@@ -1,0 +1,1 @@
+{"NOT_FOUND":"N\u00e3o localizado","SALVO_COM_SUCESSO":"Salvo com sucesso","NOME":"NOME","ATUALIZADO":"ATUALIZADO","COM_SUCESSO":"COM_SUCESSO"}

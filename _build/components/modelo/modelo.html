@@ -1,0 +1,20 @@
+<!-- template alert modal -->
+<div id="{{modalId}}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h3>{{title}}</h3>
+                <button type="button" class="close" aria-label="Close" ng-click="cancelAction()" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p ng-transclude></p>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-info" ng-click="confirmAction()" data-dismiss="modal" id="btnAlertModal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

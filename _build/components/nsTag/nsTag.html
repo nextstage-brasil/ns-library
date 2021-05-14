@@ -1,0 +1,102 @@
+<!-- template alert modal -->
+<div id="tag_{{idComponent}}">
+
+    <h5 class="mb-2 mt-2" ng-bind-html="h5"></h5>
+    <div class="mb-3" ng-if="description"><i class="fa fa-info mr-2"></i>{{description}}</div>
+
+
+    <div class="text-dark" ng-show="tagWorking"><i class="fa fa-refresh fa-spin"></i> {{tagWorking}}</div>
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="item in Tags">
+            <button ng-if="!tipo" class="btn {{item.checked && 'btn-success'|| 'btn-secondary'}} btn-block mr-2 mt-2" 
+                    data-toggle="tooltip" data-placement="top" data-html="true" title="{{item.hint}}"
+                    ng-click="set(item)" 
+                    >
+                <i class="fa {{item.checked && 'fa-check'|| 'fa-times'}} mr-1 float-right" style="position:relative;top:2px;"></i>
+                <span ng-bind-html="item.label"></span>
+                <span ng-show="item.working"><i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i></span>
+            </button> 
+        </div>
+    </div>
+    <!--
+    <button ng-if="!tipo" class="btn {{item.checked && 'btn-ativo'|| 'btn-secondary'}} mr-2 mt-2" 
+            data-toggle="tooltip" data-placement="top" data-html="true" title="{{item.hint}}"
+            ng-click="set(item)" 
+            ng-repeat="item in Tags">
+        <span ng-bind-html="item.label"></span>
+        <span ng-show="item.working"><i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i></span>
+    </button> 
+    -->
+
+    <ul ng-if="tipo === 'sortable'" id="tagsortable_{{idComponent}}">
+        <li ng-repeat="item in Tags" class="ui-state-default"
+            data-toggle="tooltip" data-placement="top" data-html="true" title="{{item.hint}}" ng-click="set(item)">
+            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+            <span ng-bind-html="item.label"></span>
+            <span class="badge {{item.checked && 'badge-success'|| 'badge-secondary'}} ml-2">{{item.checked && 'Ativo'|| 'Inativo'}}</span>
+            <span ng-show="item.working"><i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i></span>
+        </li>
+    </ul>
+
+
+    <div ng-if="tipo === 'list'">
+        <div class="row">
+            <div class="col-6 border-right">
+                <h6>Disponíveis</h6>
+                <ul id="tagsortable_{{idComponent}}_a" class="connectedSortable nsTagSortable nsTagSortableA">
+                    <li  id="li_sortablelist_id_{{item.id}}" ng-repeat="item in Tags| filter: {checked: false}" class="ui-state-default">
+                        <div class="row">
+                            <div class="col-10 col-md-10"><span ng-bind-html="item.label"></span></div>
+                            <div class="col-2 col-md-2 mouseover-hand text-right" ng-click="set(item)">
+                                <span><i class="fa fa-arrow-right"></i></span>
+                            </div>
+                        </div>
+
+
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6">
+                <h6>Ativos</h6>
+                <ul id="tagsortable_{{idComponent}}_b" class="connectedSortable nsTagSortable nsTagSortableB">
+                    <li id="li_sortablelist_id_{{item.id}}" ng-repeat="item in Tags| filter: {checked: true} | orderBy: 'sort'" class="ui-state-highlight">
+                        <div class="row">
+                            <div class="col-2 col-md-1 mouseover-hand text-center" ng-click="set(item)"><span  class=""><i class="fa fa-arrow-left"></i></span></div>
+                            <div class="col-8 col-md-10"><span ng-bind-html="item.label"></span></div>
+                            <div class="col-2 col-md-1"><span class="pt-2"><i class="fa fa-sort"></i></span></div>
+                        </div>
+
+
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <style>
+            .nsTagSortable {
+                border: 1px solid #eee;
+                list-style-type: none;
+                min-height: 120px;
+                margin: 0;
+                padding: 5px 0 0 0;
+                margin-right: 0px;
+            }
+            .nsTagSortable li {
+                margin: 0 5px 5px 5px;
+                padding: 5px;
+                font-size: 1.2em;
+            }
+            .nsTagSortable li:hover {
+                cursor: move;
+            }
+
+        </style>
+    </div>
+
+
+
+</div>
+

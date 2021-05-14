@@ -1,0 +1,1 @@
+var app = angular.module('starter', ['ui.bootstrap', 'ui.mask', 'infinite-scroll', 'angularFileUpload', 'ngSanitize', 'summernote']);

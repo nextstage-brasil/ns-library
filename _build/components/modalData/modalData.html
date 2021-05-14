@@ -1,0 +1,24 @@
+<!-- template modal View -->
+<div id="{{modalId}}" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h3>{{title}}</h3>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-0">
+                    <div class="{{item.grid}}" ng-repeat="item in modalData">
+                        <label style="font-weight: bold;" ng-bind-html="item.label"></label><br>
+                        <p class="{{item.class}}" ng-bind-html="data[item.field]"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="btnAlertModal">{{ closeLabel || 'Fechar' }}</button>
+                <a ng-show="showAction" class="btn btn-secondary" data-dismiss="modal" ng-click="actionFunction()">{{actionLabel}}</a>
+            </div>
+        </div>
+    </div>
+</div>

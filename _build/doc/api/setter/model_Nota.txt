@@ -1,0 +1,14 @@
+$obj = new SiteModelNota();
+        
+$obj->setOrder($item->getOrder());
+        
+$obj->setNota($item->getNota());
+        
+$obj->setPeso($item->getPeso());
+        
+$obj->setDate($item->getDate());
+        
+$obj->setRef($item->getRef());
+        
+$out[ ] = parent::objectToArray($obj);
+        

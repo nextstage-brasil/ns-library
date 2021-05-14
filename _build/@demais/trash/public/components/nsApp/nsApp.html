@@ -1,0 +1,169 @@
+
+
+<div id="div-search">
+    <!-- desabiitado provisoriamente
+    <div id="div-search-bar" class="header bg-sdc"></div>
+    -->
+    <h3 class="text-center">Pesquisa</h3>
+    <div id="div-search-bar" class="header">
+        <div class="form-group">
+            <div class="input-group">
+                <input type="text" ng-model="Args.search" name="search-bar" id="search-bar" class="form-control" placeholder="Informe o nome, placa, cpf, cnpj que está buscando" autocomplete="off">
+                <div class="input-group-addon">
+                    <a class="btn btn-link text-dark mouseover-hand" ng-click="search()"  data-toggle="tooltip" data-placement="top" data-html="true" title="Efetuar pesquisa" ><i class="fa fa-search"></i></a> &nbsp;&nbsp; | &nbsp;&nbsp; 
+                    <a class="text-dark text-strong  mouseover-hand"  style="text-decoration: none;" data-toggle="collapse" href="#collapseFilterSearch" role="button" aria-expanded="false" aria-controls="collapseFilterSearch">Pesquisa avançada <i class="fa fa-chevron-down"></i></a>
+                </div>
+            </div>
+        </div>
+        <div ng-show="timeElapsed>0">{{timeElapsed}} segundos</div>
+    </div>
+
+    <div class="collapse" id="collapseFilterSearch">
+        <div class="border-bottom p-2 mt-0"> 
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h3>TIPO DE PESQUISA</h3>
+                        <div class = "form-check mb-2">
+                            <input type="radio" class = "form-check-input" ng-model="Args.tipo_busca" id="tipo_busca_1" value="all">
+                            <label for="tipo_busca_1" style = "margin-top: 2px;" class = "form-check-label">Qualquer resultado</label>
+                        </div>
+                        <div class = "form-check mb-2">
+                            <input type="radio" class = "form-check-input" ng-model="Args.tipo_busca" id="tipo_busca_2" value="exact">
+                            <label for="tipo_busca_2" style = "margin-top: 2px;" class = "form-check-label">Busca exata</label>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <h3>BUSCAR POR</h3>
+                        <div class = "form-check mb-2">
+                            <input type="radio" class = "form-check-input" ng-model="Args.search_by" id="search_by_1" value="all">
+                            <label for="search_by_1" style = "margin-top: 2px;" class = "form-check-label">Nome, placa, CPF/CNPJ</label>
+                        </div>
+                        <div class = "form-check mb-2">
+                            <input type="radio" class = "form-check-input" ng-model="Args.search_by" id="search_by_2" value="mom">
+                            <label for="search_by_2" style = "margin-top: 2px;" class = "form-check-label">Filhos desta pessoa</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-4">
+                    <div class="form-group">
+                        <h3>ONDE PESQUISAR</h3>
+                        <div class = "form-check mb-2">
+        <input type = "checkbox" class = "form-check-input" ng-model="Args.onde.receita" id="receita" value="receita">
+        <label for="receita" style = "margin-top: 2px;" class = "form-check-label">Receita federal</label>
+        </div><div class = "form-check mb-2">
+        <input type = "checkbox" class = "form-check-input" ng-model="Args.onde.detran" id="detran" value="detran">
+        <label for="detran" style = "margin-top: 2px;" class = "form-check-label">Detran (SC)</label>
+        </div><div class = "form-check mb-2">
+        <input type = "checkbox" class = "form-check-input" ng-model="Args.onde.rais" id="rais" value="rais">
+        <label for="rais" style = "margin-top: 2px;" class = "form-check-label">RAIS</label>
+        </div><div class = "form-check mb-2">
+        <input type = "checkbox" class = "form-check-input" ng-model="Args.onde.public" id="public" value="public">
+        <label for="public" style = "margin-top: 2px;" class = "form-check-label">Pesquisa pública</label>
+        </div>                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+                    <h3>PERÍODO</h3>
+                    <div class="form-group" ><input ng-if="!Args.dataInicial_ro" name="Args.dataInicial" datepicker="" ng-model="Args.dataInicial" max-date="2020-01-09" min-date="" ng-change="" autocomplete="off" type="text" class=" form-control pb-0 pl-2 mb-1" /><span class="floating-label">Data inicial</span></div>                    <div class="form-group" ><input ng-if="!Args.dataFinal_ro" name="Args.dataFinal" datepicker="" ng-model="Args.dataFinal" max-date="2020-01-09" min-date="" ng-change="" autocomplete="off" type="text" class=" form-control pb-0 pl-2 mb-1" /><span class="floating-label">Data final</span></div>
+                </div>		
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 form-group text-center">
+                    <a class="btn btn-primary btn-lg" ng-click="search()"><i class="fa fa-search"></i> Pesquisar</a>
+                </div>
+            </div>    
+
+        </div>
+    </div>  
+</div>
+
+<!--  Tabela de resultados -->
+<div class="" ng-show="Results.length">
+
+    <div class="collapse" id="collapseDetails">
+        <div class="alert">
+            <div class="row">
+                <div class="col-2"><a class="btn btn-primary btn-sm" ng-click="detailsClose()"><i class="fa fa-chevron-left"></i> Voltar para relação</a></div>
+                <div class="col-8">
+                    <!-- #41cf32 --> 
+                    <h1 class="text-center alert" style="background-color: #242448">{{Item.nome}}</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+        </div>
+        <div class="border-bottom p-2 mt-0"> 
+            <div class="row">
+                <div class="col-md-4"><h3>MÃES</h3></div>
+                <div class="col-md-2"><h3>NASCIMENTO</h3></div>                        
+                <div class="col-md-2"><h3>CPF</h3></div>                        
+                <div class="col-md-2"><h3>BASE</h3></div>
+            </div>
+
+            <div class="row" style="max-height: 250px; overflow-y: auto;">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class = "form-check mb-2" ng-repeat="item in Item.Maes">
+                            <input type="checkbox" class="form-check-input" ng-click="setFilter('Maes', item)" id="{{md5(item)}}" checked="true">
+                            <label for="{{md5(item)}}" style="margin-top: 2px;" class="form-check-label">{{item}} ({{contaBase(item, 'mae')}})</label>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class = "form-check mb-2" ng-repeat="item in Item.Nascimentos">
+                            <input type="checkbox" class="form-check-input" ng-click="setFilter('Nascimentos', item)" id="{{md5(item)}}" checked="true">
+                            <label for="{{md5(item)}}" style="margin-top: 2px;" class="form-check-label">{{item}} ({{contaBase(item, 'nascimento')}})</label>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class = "form-check mb-2" ng-repeat="item in Item.Cpfs">
+                            <input type="checkbox" class="form-check-input" ng-click="setFilter('Cpfs', item)" id="{{md5(item)}}" checked="true">
+                            <label for="{{md5(item)}}" style="margin-top: 2px;" class="form-check-label">{{item}} ({{contaBase(item, 'cpf')}})</label>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class = "form-check mb-2" ng-repeat="item in Item.Bases">
+                            <input type="checkbox" class="form-check-input" ng-click="setFilter('Bases', item)" id="{{md5(item)}}" checked="true">
+                            <label for="{{md5(item)}}" style="margin-top: 2px;" class="form-check-label">{{item}} ({{contaBase(item, 'base')}})</label>
+                        </div>
+                    </div>                        
+                </div>		
+            </div>
+
+
+        </div>
+        <h3>Registros ({{RegistrosFilter.length}})</h3>
+        <div class="table-responsive">
+                <table id="c59d88d803ec9c522a06ca59693b3639" class="table  table-striped  "><thead><tr class="">
+                    <th class="mouseover-hand " >Fonte</th>
+                    <th class="mouseover-hand " >CPF/CNPJ</th>
+                    <th class="mouseover-hand " >Data</th>
+                    <th class="mouseover-hand " >Nome mãe</th>
+                    <th class="mouseover-hand " >Nascimento</th>
+                    <th class="mouseover-hand " >Registro</th>
+                    <th class="mouseover-hand " >Endereço</th></tr></thead><tbody><tr  ng-repeat="item in RegistrosFilter = (Registros | filter: filterList) | orderBy: $order:reverseSort"  id="2d5f1b" class=" table-line" ><td class="" ng-bind-html="item.base"></td><td class="" ng-bind-html="item.cpf"></td><td class="" ng-bind-html="item.data"></td><td class="" ng-bind-html="item.mae"></td><td class="" ng-bind-html="item.nascimento"></td><td class="" ng-bind-html="item.text"></td><td class="" ng-bind-html="item.endereco"></td></tr></tbody></table></div>
+        <div class="row mt-5">
+            <div class="col-sm-12 form-group text-center">
+                <a class="btn btn-primary btn-sm" ng-click="detailsClose()"><i class="fa fa-chevron-left"></i> Voltar para relação</a>
+            </div>
+        </div>    
+
+    </div>  
+    <div class="table-responsive">
+                <table id="table-results" class="table  table-striped  "><thead><tr class="">
+                    <th class="mouseover-hand " >Nome</th>
+                    <th class="mouseover-hand text-center" >Relevância</th>
+                    <th class="mouseover-hand text-center" >Mães</th>
+                    <th class="mouseover-hand text-center" >CPFs</th>
+                    <th class="mouseover-hand text-center" >Nascimentos</th>
+                    <th class="mouseover-hand text-center" >Ocorrências</th>
+                    <th class="mouseover-hand " ></th></tr></thead><tbody><tr  ng-repeat="item in Results | orderBy: $order:reverseSort"  id="2d5f1b" class=" table-line" on-long-press="" context-itens="{{table1ContextMenu}}"><td class="">{{item.nome}}</td><td class="text-center">{{item.rel}}</td><td class="text-center">{{item.qtde.mae}}</td><td class="text-center">{{item.qtde.cpfs}}</td><td class="text-center">{{item.qtde.mae}}</td><td class="text-center">{{item.qtde.ocorrencias}}</td><td class=""><button class="btn btn-info" ng-click="details(item)">Ver</button></td></tr></tbody></table></div></div>

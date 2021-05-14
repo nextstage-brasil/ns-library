@@ -1,0 +1,14 @@
+$obj = new SiteModelAluno();
+        
+$obj->setIdUsuario($item->getIdUsuario());
+        
+$obj->setNomeUsuario($item->getNomeUsuario());
+        
+$obj->setEmailUsuario($item->getEmailUsuario());
+        
+$obj->setCelularUsuario($item->getCelularUsuario());
+        
+$obj->setIdMatricula($item->getIdMatricula());
+        
+$out[ ] = parent::objectToArray($obj);
+        

@@ -1,0 +1,18 @@
+<div class="{{css && css || 'form-group'}} text-left mb-0">
+    
+    <input type="text" class="form-control pb-0 pl-2 mb-1" ng-model="initial" ng-keyup="get(true)" placeholder="{{placeholder}}" /> 
+    <span class="floating-label" ng-show="label">{{label}}</span>
+    <i ng-click="bryan()" class="form-control-microfone fa fa-microphone" aria-hidden="true"></i>
+    <div id="searchSpeech"></div>
+    <input type="hidden" ng-model="model" />
+    <ul class="list-group" style="position: relative; z-index:9999; top:0px; min-height:100px; max-height: 300px; margin-bottom: 3px; overflow: auto" ng-show="comboSearch.list.length > 0">
+        <li ng-click="set(item)" style="cursor: pointer;" class="list-group-item" ng-repeat="item in comboSearch.list track by item.id">            
+            <span ng-bind-html="item.value"></span>
+        </li>
+    </ul>
+</div>
+<!-- caso não encontre nada -->
+<p ng-show="atuou" class="alert border text-center mt-1">
+    <span ng-show="comboSearch.list.length == 0 && initial.length > 0">Nada localizado com "{{initial}}"</span>
+    <a ng-show="printBtnAdicionar" class="btn btn-info" href="../{{wsType}}/0/edit">Adicionar</a>
+</p>

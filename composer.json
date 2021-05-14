@@ -1,0 +1,18 @@
+{
+    "name": "datacloud/logos",
+    "description": "Logos - Sistema de gestão de ensino",
+    "require": {
+        "nextstage-brasil/ns-util": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "NsLibrary\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nextstage",
+            "email": "ns@nextstage.com.br"
+        }
+    ]
+}

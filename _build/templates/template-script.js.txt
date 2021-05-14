@@ -1,0 +1,20 @@
+app.controller("%entidade%Controller", function ($rootScope, $scope, DataLoadService, $filter, $timeout, $compile) {
+        $scope.entidadeName = '%entidade%'; // nome da entidade deste controller
+        $rootScope.log($scope.entidadeName, 'Starter');
+        $scope.listGetAux = [%AUX%]; // ira definir os cadastros auxiliares necessarios a carga desta pagina. Caso zeja 0, não será carregado
+        
+        /** Menu de contexto **/
+        $scope.%entidade%ContextItens = [
+            //{'link':'%entidade%OnClick(%entidade%)', 'title': '<i class="fa fa-eye" aria-hidden="true"> </i> Ver'},
+            {'link':'%entidade%OnEdit(%entidade%)', 'title': '<i class="fa fa-edit" aria-hidden="true"> </i> Abrir'},
+            {'link':'%entidade%Remove(%entidade%)', 'title': '<i class="fa fa-trash" aria-hidden="true"> </i> Remover'}
+        ];
+        
+        /** Para tratar os linktables, caso exista **/
+        $scope.setVinculosOnEdit = function (id) {};
+
+        // vai injetar as funções padrão
+        $rootScope.trataEditOnLoad($scope);
+
+        // Demais funções exclusivas deste componente
+});

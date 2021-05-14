@@ -1,0 +1,11 @@
+[classes]
+Autoloader
+Config
+Log
+[methods]
+addClass
+init
+[functions]
+ob_html_compress
+getallheaders
+customError

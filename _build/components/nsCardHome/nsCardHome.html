@@ -1,0 +1,17 @@
+<div class="card mb-2 nsCardHome" ng-click="click()">
+    <div class="card-body card-{{cardClass}}">
+        <div class="row p-0">
+            <div class="col-8 text-left pl-0 pr-0">
+                <h4 class="card-title mb-0" ng-bind-html="title"></h4>
+            </div>
+            <div class="col-4 text-right pl-0 pr-0">
+                <h2><span class="p-2 badge badge-{{cardClass}}">{{valor}}</span></h2>
+            </div>
+        </div>
+        <div class="row p-0 mt-2">
+            <div class="col-12"><small><span class="text-small" ng-bind-html="descricao"></span></small></div>
+        </div>
+    </div>
+    <ng-transclude></ng-transclude>
+
+</div>

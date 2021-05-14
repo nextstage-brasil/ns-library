@@ -1,0 +1,10 @@
+$obj = new SiteModelEncontro();
+        
+$obj->setCodTurma($item->getCodTurma());
+        
+$obj->setDataEncontro($item->getDataEncontro());
+        
+$obj->setNomeModulo($item->getNomeModulo());
+        
+$out[ ] = parent::objectToArray($obj);
+        

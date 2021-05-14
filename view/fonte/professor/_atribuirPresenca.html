@@ -1,0 +1,72 @@
+<div id="atribuirPresenca" class="controleShowGradePolo d-print-none">
+    <div>
+        <h5><strong>Polo: </strong>{{Turma.nomePolo}}, <strong>Módulo: </strong>{{Turma.nomeModulo}}</h5>
+        <p><strong>Professor: </strong>{{Turma.nomeUsuario}}, <strong>Data do encontro: </strong>{{Encontro.dataEncontro| date:'dd/MM/yyyy'}}</p>
+    </div>
+    <div id="presenca-filtros">
+        <div class="row">
+            <div class="col-6 col-lg-4">
+                <div class="form-group">
+                    <label class="mt-0">Nome</label>
+                    <input type="text" class="form-control minhaaltura" id="nomeAlunoPresente" ng-model="presenteFiltro.nomeUsuario" placeholder="Procurar pelo nome do usuário">
+                    <i class="fa fa-times" ng-click="presenteFiltro.nomeUsuario = ''; document.getElementById('nomeAlunoPresente').focus()"; style="position: absolute;right:23px;top:49px;" ng-show="presenteFiltro.nomeUsuario.length"></i>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+            </div>
+        </div>
+    </div>
+    <div id="atribuirPresencaContent">
+
+
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-chamada-presente" role="tab" aria-controls="nav-home" aria-selected="true">Presentes<span class="badge badge-success ml-2">{{AlunosPresentes.length}}</span></a>
+                <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-chamada-ausente" role="tab" aria-controls="nav-contact" aria-selected="false">Ausentes<span class="badge badge-warning ml-2">{{AlunosAusentes.length}}</span></a>
+            </div>
+        </nav>
+        <div class="tab-content py-3 px-3 px-sm-0" id="presencaAlunosTabContent">
+
+            <div class="tab-pane fade" id="nav-chamada-presente" role="tabpanel" aria-labelledby="nav-home-tab">
+                <div class="row">
+                    <div class="col-md-3 mb-2" ng-repeat="item in AlunosPresentes = (Alunos| filter: {isPresente:'true'}:true | filter:presenteFiltro | orderBy: 'nomeUsuario')">
+                        <div class="card {{item.isPresente == 'true' && 'card-success'|| 'card-danger'}} text-center">
+                            <img class="card-img-top mt-2" style="margin:0px auto;" ng-src="https://cdn.iconscout.com/icon/free/png-256/avatar-380-456332.png" alt="Avatar">
+                            <h5 class="card-title">{{item.nomeUsuario}}</h5>
+                            <div class="card-body mt-0 text-right">
+                                <button ng-click="registraPresenca(item)" class="btn btn-warning btn-sm"><i class="fa fa-times mr-1"></i>Marcar ausente</button>
+                            </div>                   
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="tab-pane fade" id="nav-chamada-ausente" role="tabpanel" aria-labelledby="nav-contact-tab">
+                <div class="row">
+                    <div class="col-md-3 mb-2" ng-repeat="item in AlunosAusentes = (Alunos| filter: {isPresente:'false'}:true | filter:presenteFiltro | orderBy: 'nomeUsuario')">
+                        <div class="card {{item.isPresente == 'true' && 'card-success'|| 'card-danger'}} text-center">
+                            <img class="card-img-top mt-2" style="margin:0px auto;" ng-src="https://cdn.iconscout.com/icon/free/png-256/avatar-380-456332.png" alt="Avatar">
+                            <h5 class="card-title">{{item.nomeUsuario}}</h5>
+                            <div class="card-body mt-0 text-right">
+                                <button ng-click="registraPresenca(item)" class="btn btn-success btn-sm"><i class="fa fa-check mr-1"></i>Marcar presente</button>
+                            </div>                   
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+    <div class="text-center mt-5">
+        <button class="btn btn-secondary mr-1" ng-click="GradePoloDoClose()"><i class="fa fa-arrow-left mr-1"></i>Voltar</button>
+    </div>
+</div>

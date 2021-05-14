@@ -1,0 +1,14 @@
+{
+  "name": "hideseek",
+  "homepage": "https://github.com/vdw/HideSeek",
+  "version": "0.8.0",
+  "_release": "0.8.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.8.0",
+    "commit": "a805661208e8eca6e180f4ba69962d41b47ba14d"
+  },
+  "_source": "https://github.com/vdw/HideSeek.git",
+  "_target": "0.8.0",
+  "_originalSource": "hideseek"
+}

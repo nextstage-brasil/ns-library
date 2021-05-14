@@ -1,0 +1,89 @@
+<alert-modal title="Colaboração de {{EntidadeReferencia.entidadeF}} entre Agências" modal-id="{{idModal}}">
+    <div>
+        <h5 class="text-center" ng-bind-html="EntidadeReferencia.referencia"></h5>
+        <!--  list -->
+        <div class="sharedShow" id="sharedList" ng-show="!Shared">
+            <a ng-click="sharedNewPublic({})" ng-show="!publicExists" class="btn btn-success btnNew text-center mb-2"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pública</a>
+            <a ng-click="sharedNew({})" class="btn btn-info btnNew text-center mb-2"><i class="fa fa-plus-circle" aria-hidden="true"></i> Privada</a>
+            <div class="row" ng-show="Shareds.length > 0">
+                <div ng-repeat="item in Shareds" class="col-sm-4 mt-3" ng-click="sharedSet(item)">
+                    <div class="card card-white {{item.publicShared === 'true' && 'card-success'|| 'card-danger'}}">
+                        <h4 ng-bind-html="item.nomeShared"></h4>
+                        <p class="text-center"><i>{{item.publicShared==='true' ? 'Público' : 'Privado'}}</i></p>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="!Shareds.length && !workingList" class="alert alert-info text-center">Nenhuma colaboração registrada</div>
+            <div ng-show="workingList">Obtendo Colaborações</div>
+        </div>
+
+        <!-- edit -->
+        <div class="sharedShow" id="sharedEdit" ng-show="Shared">
+            <div ng-show="Shared.publicShared === 'true'" class="text-center">
+                <h5 class="text-center m-5">Uma colaboração pública, torna os dados acessíveis para leitura às APIs de integração fornecida</h5>
+                <p class="text-center m-3">Somente APIs cadastradas e válidas terão acesso a leitura dos dados</p>
+                <p class="text-center m-3"><a class="btn btn-link" ng-show="Shared.publicShared === 'true'" href="integracao/0/3">Ver APIs cadastradas</a></p>
+            </div>
+            <div ng-show="Shared.publicShared === 'false'">
+                <!-- header -->
+                <div class="row">
+                    <div class="col-sm-4 text-left">
+                        <ns-input class="input-bg-white" model="Shared.nomeShared" label="Nome de Referência"></ns-input>
+                        <a class="btn btn-success" ng-show="Shared.idShared <= 0" ng-click="sharedCreate()">Definir Usuários</a>
+                    </div>
+                    <div class="col-sm-8 text-left">
+                        <!-- Usuários -->
+                        <div class="border" ng-show="Shared.idShared > 0">
+                            <h5 class="mb-3">Integrações permitidas</h5>
+                            <div class="col-sm-12 text-center">
+                                <div style="max-width: 500px; margin: 0px auto;" id="comboSearchDiv">
+                                    <combo-search label="Integração permitida" model="novoUsuario" initial="" ws-type="Usuario" ws-action="userApiList"></combo-search>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="filters-container">
+                                    <ul class="col mx-0 tag-list">
+                                        <li class="tag-item" ng-repeat="item in Shared.Users">
+                                            <div class="cs-tag pb-12">{{item.Usuario.nomeUsuario}}<button ng-click="userRemove(item, $index)"><i class="material-icons">&#xE5CD;</i></button></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>                
+                </div>
+
+
+                <!-- Campo a compartilhar
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h5 class="mb-3">Pessoa #158758</h5>
+                        <ns-input model="Shared.nomeShared" blur="onChange()" label="Nome de referência"></ns-input>
+                    </div>
+                    <div class="col-sm-4">
+                        <ns-input model="Shared.publicShared" label="Público" type="checkbox"></ns-input>
+                        <ns-input model="Shared.writeShared" label="Público" type="checkbox"></ns-input>
+                    </div>
+                </div>
+                <hr />
+                -->
+
+
+            </div>
+
+            <div class="mt-3 text-center" ng-show="Shared.idShared > 0">
+                <a class="btn btn-secondary" ng-click="sharedSet(false)">Fechar</a>
+                <a class="btn btn-danger" ng-click="sharedRemove()">Remover</a>
+                <a class="btn btn-success" ng-show="Shared.publicShared === 'false'" ng-click="sharedSave()">Salvar</a>
+
+            </div>
+
+
+        </div>
+
+        <div id="nsColaboraModalWrite"></div>
+    </div>
+
+
+</alert-modal>

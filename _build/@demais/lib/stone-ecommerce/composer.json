@@ -1,0 +1,19 @@
+{
+    "name": "stone-pagamentos/stone-ecommerce-php",
+    "description": "Stone Pagamentos PHP Library",
+    "keywords": ["gateway", "stone", "pagamento", "payment"],
+    "homepage": "http://www.stone.com.br/en/",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": { "Gateway\\" : "lib/" }
+    },
+    "require": {
+        "php": ">=5.3",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "satooshi/php-coveralls": "dev-master"
+    }
+}

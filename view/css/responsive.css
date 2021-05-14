@@ -1,0 +1,29 @@
+/* MOBILE STYLES */
+
+@media screen and (max-width: 767px)   { /* Tratamento para resoluções inferiores a tablet */
+    .font-1-5  {  font-size: 1.0em;}
+    .container-principal, .container-fluid, .container { padding: 2px;}
+    .text-small { font-size: 0.7em;}
+    .modal-dialog { width: 95%;}
+    body {        font-size: 1.3em;    }
+    .btn-jumbo {padding: 10px 10px 10px 10px; font-size: 1.0em;}
+    .avisoEsquerda   {
+        bottom: 0px;
+        left: 0px;
+        font-size: 1.0em;
+    }
+}
+/* MOBILE STYLES */
+@media (max-width: 768px) {
+    .cs-container {
+        height: 100%; }
+    .login-box {
+        height: 100%;
+        width: 100%;
+        padding: 0px; }
+    .login-box-form {
+        padding: 60px; } 
+}
+
+
+

@@ -1,0 +1,38 @@
+<div class="alert alert-secondary text-center mediaplayer-div" style="position: fixed; top: 0px; left:0px; z-index:999999; width: 100%; height:100vh; display:none;" id="midia-container">
+    <button ng-click="midiaContainerClose()" type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+    <div id="midia-audio" class="midia-controle-show">
+        <h3 class="m-0 mb-1 text-center">{{midia.title}}</h3> 
+        <span ng-show="working"><i class="fa fa-spinner fa-lg fa-spin"></i></span>
+
+        <audio controls class="sound-player" autoplay="autoplay" ng-show="mime === 'audio'">
+            <source id="audio-player-source" src="" type="{{midia.mime}}" />
+            Your browser does not support the audio tag.
+        </audio>
+
+        <video class="sound-player ns-media-player-video" style="position: relative;background-color: black;overflow: hidden;" controls autoplay="autoplay" ng-show="mime === 'video'">
+            <source id="video-player-source" src="" type="{{midia.mime}}" />
+            Your browser does not support the video tag.
+        </video>
+
+        <iframe id="iframe-player-source" style="width:100%; height: 90vh; border: 0px; margin: 0px auto; " src="" ng-show="mime === 'iframe'"></iframe>
+
+        <div style="width:auto; height: 85vh; margin: 0px auto; " ng-show="mime === 'image'">
+            <img id="image-player-source" class="img" style="max-height: 100%;" spinner-load observe="src" src="" />
+        </div>
+
+        <div style="width:auto; height: 85vh; margin: 0px auto; " ng-show="mime === 'others'">
+            <p ng-bind-html="text"></p>
+        </div>
+
+
+
+    </div>
+    <div class="text-center mt-5" style="position:fixed; bottom: 10px;right:10px;">
+        <a class="btn btn-link text-danger mr-3" ng-show="showRemove" ng-click="midiaRemove()"><i class="fa fa-trash"></i> Remover</a>  
+        <a class="btn btn-secondary mr-3" ng-click="midiaContainerClose()"><i class="fa fa-times"></i>Fechar</a>
+        <a class="btn btn-primary" href="{{uploadfile.dtmp}}&download=true" download="{{uploadfile.nomeUploadfile + '.' + uploadfile.extensaoUploadfile}}">Download: {{uploadfile.nomeUploadfile + '.' + uploadfile.extensaoUploadfile}}</a>;
+    </div>
+</div>

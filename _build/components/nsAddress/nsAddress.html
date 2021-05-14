@@ -1,0 +1,44 @@
+
+<div class="container">
+    <div ng-show="working" class="mt-5 text-center"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><span>Obtendo endereços</span></div>
+    <div ng-show="!Endereco && !working">
+        <div class="text-left" ng-show="Enderecos.length < limite">
+            <a ng-click="enderecoSet({})" class="btn btn-info text-center"><i class="fa fa-plus-circle" aria-hidden="true"></i> Novo Endereço</a>
+        </div>
+        <br/>
+        
+        <div ng-show="Enderecos.length">
+            <div class="clearfix"></div><div class="row"><div ng-repeat="endereco in Enderecos" class="col-sm-4"  on-long-press="" context-itens="{{enderecoContextItens}}" ><!-- CARDS -->
+                <br/>
+        <div class = "card " ng-mouseover="endereco.contextoShow = true" ng-mouseout="endereco.contextoShow = false">
+        
+            <div class="text-center" ng-click="enderecoSet(endereco)"><h4 ng-bind-html = "endereco.Municipio.nomeMunicipio + '/'+endereco.Municipio.Uf.siglaUf"></h4> </div>
+            <div class="text-center text-secondary">
+                <div style="position:absolute; top:0px; right:0px;" ng-show="endereco.contextoShow && enderecoContextItens.length"><a menu-contexto="" menu-contexto-itens="{{enderecoContextItens}}"><i class="fa fa-ellipsis-v fa-2x" aria-hidden="true"></i></a></div>            
+            </div>
+            
+        <div class = "clearfix"></div><div ng-click="enderecoSet(endereco)"><p class="card-text text-center text-italic"><span class = "card-text-primary"></span><span class = "card-text-secondary" ng-bind-html = "endereco.nomeEndereco"></span></p><div class = "clearfix"></div><p class="card-text "><span class = "card-text-primary">CEP: </span><span class = "card-text-secondary" ng-bind-html = "endereco.cepEndereco | cep"></span></p><div class = "clearfix"></div><p class="card-text "><span class = "card-text-primary">End.: </span><span class = "card-text-secondary" ng-bind-html = "endereco.ruaEndereco+' '+endereco.numeroEndereco+' '+endereco.complementoEndereco"></span></p><div class = "clearfix"></div><p class="card-text "><span class = "card-text-primary">Bairro: </span><span class = "card-text-secondary" ng-bind-html = "endereco.bairroEndereco"></span></p><div class = "clearfix"></div></div></div></div></div><div class="clearfix" style="margin-top:25px;"></div><div class="clearfix" style="margin-top:20px;"></div><div role="alert" class="cs-container  text-center" ng-show="!Enderecos.length"><i class="fa fa-info-circle" aria-hidden="true"></i>Nenhum endereço localizado</div><div class="clearfix" style="margin-top:20px;"></div>
+        </div>
+    </div>
+    <div ng-show="Endereco">
+        <h5>Endereço</h5>
+        <br/>
+        <div class="row">
+            
+<form name="form_0c308cf75365b133630d62cb24d0c144" id="0c308cf75365b133630d62cb24d0c144" method="post" action="" enctype="multipart/form-data" onSubmit=""><fieldset><div class="row"><div class="col-sm-4"><div class="form-group mb-0"><div ng-if="Endereco.nomeEndereco_ro"><label>TITULO</label><p ng-bind-html="Endereco.nomeEndereco"></p></div><div ng-if="!Endereco.nomeEndereco_ro"><input ng-model="Endereco.nomeEndereco" ng-change="" type="text" class=" form-control" id="296d348cf2ea4c12b413266638b9afbe" required="not-required" /><label class="control-label" for="input">TITULO</label><i></i></div></div></div><div class="col-sm-2"><div class="form-group mb-0"><div ng-if="Endereco.cepEndereco_ro"><label>CEP</label><p ng-bind-html="Endereco.cepEndereco"></p></div><div ng-if="!Endereco.cepEndereco_ro"><input ng-model="Endereco.cepEndereco" ng-blur="buscaCep()" class="cep form-control" type="text" id="2c4c4bf7aa4796010549fd7a6bf31638" required="not-required" /><label class="control-label" for="input">CEP</label><i></i></div></div></div><div class="col-sm-2"><div class="form-group mb-0"><div ng-if="Endereco.numeroEndereco_ro"><label>NÚMERO</label><p ng-bind-html="Endereco.numeroEndereco"></p></div><div ng-if="!Endereco.numeroEndereco_ro"><input ng-model="Endereco.numeroEndereco" ng-change="" type="text" class=" form-control" id="4680b62ce7383b599b46a5ec912893f7" required="not-required" /><label class="control-label" for="input">NÚMERO</label><i></i></div></div></div><div class="col-sm-2"><div class="form-group mb-0"><div ng-if="Endereco.complementoEndereco_ro"><label>COMPLEMENTO</label><p ng-bind-html="Endereco.complementoEndereco"></p></div><div ng-if="!Endereco.complementoEndereco_ro"><input ng-model="Endereco.complementoEndereco" ng-change="" type="text" class=" form-control" id="e342d7b9025a7ea4ce70182d3c0b673c" required="not-required" /><label class="control-label" for="input">COMPLEMENTO</label><i></i></div></div></div><div class="col-sm-2"><div class="form-group mb-0"><div ng-if="Endereco.statusEndereco_ro"><label>STATUS</label><p ng-bind-html="Endereco.statusEndereco"></p></div><div ng-if="!Endereco.statusEndereco_ro"><select class="form-control" ng-model = "Endereco.statusEndereco" ng-options = "item.idStatusPessoaEndereco as item.nomeStatusPessoaEndereco for item in Aux.StatusPessoaEndereco"></select><label class="control-label" for="select">STATUS</label><i></i></div></div></div><div class="col-sm-8"><div class="form-group mb-0"><div ng-if="Endereco.ruaEndereco_ro"><label>RUA , AVENIDA...</label><p ng-bind-html="Endereco.ruaEndereco"></p></div><div ng-if="!Endereco.ruaEndereco_ro"><input ng-model="Endereco.ruaEndereco" ng-change="" type="text" class=" form-control" id="8c5ec6acd1ea3c8acd233b216461d7f6" required="not-required" /><label class="control-label" for="input">RUA , AVENIDA...</label><i></i></div></div></div><div class="col-sm-4"><div class="form-group mb-0"><div ng-if="Endereco.bairroEndereco_ro"><label>BAIRRO</label><p ng-bind-html="Endereco.bairroEndereco"></p></div><div ng-if="!Endereco.bairroEndereco_ro"><input ng-model="Endereco.bairroEndereco" ng-change="" type="text" class=" form-control" id="ae44978fa2bd67212a98efbeafe8f184" required="not-required" /><label class="control-label" for="input">BAIRRO</label><i></i></div></div></div><div class="col-sm-6"><div class="form-group" ng-if="Endereco.idMunicipio_ro"><label>MUNICIPIO</label><p>{{Endereco.Municipio.nomeMunicipio}}<i class="bar"></i></p></div><combo-search ng-if="!Endereco.idMunicipio_ro" label="MUNICIPIO" model="Endereco.idMunicipio" initial="{{Endereco.Municipio.nomeMunicipio+'/'+Endereco.Municipio.Uf.siglaUf}}" ws-type="Municipio" ws-action="getAll"></combo-search></div><div class="col-sm-3"><div class="form-group mb-0"><div ng-if="Endereco.latitudeEndereco_ro"><label>LATITUDE</label><p ng-bind-html="Endereco.latitudeEndereco"></p></div><div ng-if="!Endereco.latitudeEndereco_ro"><input ng-model="Endereco.latitudeEndereco" ng-change="" type="text" class=" form-control" id="8ef4f3ab99f23fc266fba87621df8be3" required="not-required" /><label class="control-label" for="input">LATITUDE</label><i></i></div></div></div><div class="col-sm-3"><div class="form-group mb-0"><div ng-if="Endereco.longitudeEndereco_ro"><label>LONGITUDE</label><p ng-bind-html="Endereco.longitudeEndereco"></p></div><div ng-if="!Endereco.longitudeEndereco_ro"><input ng-model="Endereco.longitudeEndereco" ng-change="" type="text" class=" form-control" id="fd3583545f33a63f6df43f91a327e041" required="not-required" /><label class="control-label" for="input">LONGITUDE</label><i></i></div></div></div><div class="col-sm-12"><div class="form-group mb-0"><div ng-if="Endereco.pontoReferenciaEndereco_ro"><label>PONTO REFERENCIA</label><p ng-bind-html="Endereco.pontoReferenciaEndereco"></p></div><div ng-if="!Endereco.pontoReferenciaEndereco_ro"><input ng-model="Endereco.pontoReferenciaEndereco" ng-change="" type="text" class=" form-control" id="885036cd8e23ad194e15863c8c9fb6bc" required="not-required" /><label class="control-label" for="input">PONTO REFERENCIA</label><i></i></div></div></div></div>
+    </fieldset></form>
+        </div>
+
+        
+
+        <div class="col-sm-12 text-center mt-1 mb-5">
+            <button ng-if="limite>1" class="btn btn-info text-right" ng-click="Endereco = false"><i class="fa fa-times" aria-hidden="true"> </i> Fechar</button>
+            <button class="btn btn-success" ng-click="enderecoSave()"><i class="fa fa-check" aria-hidden="true"></i> Salvar Endereço</button>
+        </div>
+        
+<div id="map" style="height: 400px;width: 100%;"></div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+        

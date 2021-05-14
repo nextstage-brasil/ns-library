@@ -1,0 +1,125 @@
+/** 
+Aqui deve ser definidos os estilos deste sistema 
+Caso necessário, para alterar estilos pre definidos
+**/
+
+.footer { background-color:#003147;height: 40px;color: #fff;}
+.footer a {    color: #777;}
+h1, h2, h3, h4, h5, h6 { font-family: "ArchivoNarrow" !important; }
+.navbar-comp { font-size: 0.8em;}
+/*.navbar-comp .tempoSessao { font-size: 0.7em; }*/
+
+/* Cor das barrinhas do menu mobile */
+.navbar-toggler-icon{  
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+/** Correções no FORM **/
+select.form-control:not([size]):not([multiple]) {
+    height: calc(2.41875rem + 0.1rem);
+}
+textarea:not(textarea), textarea.form-control:not(textarea), input.form-control:not(textarea), input[type=text]:not(textarea), input[type=password]:not(textarea), input[type=email]:not(textarea), input[type=number]:not(textarea), [type=text].form-control:not(textarea), [type=password].form-control:not(textarea), [type=email].form-control:not(textarea), [type=tel].form-control:not(textarea), [contenteditable].form-control:not(textarea) {
+    height: calc(2.81875rem + 1.2225rem);
+}
+input.minhaaltura {
+    height: calc(2.81875rem + 0rem) !important;
+    padding-top: 0px;
+}
+
+table select.form-control:not([size]):not([multiple]) {
+    height: 25px;
+}
+table textarea:not(textarea), 
+table textarea.form-control:not(textarea), 
+table input.form-control:not(textarea), 
+table input[type=text]:not(textarea), 
+table input[type=password]:not(textarea), 
+table input[type=email]:not(textarea), 
+table input[type=number]:not(textarea), 
+table [type=text].form-control:not(textarea), 
+table [type=password].form-control:not(textarea), 
+table [type=email].form-control:not(textarea), 
+table [type=tel].form-control:not(textarea), 
+table [contenteditable].form-control:not(textarea) {
+    height: 25px;
+}
+
+/* para as abas rolarem lateralmente e não quebrar */
+.nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.nav-tabs a {
+    white-space: nowrap;
+}
+/** **/
+
+
+
+
+/** Alterações no MateriaCSS **/
+.btn {
+    /*padding: 0.65rem;*/
+    text-transform: none;
+}
+.btn-info {
+    background-color: #2779b0;
+    color: #fff;
+}
+.progress {
+    height: auto;
+}
+.f-12 {
+    font-size: 1.2em;
+}
+
+/** navbar **/
+.navbar-nav .nav-link {
+    font-size: 1.2em;
+}
+.navbar-nav .nav-link:hover {
+    border-right: solid 1px #41cf32;
+    border-left: solid 1px #41cf32;
+    background-color: #242448; /*#41cf32;*/
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #f5f5f5;
+    opacity: 1;
+    font-weight: bold;
+    padding: 10px 20px 10px 20px;
+}
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: white;/* #ec2f12;*/
+}
+
+
+
+
+.input-group-prepend {
+    padding-top: 16px;
+}
+
+.btn-info {
+    color: white;
+}
+
+.form-control {
+    padding: 0px;
+}
+
+
+/* Fixed Header */
+table.tableHeaderFixed thead {
+    background-color: #fff !important;
+}
+table.tableHeaderFixed thead tr th {
+    /* Important */
+    /*background-color: red;*/
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 50px;
+    background-color: #fff !important;
+}
+/* Fixed Header */

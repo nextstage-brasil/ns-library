@@ -1,0 +1,14 @@
+$obj = new SiteModelAlunoEncontro();
+        
+$obj->setIdUsuario($item->getIdUsuario());
+        
+$obj->setNomeUsuario($item->getNomeUsuario());
+        
+$obj->setEmailUsuario($item->getEmailUsuario());
+        
+$obj->setIdGradeAluno($item->getIdGradeAluno());
+        
+$obj->setIsPresente($item->getIsPresente());
+        
+$out[ ] = parent::objectToArray($obj);
+        

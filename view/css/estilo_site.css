@@ -1,0 +1,144 @@
+body {
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+}
+.container-principal,
+.container-fluid { 
+    background-color: #fff;
+}
+
+
+/** Estilos dos hints **/
+.ui-tooltip, .arrow:after {
+    background: #293c5b;
+    border: 2px solid white;
+}
+.ui-tooltip {
+    padding: 10px 20px;
+    color: white;
+    border-radius: 20px;
+    font: 12px "Helvetica Neue", Sans-Serif;
+    box-shadow: 0 0 7px black;
+}
+.arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 10%;
+    margin-left: -35px;
+    bottom: -16px;
+}
+.arrow.top {
+    top: -10px;
+    bottom: auto;
+}
+.arrow.left {
+    left: 20%;
+}
+.arrow:after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 25px;
+    height: 25px;
+    box-shadow: 6px 5px 9px -9px black;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.arrow.top:after {
+    bottom: -20px;
+    top: auto;
+}
+
+
+button.btn-ativo:not(:disabled):not(.disabled).active,
+button.btn-ativo:not(:disabled):not(.disabled):active,
+button.show>.btn-ativo.dropdown-toggle,
+button.btn-ativo,
+a.btn-ativo:not(:disabled):not(.disabled).active,
+a.btn-ativo:not(:disabled):not(.disabled):active,
+a.show>.btn-ativo.dropdown-toggle,
+a.btn-ativo,
+bg.ativo
+{
+    background-color: #ed7906;
+    border-color: #ed7906;
+    color: white;
+    border: none;
+    margin: 2px;
+} 
+
+/** Inputs das notas dos alunos na tabela **/
+
+.avaliacaoInput {
+    padding: 5px !important;
+    /*border: 1px solid #999;*/
+    height: 2em !important;
+    font-size: 1.5em !important;
+    /*max-width: 100px;*/
+    text-align: center;
+    color: #666;
+}
+
+.avaliacaoSet:hover {
+    background-color: #f1f1f1;  
+}
+
+
+
+/** toogle btn **/
+.toggle {
+    margin-bottom: 40px;
+}
+
+.toggle > input {
+    display: none;
+}
+
+.toggle > label {
+    position: relative;
+    /*display: block;*/
+    height: 14px;
+    width: 44px;
+    background: #898989;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.toggle > label:after {
+    position: absolute;
+    left: -2px;
+    top: -3px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    background: #fff;
+    box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
+    content: '';
+    transition: all 0.3s ease;
+}
+.toggle > label:active:after {
+    transform: scale(1.15, 0.85);
+}
+.toggle > input:checked ~ label {
+    background: #6fbeb5;
+}
+.toggle > input:checked ~ label:after {
+    left: 25px;
+    background: #179588;
+}
+.toggle > input:disabled ~ label {
+    background: #d5d5d5;
+    pointer-events: none;
+}
+.toggle > input:disabled ~ label:after {
+    background: #bcbdbc;
+}
+/******************************/

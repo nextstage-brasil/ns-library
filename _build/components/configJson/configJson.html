@@ -1,0 +1,73 @@
+<h5 class="mb-1 mt-3 text-warning" ng-bind-html=" title" ng-if="title.length>0"></h5>
+<div class="row">
+    <div data-toggle="tooltip" data-placement="top" data-html="true" title="{{config[key]['tip']}}"
+         class="{{config[key]['grid'] && config[key]['grid']|| grid }}" ng-repeat="(key, value) in model track by $index">
+
+        <div class="form-group mb-0" ng-if="config[key]['ro'] == 'true'">
+            <span class="floating-label" for="input" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+            <p ng-bind-html="model[key]"></p>
+        </div>            
+
+        <!--textarea -->
+        <div class="form-group mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && config[key]['type'] === 'textarea'">
+            <span class="floating-label" for="textareat" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+            <textarea 
+                type="textarea" 
+                rows="5" 
+                ng-model="model[key]" 
+                required="not-required" 
+                class="form-control">
+            </textarea>            
+        </div>
+        
+         <!--summernote -->
+        <div class="mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && config[key]['type'] === 'summernote'">
+            <label class="control-label text-strong" for="textareat" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></label>
+            <summernote config="snOptions" ng-model="model[key]"></summernote>
+            <i></i>
+        </div>        
+        
+
+        <!-- date -->
+        <div class="form-group mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && config[key]['type'] === 'date'">
+            <div>
+                <span class="floating-label" for="select" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+                <input datepicker="" 
+                       ng-model="model[key]"
+                       max-date="" 
+                       min-date="" 
+                       ng-blur="" 
+                       type="text" 
+                       class="form-control">
+
+            </div>
+        </div>
+
+        <!-- boolean -->
+        <div class="form-group mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && config[key]['type'] === 'boolean'">
+            <span class="floating-label-select" for="select" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+            <select class="form-control" ng-model="model[key]">
+                <!--<option value="Não informado">Não informado</option>-->
+                <option value="S">Sim</option>
+                <option value="N">Não</option>
+            </select>
+        </div>
+
+        <!-- select -->
+        <div class="form-group mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && config[key]['type'] === 'select'">
+            <span class="floating-label-select" for="select" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+            <select class="form-control" ng-model="model[key]" ng-options="item.id as item.label for item in config[key]['list']"></select>        
+        </div>
+
+
+
+        <!-- others -->
+        <div class="form-group mb-0" ng-if="(!config[key]['ro'] || config[key]['ro'] == 'false') && (config[key]['type'] === 'text' || config[key]['type'] === 'number')">
+            <input type="{{config[key]['type']}}" class=" form-control {{config[key]['class']}} pb-0 pl-2 mb-1" ng-model="model[key]" />
+            <span class="floating-label" ng-bind-html="config[key]['label'] && config[key]['label'] || key"></span>
+        </div>
+
+
+
+    </div>
+</div>

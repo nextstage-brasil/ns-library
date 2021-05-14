@@ -1,0 +1,159 @@
+<div ng-show="!Linktable && !view" id="LinktableList" class="text-dark">
+
+    <!-- template modal View -->
+    <div id="linktableModalView{{ID}}" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h3>{{title}}</h3>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-0">
+                        <div class="{{item.grid}}" ng-repeat="item in modalData">
+                            <label style="font-weight: bold;" ng-bind-html="item.label"></label><br>
+                            <p class="{{item.class}}" ng-bind-html="item.text"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" id="btnAlertModal">Fechar</button>
+                    <a class="btn btn-warning" data-dismiss="modal" ng-click="toQualify()">Qualificar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- botoes -->
+    <div class="row">
+        <div class="col-12 col-sm-6 text-left listEditDiretive d-print-none hidden-xs">
+            <h3 class="title text-left hidden-xs" id="titlePage">{{title}}</h3>
+            <a ng-click="LinktableOnEdit({})" class="btn btn-info btnNew text-center">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i> <span ng-bind-html="btnText"></span>
+            </a>  
+            <!-- botão especifico para clubes, mostrar a listagem do jogador entre os clubes -->
+            <a class="btn btn-link" 
+               ng-if="EntidadeRelacionada === 'Clube'" 
+               ng-click="clubeShowMovimentacoes()" 
+               data-toggle="tooltip" data-placement="top" data-html="true" title="Visualizar as movimentações em ordem cronológica">
+                <i class="fa fa-eye fa-1g" aria-hidden="true"></i> Ver cronologia
+            </a>
+
+            <a class="btn btn-default" ng-click="viewTable = !viewTable" alt="teste">
+                <i class="fa fa-{{viewTable && 'id-card'|| 'list'}} fa-1g" aria-hidden="true"></i>
+            </a>
+
+        </div>
+        <!-- filtros -->
+        <div class="col-12 col-sm-6 text-right listEditDiretive d-print-none">
+
+            <div class="row">
+                <!-- demais filtros -->
+                <div class="col-sm-12">
+                    <!-- federacoes A TRATRAR AINDA
+                    <div ng-if="Args.relacaoLinktable === 'PESSOA|FEDERACAO'">
+                        <div class="row">
+                            <div class="col-sm-4">
+                <div class="form-group mt-2">
+                    <span class="floating-label-select">Função</span>
+                    <i ng-show="Args.idClubeTipo" ng-click="filterClear('idFuncao')" class="btn btn-link filter-control-clear fa fa-times form-control-feedback hidden ng-hide" aria-hidden="true"></i>
+                    <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched" ng-change="ClubeGetAll('', true)" ng-model="Args.idClubeTipo" ng-options="item.idClubeTipo as item.nomeClubeTipo for item in Aux.ClubeTipo"><option value="?" selected="selected"></option><option label="PRISIONAL" value="number:1">PRISIONAL</option><option label="SÓCIO-EDUCATIVO" value="number:2">SÓCIO-EDUCATIVO</option>
+                    </select>
+                </div>
+                            </div>
+                            <div class="col-sm-4">STATUS</div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+
+                <!-- search -->
+                <div class="col-sm-12">
+                    <div class="form-group mb-0">
+                        <input ng-model="Search" ng-keyup="doSearch()" placeholder=" Filtrar {{title}}" style="font-family:Arial,FontAwesome" class="Search form-control" type="text">
+                        <label class="control-label" for="input"></label>
+                        <i ng-show="Search" ng-click="filterClear('Search')" class="form-control-clear fa fa-times form-control-feedback hidden" aria-hidden="true"></i>
+                        <i ng-click="bryan('Search', 'doSearch')" class="form-control-microfone fa fa-microphone form-control-feedback" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+        <div class="clearfix listEditDiretive d-print-none" style="margin-top: 35px;"></div>
+    </div>
+
+
+    <!-- LIST CARDS OR TABLE - OBTIDO NO JS FROM CONTROLLER PHP, CONFORME RELAÇÃO -->
+    <div id="{{relacaoID}}" ng-show="!viewTable"></div>
+    <div id="{{relacaoIDTable}}" ng-show="viewTable" class="mt-5"></div>
+
+    <!-- LOADING INLINE -->
+    <div ng-show="linktableWorking" class="mt-5 text-center"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><span>Obtendo {{title}} ...</span></div>
+
+    <!-- BOTAO CARREGAR MAIS -->
+    <div class="text-center" ng-show="!linktableWorking">
+        <div class="text-center text-dark" ng-show="Count > 0">
+            <tip>Mostrando {{Linktables.length}} de {{Count}} vínculos</tip>
+            <p class="text-center" ng-show="Search"> Filtro: '{{Search}}'</p>
+
+        </div>
+        <button ng-show="Linktables.length < Count" class="btn btn-outline-dark btn-lg pt-3 pb-3 mt-5" style="margin:0px auto;" ng-click="LinktableGetAll()">Mostrar mais {{title}}</button>
+    </div>
+
+
+</div>
+
+<!-- exibições personnalizadas para fichas (viewer) -->
+<div ng-show="!Linktable && view" id="LinktableView">
+
+    <div id="{{relacaoIDView}}" class="mt-1"></div>
+
+    <!-- BOTAO CARREGAR MAIS -->
+    <div class="text-center" ng-show="!linktableWorking && Linktables.length < Count">
+        <div class="text-center text-dark" ng-show="Count > 0">
+            <tip>Mostrando {{Linktables.length}} de {{Count}} {{title}}</tip>
+            <p class="text-center" ng-show="Search"> Filtro: '{{Search}}'</p>
+
+        </div>
+        <button ng-show="Linktables.length < Count" class="btn btn-outline-dark btn-sm pt-3 pb-3 mt-5" style="margin:0px auto;" ng-click="LinktableGetAll()">Mostrar mais {{title}}</button>
+    </div>
+</div>
+
+
+<!-- SHOW FORM -->
+<div ng-show="Linktable" class="text-dark">
+    <!-- SHOW FORM PARA BUSCAR EXISTENTE OU CRIAR NOVO
+    <div ng-show="!LinktableExistente" class="text-center">
+    -->
+    <div class="text-center" ng-show="!Linktable.idLinktable">
+        <div style="margin: 0px auto; max-width: 80%">
+            <div id="{{searchID}}" class="text-center"></div>
+            <a class="btn btn-secondary" ng-click="LinktableDoClose()">Cancelar</a>
+            <a class="btn btn-link" href="{{linkNew}}">Adicionar Novo em {{title}}</a>
+        </div>
+    </div>
+
+    <div class="text-center" ng-show="Linktable.idLinktable > 0">
+        <h5 class="mb-5">Qualificação de Vinculos com {{title}}</h5>
+        <h3 class="mb-5 alert alert-secondary" ng-show="Linktable.referencia" ng-bind-html="Linktable.referencia"></h3>
+        <div class="row">
+            <div class="col-12">
+                <config-json model="Linktable.extraLinktable" grid="col-sm-4"></config-json>
+                <span id="linktable-edit-{{ID}}"></span>
+            </div>
+        </div>
+        <div style="margin: 0px auto; max-width: 80%">
+            <a class="btn btn-secondary" ng-click="LinktableDoClose()">Fechar</a>
+            <a class="btn btn-success" ng-click="save()">Salvar Vinculo</a>
+        </div>
+    </div>
+</div>
+
+<!-- modal para exibir detalhes de linktable (historico por exemplo) -->
+<alert-modal hidden-buttons="true" modal-id="modalht_{{ID}}" title="Movimentações" confirm-action="closeModal()" cancel-action="closeModal()">
+    <span id="ht_{{ID}}"></span> 
+</alert-modal>
