@@ -23,7 +23,6 @@ class EntidadesCreate {
             
             namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entidades;
             use NsUtil\Helper;
-            use function mb_substr;
             
             /** CREATE AT ' . date('d/m/Y H:i:s') . ' BY NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("Acesso direto não permitido");}               
@@ -154,7 +153,7 @@ public function list(array $filter=[], $inicio=0, $fim=1000, $order=false)   {
     return $this->dao->getAll($filter, true, $inicio, $fim);
 }
 
-public function persist() {
+public function save() {
     $this->setDao();
     $ret = $this->dao->setObject($this)->save();
     if ($ret->getError() !== false)   {

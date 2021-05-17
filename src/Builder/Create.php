@@ -11,8 +11,13 @@ use function mb_strtolower;
 
 class Create {
 
-    private $querys, $rotas;
+    private $querys;
+    private $rotas;
 
+    /**
+     * Método para criação das entidades ORM conforme constam no banco de dados Postgresql
+     * @param array $schemasLoad
+     */
     public function __construct(array $schemasLoad = ['public']) {
         $database = Config::getData('database')['dbname'];
 
@@ -22,7 +27,7 @@ class Create {
         }, $schemasLoad);
         $schemas = implode(',', $schemasLoad);
 
-        $this->$querys = [
+        $this->querys = [
             'listTables' => "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE schemaname in (" . $schemas . ") ORDER BY tablename",
             'getEstruturaTable' => "select * from information_schema.columns WHERE table_name= '%s' and table_schema in (" . $schemas . ")",
             'getComents' => 'SELECT pg_catalog.col_description(c.oid, a.attnum) AS column_comment FROM pg_class c LEFT JOIN pg_attribute a ON a.attrelid = c.oid LEFT JOIN information_schema.columns ws ON ws.column_name = a.attname AND ws.table_name= c.relname '
@@ -86,7 +91,7 @@ class Create {
 
         $defaults = array('CURRENT_TIMESTAMP' => '', '\'{}\'::jsonb' => "'{}'", '::text' => '', '::character varying' => '', '::bpchar' => '', 'now()' => "date('Y-m-d H:i:s')", 'nextval' => '');
         $prefixos = array('mem_', 'sis_', 'anz_', 'aux_', 'app_');
-        $query = $this->$querys;
+        $query = $this->querys;
 
 
         // Obter tabelas
@@ -254,28 +259,14 @@ class Create {
             $out = array();
 
             ### Criação de entidade
-
             EntidadesCreate::save($dados, $entidade);
-
+            
             continue;
 
             ### Criação de controller
-            // Não quero salvar esses controller, pq são padrão do framework
-            if (array_search($entidade, [
-                        'Linktable',
-                        'Trash',
-                        'Uploadfile',
-                        'Usuario',
-                        'UsuarioPermissao',
-                        'UsuarioTipo',
-                        'Mensagem',
-                        'Status'
-                    ]) === false) {
-                $template = ControllerCreate::get($dados);
-                $file = Config::getData('path') . '/src/controller/' . $entidade . 'Controller.class.php';
-                Helper::saveFileBuild($file, $template);
-            }
 
+
+                /*
             ### Criação do ambiente administração
             $template = SistemaCreate::getList($dados);
             $index = file_get_contents('./templates/template-index-component.php');
@@ -290,7 +281,7 @@ class Create {
             // Salvando na rota nova, com PHP no server
             Helper::saveFileBuild(Config::getData('path') . "/view/fonte/$myent.php", $template['div']);
             Helper::saveFileBuild(Config::getData('path') . "/_build/js_app/$entidade-script.js", SistemaCreate::getJs($dados));
-
+            */
 
 
             ### Criação dos components
