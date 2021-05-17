@@ -457,7 +457,7 @@ Demais métodos getters e setters
     public static $templateJsonObrigatorio = '
         public function set%nomeFunction%($%nome%) {
         if (is_array($%nome%)) {
-            $%nome% = json_encode($%nome%, true);
+            $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
         } else {
             $%nome% = str_replace(\'&#34;\', \'"\', $%nome%);
         }
@@ -476,7 +476,7 @@ Demais métodos getters e setters
 ';
     public static $templateJson = 'public function set%nomeFunction%($%nome%) {
         if (is_array($%nome%)) {
-            $%nome% = json_encode($%nome%);
+            $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
         }
         if (strlen($%nome%)<=0)   {
             $%nome% = \'{}\';
