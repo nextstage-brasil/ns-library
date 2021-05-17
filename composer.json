@@ -1,6 +1,6 @@
 {
-    "name": "datacloud/logos",
-    "description": "Logos - Sistema de gestão de ensino",
+    "name": "nextstage-brasil/ns-library",
+    "description": "Sistema para facilitar criação de entidades ORM",
     "require": {
         "nextstage-brasil/ns-util": "^1.0"
     },
