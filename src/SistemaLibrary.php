@@ -4,7 +4,7 @@ namespace NsLibrary;
 
 class SistemaLibrary {
 
-    const VERSION = "20190202";
+    const VERSION = "20210517";
 
     private static $library;
     private static $path;
@@ -12,7 +12,7 @@ class SistemaLibrary {
 
     private function __construct($host, $user, $pass, $dbname, $port, $psr4Name, array $config) {
         $cfg = array_merge($config, [
-            'psr4Name' => $psr4Name, 
+            'psr4Name' => $psr4Name,
             'database' => ['host' => $host, 'user' => $user, 'pass' => $pass, 'port' => (int) $port, 'dbname' => $dbname],
             'path' => \NsUtil\Helper::getPathApp(),
             'NsLibraryPath' => str_replace(DIRECTORY_SEPARATOR . 'src', '', __DIR__)
@@ -38,6 +38,10 @@ class SistemaLibrary {
             self::$library = new SistemaLibrary($host, $user, $pass, $dbname, $port, $psr4Name, $config);
         }
         return self::$library;
+    }
+
+    public static function initByConfig(array $SistemaConfig) {
+        return self::init($SistemaConfig['database']['host'], $SistemaConfig['database']['user'], $SistemaConfig['database']['pass'], $SistemaConfig['database']['dbname'], $SistemaConfig['database']['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
 
     public static function isStarted() {

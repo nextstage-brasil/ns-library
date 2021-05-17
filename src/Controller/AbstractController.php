@@ -185,7 +185,7 @@ abstract class AbstractController {
             foreach ($reflectionClass->getProperties() as $property) {
                 $property->setAccessible(true);
                 // campo nao permitido, tabela logs, e detalhes
-                if ((int) array_search($property->getName(), ['', 'table', 'cpoId', 'senha', 'password']) > 0) {
+                if ((int) array_search($property->getName(), ['', 'table', 'cpoId', 'senha', 'password', 'dao']) > 0) {
                     continue;
                 }
 

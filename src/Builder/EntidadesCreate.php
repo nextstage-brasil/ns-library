@@ -159,7 +159,14 @@ public function save() {
     if ($ret->getError() !== false)   {
         $this->setError = $ret->getError();
     }
+    if ($ret->getId() > 0)   {
+        $this->setId($ret->getId());
+    }
     return $this;
+}
+
+public function toArray() {
+    return (new \NsLibrary\Controller\Controller())->objectToArray($this);
 }
                
 public function populate($dd)  {
