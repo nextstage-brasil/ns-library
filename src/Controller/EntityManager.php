@@ -126,69 +126,25 @@ class EntityManager {
                         continue;
                     }
                     $atributo = Helper::reverteName2CamelCase($atributo);
-                    /*
-                      switch ($type) {
-                      case 'object':
-                      continue;
-                      break;
-                      case 'integer':
-                      case 'double':
-                      break;
-                      default:
-                      $val = str_replace("'", '"', $val);
-                      break;
-                      }
-
-                      if ($val != NULL) {
-                      if (gettype($val) === 'integer' || gettype($val) === 'double') {
-                      } else {
-                      $val = str_replace("'", '"', $val);
-                      //$val = stripslashes($val);
-                      $val = "'$val'";
-                      }
-                      } else {
-                      $val = "NULL"; //((gettype($val) === 'integer' || gettype($val) === 'double') ? $val : "NULL");
-                      }
-                     */
 
                     // alteração para prepare query
                     $preparedValues[$atributo] = $val;
-                    //
-                    //$queryUpdate[] = "$atributo= $val";
-                    //$queryInsertKeys[] = "$atributo";
-                    //$queryInsertVals[] = $val;
                 }
             }
-            /**
-              //$queryUpdate = "UPDATE $tabela SET " . implode(", ", $queryUpdate) . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId();
-              $queryInsert = "INSERT INTO $tabela (" . implode(", ", $queryInsertKeys) . ") VALUES (" . implode(", ", $queryInsertVals) . ")";
-              if (Config::getData('database', 'type') === 'postgres') {
-              $queryInsert .= " returning " . Helper::reverteName2CamelCase($this->object->getCpoId()) . " as nsnovoid";
-              }
-             * 
-             */
             try {
                 // auditoria onsave
                 //$this->auditoria();
 
                 if ($this->object->getId() > 0) {
-                    //$this->con->executeQuery($queryUpdate);
                     $preparedValues[Helper::reverteName2CamelCase($this->object->getCpoId())] = $this->object->getId();
                     $this->con->update($tabela, $preparedValues, Helper::reverteName2CamelCase($this->object->getCpoId()));
                     $auditoria = 'Atualizar';
                 } else {
                     $auditoria = 'Inserir';
                     $this->con->insert($tabela, $preparedValues, Helper::reverteName2CamelCase($this->object->getCpoId()), $onConflict);
-
-                    //$this->con->executeQuery($queryInsert);
-                    if (Config::getData('database', 'type') === 'postgres') {
-                        $dd = $this->con->next();
-                        $this->object->setId($dd['nsnovoid']);
-                    } else {
-                        $this->object->setId($this->con->lastInsertId);
-                    }
+                    $dd = $this->con->next();
+                    $this->object->setId($dd['nsnovoid']);
                 }
-
             } catch (Exception $exc) {
                 foreach (Config::getData('errors') as $chave => $value) {
                     if (stripos(strtolower($exc->getMessage()), strtolower($chave)) > -1) {
