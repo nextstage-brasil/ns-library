@@ -82,4 +82,16 @@ class SistemaLibrary {
         //Log::gravaFromSession();
     }
 
+    public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1) {
+        foreach ([
+    'session.use_strict_mode' => $strictMode,
+    'session.cookie_secure' => $cookieSecure,
+    'session.cookie_httponly' => $cookieHttpOnly,
+    'upload_max_filesize' => $maxUploadfile,
+        ] as $key => $value) {
+            ini_set($key, $value);
+        }
+        error_reporting($errorReporting);
+    }
+
 }

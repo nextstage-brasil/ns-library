@@ -18,7 +18,7 @@ class Connection {
      * @return ConnectionPostgreSQL
      */
     public static function getConnection(): ConnectionPostgreSQL {
-        if (!$con) {
+        if (!self::$con) {
             try {
                 $config = Config::getData('database');
                 self::$con = new ConnectionPostgreSQL($config['host'], $config['user'], $config['pass'], $config['port'], $config['dbname']);
