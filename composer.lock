@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d435ed618925757d8ba97dbd7addb38f",
+    "content-hash": "a3bc552d869560ca7b25e4adfea42c6f",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.181.2",
+            "version": "3.183.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ca4839367aa57de005d52593081eab777b87a6b0"
+                "reference": "4ba06057844425c4095ad72095beaea278c9778b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ca4839367aa57de005d52593081eab777b87a6b0",
-                "reference": "ca4839367aa57de005d52593081eab777b87a6b0",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4ba06057844425c4095ad72095beaea278c9778b",
+                "reference": "4ba06057844425c4095ad72095beaea278c9778b",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.181.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.183.1"
             },
-            "time": "2021-05-14T18:16:31+00:00"
+            "time": "2021-05-19T18:14:26+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -632,16 +632,16 @@
         },
         {
             "name": "nextstage-brasil/ns-util",
-            "version": "1.0.59",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextstage-brasil/ns-util.git",
-                "reference": "ee4d81ab169427e6e3943f615792da7d9e3a12ed"
+                "reference": "1e80473ef2f9221aa17f9a9e6e3fb55733e44ef5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/ee4d81ab169427e6e3943f615792da7d9e3a12ed",
-                "reference": "ee4d81ab169427e6e3943f615792da7d9e3a12ed",
+                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/1e80473ef2f9221aa17f9a9e6e3fb55733e44ef5",
+                "reference": "1e80473ef2f9221aa17f9a9e6e3fb55733e44ef5",
                 "shasum": ""
             },
             "require": {
@@ -669,9 +669,9 @@
             "description": "Metodos e classes de utilidades diversas",
             "support": {
                 "issues": "https://github.com/nextstage-brasil/ns-util/issues",
-                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.0.59"
+                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.1.1"
             },
-            "time": "2021-05-13T22:52:58+00:00"
+            "time": "2021-05-20T14:41:51+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -822,16 +822,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v5.2.8",
+            "version": "v5.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "eccb8be70d7a6a2230d05f6ecede40f3fdd9e252"
+                "reference": "ccccb9d48ca42757dd12f2ca4bf857a4e217d90d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/eccb8be70d7a6a2230d05f6ecede40f3fdd9e252",
-                "reference": "eccb8be70d7a6a2230d05f6ecede40f3fdd9e252",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/ccccb9d48ca42757dd12f2ca4bf857a4e217d90d",
+                "reference": "ccccb9d48ca42757dd12f2ca4bf857a4e217d90d",
                 "shasum": ""
             },
             "require": {
@@ -863,7 +863,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v5.2.8"
+                "source": "https://github.com/symfony/finder/tree/v5.2.9"
             },
             "funding": [
                 {
@@ -879,7 +879,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-10T14:39:23+00:00"
+            "time": "2021-05-16T13:07:46+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
