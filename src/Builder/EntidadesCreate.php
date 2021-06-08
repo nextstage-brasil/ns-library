@@ -33,8 +33,17 @@ private $table = "' . $dados['schemaTable'] . '";
 private $cpoId = "' . $dados['cpoID'] . '";
 private $dao = null;';
 
+        // caso já exista um campo chamado ID, o setId e getId deve ser removido
+        $getSetDefault = self::$getterSetterPadrao;
+        foreach ($dados['atributos'] as $val) {
+            if ($val['nome'] === 'id') {
+                $getSetDefault = str_replace(['public function setId($id)', 'public function getId()'], ['private function LIBRARYsetId($id)', 'private function LIBRARYgetId()'], self::$getterSetterPadrao);
+                break;
+            }
+        }
 
-        $getSet[] = (new Template(self::$getterSetterPadrao, array('cpoID' => $dados['cpoID']), '%', '%'))->render();
+        $getSet[] = (new Template($getSetDefault, array('cpoID' => $dados['cpoID']), '%', '%'))->render();
+
         foreach ($dados['atributos'] as $val) {
             $val['valorPadrao'] = str_replace("::date", "", $val['valorPadrao']);
             $val['valorPadrao'] = str_replace('::timestamp without time zone', '', $val['valorPadrao']);
