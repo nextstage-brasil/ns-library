@@ -10,6 +10,9 @@ class Field {
         $this->name = \NsUtil\Helper::sanitize($name);
         $this->type = $type;
         $this->description = $description;
+        if ($default === '' && ($type === 'jsonb' || $type === 'json')) {
+            $default = '{}';
+        }
         $this->default = $default;
     }
 

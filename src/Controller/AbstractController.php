@@ -48,13 +48,13 @@ abstract class AbstractController {
         $ID = $dao->getObject()->getId();
 
         /*
-        // Tratamento de uploadfiles
-        $error = AppLibraryController::trataUploadFile($dados['Files'], $this->ent, $ID, $dao)['error'];
-        if ($error) {
-            Api::result(200, ['error' => $error]);
-        }
-        */
-        
+          // Tratamento de uploadfiles
+          $error = AppLibraryController::trataUploadFile($dados['Files'], $this->ent, $ID, $dao)['error'];
+          if ($error) {
+          Api::result(200, ['error' => $error]);
+          }
+         */
+
         // commit
         $dao->commit();
 
@@ -209,6 +209,11 @@ abstract class AbstractController {
                             $VALOR = json_decode($VALOR, true);
                             break;
                         default:
+                            // is json?
+                            $tmp = json_decode($VALOR, true);
+                            if (json_last_error() === JSON_ERROR_NONE) {
+                                $VALOR = $tmp;
+                            }
                     }
                     $array[$property->getName()] = $VALOR;
                 }
