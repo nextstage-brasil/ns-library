@@ -21,11 +21,11 @@ class EntidadesCreate {
     public static function get($dados) {
         $out = '<?php
             
-            namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entidades;
+            namespace ' . Config::getData('psr4Name')  . '\NsLibrary\Entidades;
             use NsUtil\Helper;
             
             /** CREATE AT ' . date('d/m/Y H:i:s') . ' BY NsLibrary Framework **/
-if (!defined("SISTEMA_LIBRARY")) {die("Acesso direto não permitido");}               
+if (!defined("SISTEMA_LIBRARY")) {die("'.$dados['entidade'].': Direct access not allowed. Set the variable SISTEMA_LIBRARY.");}               
 class ' . $dados['entidade'] . '{
 
 private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
