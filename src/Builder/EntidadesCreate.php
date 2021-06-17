@@ -21,7 +21,7 @@ class EntidadesCreate {
     public static function get($dados) {
         $out = '<?php
             
-            namespace ' . Config::getData('psr4Name')  . '\NsLibrary\Entidades;
+            namespace ' . Config::getData('psr4Name')  . '\NsLibrary\Entities;
             use NsUtil\Helper;
             
             /** CREATE AT ' . date('d/m/Y H:i:s') . ' BY NsLibrary Framework **/

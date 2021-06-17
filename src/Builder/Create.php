@@ -295,7 +295,7 @@ class Create {
     }
 
     private function entidadesInit() {
-        Config::setData('pathEntidades', Config::getData('path') . '/src/NsLibrary/Entidades');
+        Config::setData('pathEntidades', Config::getData('path') . '/src/NsLibrary/Entities');
         // Remover diretório de entidades, caso exista
         Helper::deleteDir(Config::getData('pathEntidades'));
         sleep(0.2);

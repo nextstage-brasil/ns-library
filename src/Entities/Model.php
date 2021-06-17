@@ -48,7 +48,7 @@ class Model {
         
         // Salvar entidade
         $template = EntidadesCreate::get($dados);
-        Helper::saveFile(\NsLibrary\Config::getData('path') . '/src/NsLibrary/Entidades/' . $file . '.php', false, $template, 'SOBREPOR');
+        Helper::saveFile(\NsLibrary\Config::getData('path') . '/src/NsLibrary/Entities/' . $file . '.php', false, $template, 'SOBREPOR');
 
         /*
         // Gerar documentação
