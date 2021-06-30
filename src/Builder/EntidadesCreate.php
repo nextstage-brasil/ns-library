@@ -140,6 +140,14 @@ private function setDao() {
     }
 }
 
+    public function setSchema($schema) {
+        $t = explode(".", $this->table);
+        $table = array_pop($t);
+        $this->table = "$schema.$table";
+        echo $this->table;
+        return $this;
+    }
+
 /**
  * Executa a busca de um item pelo ID da tabela 
  */
@@ -162,9 +170,9 @@ public function list(array $filter=[], $inicio=0, $fim=1000, $order=false)   {
     return $this->dao->getAll($filter, true, $inicio, $fim);
 }
 
-public function save() {
+public function save($onConflict=\'\') {
     $this->setDao();
-    $ret = $this->dao->setObject($this)->save();
+    $ret = $this->dao->setObject($this)->save($onConflict);
     if ($ret->getError() !== false)   {
         $this->setError = $ret->getError();
     }
