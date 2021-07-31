@@ -18,6 +18,7 @@ class Model {
 
     public function addField(Field $field) {
         $this->fields[] = $field;
+        return $this;
     }
 
     public function generate($prefix = '', $sufix = '') {
