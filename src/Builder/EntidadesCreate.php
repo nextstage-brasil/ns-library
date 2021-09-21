@@ -5,8 +5,6 @@ namespace NsLibrary\Builder;
 use NsLibrary\Config;
 use NsUtil\Helper;
 use NsUtil\Template;
-use function mb_substr;
-use function utf8_encode;
 
 class EntidadesCreate {
 
@@ -24,7 +22,7 @@ class EntidadesCreate {
             namespace ' . Config::getData('psr4Name')  . '\NsLibrary\Entities;
             use NsUtil\Helper;
             
-            /** CREATE AT ' . date('d/m/Y H:i:s') . ' BY NsLibrary Framework **/
+            /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("'.$dados['entidade'].': Direct access not allowed. Set the variable SISTEMA_LIBRARY.");}               
 class ' . $dados['entidade'] . '{
 
