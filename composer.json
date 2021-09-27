@@ -2,7 +2,7 @@
     "name": "nextstage-brasil/ns-library",
     "description": "Sistema para facilitar criação de entidades ORM",
     "require": {
-        "nextstage-brasil/ns-util": "^1"
+        "nextstage-brasil/ns-util": "~1"
     },
         "license": "Apache-2.0",
     "autoload": {
