@@ -15,6 +15,7 @@ class Create {
     private $rotas;
     private $data;
     private $onlyGetData = false;
+    private $quiet = true;
 
     /**
      * Método para criação das entidades ORM conforme constam no banco de dados Postgresql
@@ -112,6 +113,14 @@ class Create {
             . '</div>';
             die();
         }
+
+        $totalRegistros = count($tabelas);
+        if (!$this->quiet) {
+            $loader = new \NsUtil\StatusLoader($totalRegistros);
+        }
+
+
+
         foreach ($tabelas as $schemaTable => $tabela) {
             $estrutura = $entidade = $atributos = $table = $temp = $declaracao = $out = $relacionamentos = false;
             $camposDate = [];
@@ -265,6 +274,8 @@ class Create {
                 EntidadesCreate::save($dados, $entidade);
             }
 
+            $done++;
+            $loader->done($done);
             continue;
 
             ### Criação de controller
@@ -316,10 +327,12 @@ class Create {
         
     }
 
-    public function getData() {
+    public function getData($quiet = false) {
         $this->onlyGetData = true;
+        $this->quiet = $quiet;
         $this->run();
         $this->onlyGetData = false;
+        $this->quiet = true;
         return $this->data;
     }
 
