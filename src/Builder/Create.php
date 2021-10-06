@@ -13,6 +13,8 @@ class Create {
 
     private $querys;
     private $rotas;
+    private $data;
+    private $onlyGetData = false;
 
     /**
      * Método para criação das entidades ORM conforme constam no banco de dados Postgresql
@@ -22,7 +24,7 @@ class Create {
         $database = Config::getData('database')['dbname'];
 
         // Schemas a ler
-        $schemasLoad = array_map(function($val) {
+        $schemasLoad = array_map(function ($val) {
             return "'$val'";
         }, $schemasLoad);
         $schemas = implode(',', $schemasLoad);
@@ -50,6 +52,7 @@ class Create {
     public function run() {
         $con = Connection::getConnection();
         $this->entidadesInit();
+        $this->data = [];
 
         $tipos = array(
             //numeros
@@ -93,12 +96,11 @@ class Create {
         $prefixos = array('mem_', 'sis_', 'anz_', 'aux_', 'app_');
         $query = $this->querys;
 
-
         // Obter tabelas
         $tabelas = [];
         $list = $con->execQueryAndReturn($query['listTables']);
         foreach ($list as $item) {
-            $tabelas[$item['schemaname'].'.'.$item['tablename']] = $item['tablename'];
+            $tabelas[$item['schemaname'] . '.' . $item['tablename']] = $item['tablename'];
         }
 
 
@@ -240,8 +242,8 @@ class Create {
             }
 
 
-            $dados = array(
-                'schemaTable' => $schemaTable, 
+            $dados = [
+                'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
                 'cpoID' => Helper::name2CamelCase($cpoID),
                 'entidade' => $entidade,
@@ -252,36 +254,38 @@ class Create {
                 'camposDouble' => implode(', ', $camposDouble),
                 'camposJson' => implode(', ', $camposJson),
                 'arrayCamposJson' => $camposJson,
-            );
+            ];
 
-
+            $this->data[] = $dados;
 
             $out = array();
 
             ### Criação de entidade
-            EntidadesCreate::save($dados, $entidade);
-            
+            if (!$this->onlyGetData) {
+                EntidadesCreate::save($dados, $entidade);
+            }
+
             continue;
 
             ### Criação de controller
 
 
-                /*
-            ### Criação do ambiente administração
-            $template = SistemaCreate::getList($dados);
-            $index = file_get_contents('./templates/template-index-component.php');
-            $dados['AUX'] = $template['aux'];
-            $dados['SETDATA'] = $template['setdata'];
-            $dados['filtros'] = $template['filtros'];
-            $dados['MODAL_DATA'] = $template['MODAL_DATA'];
-            Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/index.php", $template['div']);
-            Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/script.js", SistemaCreate::getJs($dados));
-            Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/view.php", '<?php include \'../../../library/SistemaLibrary.php\'; ?>');
+            /*
+              ### Criação do ambiente administração
+              $template = SistemaCreate::getList($dados);
+              $index = file_get_contents('./templates/template-index-component.php');
+              $dados['AUX'] = $template['aux'];
+              $dados['SETDATA'] = $template['setdata'];
+              $dados['filtros'] = $template['filtros'];
+              $dados['MODAL_DATA'] = $template['MODAL_DATA'];
+              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/index.php", $template['div']);
+              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/script.js", SistemaCreate::getJs($dados));
+              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/view.php", '<?php include \'../../../library/SistemaLibrary.php\'; ?>');
 
-            // Salvando na rota nova, com PHP no server
-            Helper::saveFileBuild(Config::getData('path') . "/view/fonte/$myent.php", $template['div']);
-            Helper::saveFileBuild(Config::getData('path') . "/_build/js_app/$entidade-script.js", SistemaCreate::getJs($dados));
-            */
+              // Salvando na rota nova, com PHP no server
+              Helper::saveFileBuild(Config::getData('path') . "/view/fonte/$myent.php", $template['div']);
+              Helper::saveFileBuild(Config::getData('path') . "/_build/js_app/$entidade-script.js", SistemaCreate::getJs($dados));
+             */
 
 
             ### Criação dos components
@@ -310,6 +314,13 @@ class Create {
 
     private function viewInit() {
         
+    }
+
+    public function getData() {
+        $this->onlyGetData = true;
+        $this->run();
+        $this->onlyGetData = false;
+        return $this->data;
     }
 
 }
