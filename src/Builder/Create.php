@@ -116,7 +116,7 @@ class Create {
 
         $totalRegistros = count($tabelas);
         if (!$this->quiet) {
-            $loader = new \NsUtil\StatusLoader($totalRegistros);
+            $loader = new \NsUtil\StatusLoader($totalRegistros, 'Obtendo dados');
         }
 
 
