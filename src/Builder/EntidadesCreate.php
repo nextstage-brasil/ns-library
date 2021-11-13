@@ -29,15 +29,18 @@ class EntidadesCreate {
             
             namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
             use NsUtil\Helper;
-            
-            /** Created by NsLibrary Framework **/
-if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Set the constant SISTEMA_LIBRARY.");}               
+            use NsLibrary\Controller\Controller;
+            use NsLibrary\Controller\EntityManager;
+
+/** Created by NsLibrary Framework **/
+if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
 class ' . $dados['entidade'] . '{
 
 private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
 private $table = "' . $dados['schemaTable'] . '";
 private $cpoId = "' . $dados['cpoID'] . '";
-private $dao = null;';
+private $dao = null;
+private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
 
         // caso já exista um campo chamado ID, o setId e getId deve ser removido
         $getSetDefault = self::$getterSetterPadrao;
@@ -124,22 +127,14 @@ private $dao = null;';
 
         $construct = '
                public function __construct($dd=false)  {
-               //$t = new Eficiencia(\'ConstructEntitie:\'.get_class($this));
                     $this->error = false;
                     ' . implode($constructSet) . '
                     $this->populate($dd);
-
-            
-        //$t->end(0.1);
-            
-
-
-        
                }
 
 private function setDao() {
     if ($this->dao === null)  {
-        $this->dao = new \NsLibrary\Controller\EntityManager($this);
+        $this->dao = new EntityManager($this);
     }
 }
 
@@ -153,11 +148,14 @@ private function setDao() {
 
 /**
  * Executa a busca de um item pelo ID da tabela 
+ *
+* @param type $id
+* @return $this
  */
 public function read($id) {
-    $ret = $this->list(["' . $dados['cpoID'] . '" => $id])[0];
-    if ($ret instanceof ' . $dados['entidade'] . ')  {
-        $dd = (new \NsLibrary\Controller\Controller())->objectToArray($ret);
+    $ret = $this->list([$this->cpoId => $id])[0];
+    if ($ret instanceof $this)  {
+        $dd = (new Controller())->objectToArray($ret);
         $this->populate($dd);
     } else {
         $this->error = "ID not found \'$id\'";
@@ -167,10 +165,21 @@ public function read($id) {
 
 /**
     * Obtém a lista de entidades. 
+     * @param array $filters Array contendo chave=>valor para filtro no banco. Utilizar camelcase para nome dos campos, ex.: nomeUsuario=>"Teste"
+     * @param int $page Paginação
+     * @param int $limit Limite de resultados por busca
+     * @param array $order Array contendo dois campos: 0: chave para ordenar, 1 : sort. Ex.: ["nomePessoa", "asc"] 
+     * @return type array    
 */
-public function list(array $filter=[], $inicio=0, $fim=1000, $order=false)   {
-    $this->setDao();
-    return $this->dao->getAll($filter, true, $inicio, $fim);
+public function list(array $filters=[], int $page=0, int $limit=1000, $order=false) : array   {
+        $this->setDao();    
+        if ($order !== false) {
+            if (is_array($order)) {
+                $order = Helper::reverteName2CamelCase($order[\'0\']) . \' \' . $order[1];
+            }
+            $this->dao->setOrder($order);
+        }
+    return $this->dao->getAll($filters, true, $page, $limit);
 }
 
 public function save($onConflict=\'\') {
@@ -183,7 +192,7 @@ public function save($onConflict=\'\') {
 }
 
 public function toArray() {
-    return (new \NsLibrary\Controller\Controller())->objectToArray($this);
+    return (new Controller())->objectToArray($this);
 }
                
 public function populate($dd)  {
@@ -213,17 +222,23 @@ public function populate($dd)  {
             }
         }
 }';
-        if (is_array($dados['relacionamentos'])) {
-            $rel = '
+        $rel = '
                 // metodo para retornar os campos de relacionamento entre as entidades
-                public function getRelacionamentos()   {
-                    return self::getRelacionamentosStatic();
-                    //return array(' . implode(", ", $dados['relacionamentos']) . ');
-                }
-            public static function getRelacionamentosStatic()   {
-                     return array(' . implode(", ", $dados['relacionamentos']) . ');
-                }';
+        public function getRelacionamentos()   {
+            return $this->relacoes;
         }
+        public static function getRelacionamentosStatic()   {
+            return (new ' . $dados['entidade'] . '())->getRelacionamentos();
+        }
+       
+        public function addRelacionamento($tabela, $campoNaTabelaReferenciada=\'\', $campoNestaEntidade=\'\') {
+            if (!is_array($tabela))   {
+                $array = [\'tabela\' => $tabela, \'cpoRelacao\' =>$campoNaTabelaReferenciada , \'cpoOrigem\' => $campoNestaEntidade];
+            } else {
+                $array = $tabela;
+            }
+            $this->relacoes[] = $array;
+        }';
 
         $out = $out . implode("", $propriedades) . $construct . implode("", $getSet) . $rel . '}';
 

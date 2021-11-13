@@ -35,7 +35,7 @@ class Create {
             'getEstruturaTable' => "select * from information_schema.columns WHERE table_name= '%s' and table_schema in (" . $schemas . ")",
             'getComents' => 'SELECT pg_catalog.col_description(c.oid, a.attnum) AS column_comment FROM pg_class c LEFT JOIN pg_attribute a ON a.attrelid = c.oid LEFT JOIN information_schema.columns ws ON ws.column_name = a.attname AND ws.table_name= c.relname '
             . 'WHERE c.relname = \'%s\' AND a.attname= \'%s\' and c.relnamespace in (select oid from pg_catalog.pg_namespace where nspname in (' . $schemas . ')) ',
-            'relacionamentos' => "SELECT a.attname AS column_name, clf.relname AS referenced_table_name, af.attname AS referenced_column_name   
+            'relacionamentos' => "SELECT nf.nspname as referenced_schema_name, a.attname AS column_name, clf.relname AS referenced_table_name, af.attname AS referenced_column_name   
         FROM pg_catalog.pg_attribute a   
         JOIN pg_catalog.pg_class cl ON (a.attrelid = cl.oid AND cl.relkind = 'r')
         JOIN pg_catalog.pg_namespace n ON (n.oid = cl.relnamespace)   
@@ -46,7 +46,8 @@ class Create {
         JOIN pg_catalog.pg_attribute af ON (af.attrelid = ct.confrelid AND   
            af.attnum = ct.confkey[1])   
         WHERE   
-        cl.relname = '%s' and n.oid in (select oid from pg_catalog.pg_namespace where nspname in (" . $schemas . ")) group by a.attname, af.attname, clf.relname"
+        cl.relname = '%s' and n.oid in (select oid from pg_catalog.pg_namespace where nspname in (" . $schemas . "))
+        group by 1,2,3,4"
         ];
     }
 
@@ -55,7 +56,7 @@ class Create {
         $this->entidadesInit();
         $this->data = [];
 
-        $tipos = array(
+        $tipos = [
             //numeros
             'bigint' => 'int',
             'integer' => 'int',
@@ -78,7 +79,7 @@ class Create {
             'timestamp without time zone' => 'timestamp',
             'time without time zone' => 'int',
             'enum' => 'string',
-        );
+        ];
 
         $rota = [
             "['prefix' => '/', 'archive' => 'App/index.php']",
@@ -98,7 +99,7 @@ class Create {
             'now()' => "date('Y-m-d H:i:s')",
             'nextval' => ''
         ];
-        $prefixos = array('mem_', 'sis_', 'anz_', 'aux_', 'app_');
+        $prefixos = ['mem_', 'sis_', 'anz_', 'aux_', 'app_'];
         $query = $this->querys;
 
         // Obter tabelas
@@ -225,7 +226,7 @@ class Create {
 
 
                 // Criação do atributo
-                $atributos[] = array(
+                $atributos[] = [
                     'entidade' => $entidade,
                     'key' => (($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') ? true : false),
                     'nome' => Helper::name2CamelCase($detalhes['column_name']),
@@ -235,7 +236,7 @@ class Create {
                     'coments' => (($detalhes['column_comment']) ? $detalhes['column_comment'] : Helper::name2CamelCase($detalhes['column_name'])),
                     'notnull' => (($detalhes['is_nullable'] === 'NO') ? true : false),
                     'hint' => $detalhes['hint']
-                );
+                ];
             }
 
             //Relacionamentos
@@ -250,15 +251,15 @@ class Create {
 
                 // != $tabela: evitara o autorelacionamento, pois gera exaustao de memória
                 if ($dd['referenced_table_name'] != $tabela) {
-                    $relacoes[] = "array('tabela'=>'" . $dd['referenced_table_name'] . "', 'cpoOrigem'=>'" . $dd['column_name'] . "', 'cpoRelacao'=>'" . $dd['referenced_column_name'] . "')";
-                    $atributos[] = array(
+                    $relacoes[] = "['schema' => '".$dd['referenced_schema_name']."',  'tabela'=>'" . $dd['referenced_table_name'] . "', 'cpoOrigem'=>'" . $dd['column_name'] . "', 'cpoRelacao'=>'" . $dd['referenced_column_name'] . "']";
+                    $atributos[] = [
                         'key' => false,
                         'nome' => $entidadeRef,
                         'tipo' => (((Helper::compareString(substr($dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
                         'valorPadrao' => 'new ' . ucwords($entidadeRef) . '()',
                         'coments' => 'Relação com entidade ' . $dd['referenced_table_name'] . ' @JoinColumn(name=\'' . $dd['referenced_column_name'] . '\')',
                         'notnull' => 'false'
-                    );
+                    ];
                 }
             }
 
@@ -280,7 +281,7 @@ class Create {
 
             $this->data[] = $dados;
 
-            $out = array();
+            $out = [];
 
             ### Criação de entidade
             if (!$this->onlyGetData) {

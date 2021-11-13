@@ -324,7 +324,8 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
                 if (!$$entidade) {
-                    $$entidade = new $entidade();
+                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : '\\'. ucwords($relacao['schema'])) . $entidade;
+                    $$entidade = new $namespace();
                 }
                 $newEntitie = clone($$entidade);
                 $newEntitie->populate($dd);
