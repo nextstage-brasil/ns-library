@@ -2,11 +2,10 @@
 
 namespace NsLibrary\Builder;
 
-use ControllerCreate;
 use NsLibrary\Config;
 use NsLibrary\Connection;
 use NsUtil\Helper;
-use SistemaCreate;
+use NsUtil\StatusLoader;
 use function mb_strtolower;
 
 class Create {
@@ -54,6 +53,7 @@ class Create {
     public function run() {
         $con = Connection::getConnection();
         $this->entidadesInit();
+        //$this->controllerInit();
         $this->data = [];
 
         $tipos = [
@@ -124,7 +124,7 @@ class Create {
 
         $totalRegistros = count($tabelas);
         if (!$this->quiet) {
-            $loader = new \NsUtil\StatusLoader($totalRegistros, 'Obtendo dados');
+            $loader = new StatusLoader($totalRegistros, 'Obtendo dados');
         }
 
 
@@ -251,7 +251,7 @@ class Create {
 
                 // != $tabela: evitara o autorelacionamento, pois gera exaustao de memória
                 if ($dd['referenced_table_name'] != $tabela) {
-                    $relacoes[] = "['schema' => '".$dd['referenced_schema_name']."',  'tabela'=>'" . $dd['referenced_table_name'] . "', 'cpoOrigem'=>'" . $dd['column_name'] . "', 'cpoRelacao'=>'" . $dd['referenced_column_name'] . "']";
+                    $relacoes[] = "['schema' => '" . $dd['referenced_schema_name'] . "',  'tabela'=>'" . $dd['referenced_table_name'] . "', 'cpoOrigem'=>'" . $dd['column_name'] . "', 'cpoRelacao'=>'" . $dd['referenced_column_name'] . "']";
                     $atributos[] = [
                         'key' => false,
                         'nome' => $entidadeRef,
@@ -283,18 +283,21 @@ class Create {
 
             $out = [];
 
-            ### Criação de entidade
             if (!$this->onlyGetData) {
+                // Criação de entidade
                 EntidadesCreate::save($dados, $entidade);
+
+                // Criação de controller
+                //ControllerCreate::save($dados, $entidade);
             }
+
+
+
             if (isset($loader)) {
                 $done++;
                 $loader->done($done);
             }
             continue;
-
-            ### Criação de controller
-
 
             /*
               ### Criação do ambiente administração
@@ -333,9 +336,8 @@ class Create {
     }
 
     private function controllerInit() {
-        // Remover diretório de entidades, caso exista
-        Helper::deleteDir(Config::getData('path') . '/src/NsLibrary/Controller');
-        Helper::mkdir(Config::getData('path') . '/src/NsLibrary/Controller');
+//        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');        
+//        Helper::mkdir(Config::getData('pathControllers'));
     }
 
     private function viewInit() {

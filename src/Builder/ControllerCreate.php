@@ -2,34 +2,42 @@
 
 namespace NsLibrary\Builder;
 
+use NsLibrary\Config;
+use NsUtil\Helper;
+
 class ControllerCreate {
 
+    private static $namespace;
+
     public static function save($dados, $entidade) {
-                    // Não quero salvar esses controller, pq são padrão do framework
-            if (array_search($entidade, [
-                        'Linktable',
-                        'Trash',
-                        'Uploadfile',
-                        'Usuario',
-                        'UsuarioPermissao',
-                        'UsuarioTipo',
-                        'Mensagem',
-                        'Status'
-                    ]) === false) {
-                $template = self::get($dados);
-                $file = Config::getData('path') . '/src/controller/' . $entidade . 'Controller.class.php';
-                Helper::saveFileBuild($file, $template);
-            }
-            
-            
-        ### Criação de entidade
-        
-        $file = Config::getData('pathEntidades') . DIRECTORY_SEPARATOR . $entidade . '.php';
-        Helper::saveFile($file, false, $template, 'SOBREPOR');
+        $controllersDefault = [
+            'Linktable',
+            'Trash',
+            'Uploadfile',
+            'Usuario',
+            'UsuarioPermissao',
+            'UsuarioTipo',
+            'Mensagem',
+            'Status'
+        ];
+        // Não quero salvar esses controller, pq são padrão do framework
+        if (array_search($entidade, $controllersDefault) === false) {
+            $template = self::get($dados);
+
+            $file = Config::getData('pathControllers')
+                    . DIRECTORY_SEPARATOR
+                    . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
+                    . $entidade
+                    . 'ControllerLibrary.php';
+            Helper::saveFile($file, false, $template, 'SOBREPOR');
+        }
         return true;
     }
 
     public final static function get($dados) {
+        $schema = $dados['schema'];
+        self::$namespace = (($schema === 'public') ? null : ucwords($schema));
+
         $dados['date'] = date('d/m/Y');
         $dados['datetime'] = date('c');
         $condicoes = [];
@@ -54,12 +62,14 @@ class ControllerCreate {
         }
         $dados['jsonConfig'] = implode("\n", $jsonConfig);
 
-        $out = Helper::escreveTemplate(self::$template, $dados);
-        return $out;
-    }
+        $template = '<?php
+            namespace ' . Config::getData('psr4Name') . '\NsLibrary\Controllers' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+            use NsUtil\Helper;
+            use NsLibrary\Controller\AbstractController;
 
-    public static $template = '<?php
-if (!defined("SISTEMA_LIBRARY")) {die("Acesso direto não permitido");}               
+/** Created by NsLibrary Framework **/
+if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . 'ControllerLibrary: Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
+
 
 /**
 * Controlador da entidade
@@ -68,7 +78,7 @@ if (!defined("SISTEMA_LIBRARY")) {die("Acesso direto não permitido");}
 * @date %datetime%
 */
 
-class %entidade%Controller extends AbstractController {
+class %entidade%ControllerLibrary extends AbstractController {
     
     private static $poderesGrupo = \'%entidade%\';
     private static $poderesSubGrupo = \'%entidade%\';
@@ -214,5 +224,9 @@ class %entidade%Controller extends AbstractController {
 
 }
 ';
+
+        $out = (new \NsUtil\Template($template, $dados, '%', '%'))->render();
+        return $out;
+    }
 
 }
