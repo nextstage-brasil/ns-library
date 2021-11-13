@@ -8,22 +8,30 @@ use NsUtil\Template;
 
 class EntidadesCreate {
 
+    private static $namespace;
+
     public static function save($dados, $entidade) {
         ### Criação de entidade
         $template = self::get($dados);
-        $file = Config::getData('pathEntidades') . DIRECTORY_SEPARATOR . $entidade . '.php';
+        $file = Config::getData('pathEntidades')
+                . DIRECTORY_SEPARATOR
+                . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
+                . $entidade
+                . '.php';
         Helper::saveFile($file, false, $template, 'SOBREPOR');
         return true;
     }
 
     public static function get($dados) {
+        $schema = $dados['schema'];
+        self::$namespace = (($schema === 'public') ? null : ucwords($schema));
         $out = '<?php
             
-            namespace ' . Config::getData('psr4Name')  . '\NsLibrary\Entities;
+            namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
             use NsUtil\Helper;
             
             /** Created by NsLibrary Framework **/
-if (!defined("SISTEMA_LIBRARY")) {die("'.$dados['entidade'].': Direct access not allowed. Set the variable SISTEMA_LIBRARY.");}               
+if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Set the constant SISTEMA_LIBRARY.");}               
 class ' . $dados['entidade'] . '{
 
 private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
@@ -62,9 +70,6 @@ private $dao = null;';
               }
              */
             $val['coments'] = ucfirst($val['coments']);
-
-
-
 
             $val['upper'] = ''; /// retirei pois o upper deixa o layout horrivel
             $val['USER'] = ((Helper::compareString('idusuario', $val['nome']) && !Helper::compareString('usuario', $dados['tabela'])) ? '$idUsuario = (($idUsuario) ? $idUsuario : $_SESSION[\'user\'][\'id_pessoa\']);' : ''); // protegendo para que todos aparceeam clean, somente user
@@ -132,19 +137,19 @@ private $dao = null;';
         
                }
 
-private function setDao() {
-    if ($this->dao === null)  {
-        $this->dao = new \NsLibrary\Controller\EntityManager($this);
-    }
-}
+//private function setDao() {
+//    if ($this->dao === null)  {
+//        $this->dao = new \NsLibrary\Controller\EntityManager($this);
+//    }
+//}
 
-    public function setSchema($schema) {
-        $t = explode(".", $this->table);
-        $table = array_pop($t);
-        $this->table = "$schema.$table";
-        echo $this->table;
-        return $this;
-    }
+//    public function setSchema($schema) {
+//        $t = explode(".", $this->table);
+//        $table = array_pop($t);
+//        $this->table = "$schema.$table";
+//        //echo $this->table;
+//        return $this;
+//    }
 
 /**
  * Executa a busca de um item pelo ID da tabela 
@@ -155,7 +160,7 @@ public function read($id) {
         $dd = (new \NsLibrary\Controller\Controller())->objectToArray($ret);
         $this->populate($dd);
     } else {
-        $this->error = "Not found ID " . $id;
+        $this->error = "ID not found \'$id\'";
     }
     return $this;
 }

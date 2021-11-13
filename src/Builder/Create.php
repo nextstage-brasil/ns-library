@@ -93,7 +93,11 @@ class Create {
             "['prefix' => '/recovery', 'archive' => 'App/passwordRecovery.php']"
         ];
 
-        $defaults = array('CURRENT_TIMESTAMP' => '', '\'{}\'::jsonb' => "'{}'", '::text' => '', '::character varying' => '', '::bpchar' => '', 'now()' => "date('Y-m-d H:i:s')", 'nextval' => '');
+        $defaults = [
+            'CURRENT_TIMESTAMP' => '',
+            'now()' => "date('Y-m-d H:i:s')",
+            'nextval' => ''
+        ];
         $prefixos = array('mem_', 'sis_', 'anz_', 'aux_', 'app_');
         $query = $this->querys;
 
@@ -101,7 +105,10 @@ class Create {
         $tabelas = [];
         $list = $con->execQueryAndReturn($query['listTables']);
         foreach ($list as $item) {
-            $tabelas[$item['schemaname'] . '.' . $item['tablename']] = $item['tablename'];
+            $tabelas[$item['schemaname'] . '.' . $item['tablename']] = [
+                'tabela' => $item['tablename'],
+                'schema' => $item['schemaname']
+            ];
         }
 
 
@@ -121,7 +128,8 @@ class Create {
 
 
 
-        foreach ($tabelas as $schemaTable => $tabela) {
+        foreach ($tabelas as $schemaTable => $tab) {
+            $tabela = $tab['tabela'];
             $estrutura = $entidade = $atributos = $table = $temp = $declaracao = $out = $relacionamentos = false;
             $camposDate = [];
             $camposDouble = [];
@@ -186,6 +194,10 @@ class Create {
                 // corrigir valores padrões
                 foreach ($defaults as $key => $value) {
                     $detalhes['column_default'] = str_replace($key, $value, $detalhes['column_default']);
+                }
+                if (stripos($detalhes['column_default'], '::') !== false) {
+                    $temp = explode('::', $detalhes['column_default']);
+                    $detalhes['column_default'] = $temp[0];
                 }
 
                 // comentários do campo
@@ -252,6 +264,7 @@ class Create {
 
 
             $dados = [
+                'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
                 'cpoID' => Helper::name2CamelCase($cpoID),
@@ -273,9 +286,10 @@ class Create {
             if (!$this->onlyGetData) {
                 EntidadesCreate::save($dados, $entidade);
             }
-
-            $done++;
-            $loader->done($done);
+            if (isset($loader)) {
+                $done++;
+                $loader->done($done);
+            }
             continue;
 
             ### Criação de controller

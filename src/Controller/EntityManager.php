@@ -34,6 +34,14 @@ class EntityManager {
         $this->setInnerOrLeftJoin();
     }
 
+    public function __destruct() {
+        try {
+            $this->con->close();
+        } catch (Exception $exc) {
+            
+        }
+    }
+
     function setOrder($orderBy) {
         if ($orderBy && stripos($orderBy, '.') === false) { // não veio tabela principal
             $orderBy = $this->object->getTable() . '.' . $orderBy;
@@ -258,10 +266,10 @@ class EntityManager {
         $condicao = self::trataCondicao($condicao, $tabelaPrincipal);
         //$order = $tabelaPrincipal . '.' . (($this->order) ? $this->order : Helper::reverteName2CamelCase($this->object->getCpoId()) . ' ASC');
         $order = (($this->order) ? $this->order : $tabelaPrincipal . '.' . Helper::reverteName2CamelCase($this->object->getCpoId()) . ' ASC');
-        //Log::logTxt('query', $condicao);
+
         // select extra, definido ou não
         if ($this->countUploadfile) {
-            $select[] = '(select count(id_uploadfile) from uploadfile '
+            $select[] = '(select count(id_uploadfile) from app_uploadfile '
                     . 'where entidade_uploadfile= \'' . Helper::upper($tabelaPrincipal) . '\' '
                     . 'and valorid_uploadfile= ' . $tabelaPrincipal . '.id_' . $tabelaPrincipal . ') as countuploadfile';
             $this->countUploadfile = false;
@@ -292,15 +300,13 @@ class EntityManager {
                 }
             }
         }
-        //$query = 'SELECT distinct(' . $tabelaPrincipal . '.' . Helper::reverteName2CamelCase($this->object->getCpoId()) . '), ' . implode(', ', $select) . ' FROM ' . $tabelaPrincipal . ' ' . implode(' ', $innerJoin);
 
         $query = 'SELECT ' . implode(', ', $select) . ' FROM ' . $tabelaPrincipal . ' ' . implode(' ', $innerJoin);
 
         $query .= $condicao
                 . " ORDER BY " . $order . " LIMIT " . $limit . " OFFSET " . $inicio * $limit;
-        //Log::ver($query); 
-        $this->query = $query;
 
+        $this->query = $query;
 
         $this->con->executeQuery($query);
 
@@ -332,7 +338,7 @@ class EntityManager {
                 // Especifico para Pessoa, mostrar o avatar
                 if ($entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
                     //$con = Connection::getConnection();
-                    $con->executeQuery('select * from uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
+                    $con->executeQuery('select * from app_uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
                     $up = new Uploadfile($con->next());
                     $newEntitie->setUploadfile($up);
                 }
