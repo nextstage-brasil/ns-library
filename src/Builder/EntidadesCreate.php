@@ -137,19 +137,19 @@ private $dao = null;';
         
                }
 
-//private function setDao() {
-//    if ($this->dao === null)  {
-//        $this->dao = new \NsLibrary\Controller\EntityManager($this);
-//    }
-//}
+private function setDao() {
+    if ($this->dao === null)  {
+        $this->dao = new \NsLibrary\Controller\EntityManager($this);
+    }
+}
 
-//    public function setSchema($schema) {
-//        $t = explode(".", $this->table);
-//        $table = array_pop($t);
-//        $this->table = "$schema.$table";
-//        //echo $this->table;
-//        return $this;
-//    }
+    public function setSchema($schema) {
+        $t = explode(".", $this->table);
+        $table = array_pop($t);
+        $this->table = "$schema.$table";
+        //echo $this->table;
+        return $this;
+    }
 
 /**
  * Executa a busca de um item pelo ID da tabela 
