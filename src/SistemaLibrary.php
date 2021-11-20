@@ -17,7 +17,7 @@ class SistemaLibrary {
             'path' => \NsUtil\Helper::getPathApp(),
             'NsLibraryPath' => str_replace(DIRECTORY_SEPARATOR . 'src', '', __DIR__)
         ]);
-        define('SISTEMA_LIBRARY', TRUE);  // constante que garante acesso as classes unicamente após este script
+        define('SISTEMA_LIBRARY', true);  // constante que garante acesso as classes unicamente após este script
         Config::init($cfg);
         Connection::getConnection();
     }
@@ -44,7 +44,7 @@ class SistemaLibrary {
         return self::init($SistemaConfig['database']['host'], $SistemaConfig['database']['user'], $SistemaConfig['database']['pass'], $SistemaConfig['database']['dbname'], $SistemaConfig['database']['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
 
-    public static function isStarted() {
+    public static function isStarted() : bool {
         return self::$library == null;
     }
 
@@ -70,19 +70,19 @@ class SistemaLibrary {
         return $dependencies;
     }
 
-    public final static function getPath() {
+    public final static function getPath() : string{
         return self::$path;
     }
 
-    public final static function getPathRoot() {
+    public final static function getPathRoot() : string {
         return self::$pathRoot;
     }
 
-    public function __shutdown_check() {
+    public function __shutdown_check() : void {
         //Log::gravaFromSession();
     }
 
-    public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1) {
+    public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1) : void {
         foreach ([
     'session.use_strict_mode' => $strictMode,
     'session.cookie_secure' => $cookieSecure,
@@ -92,6 +92,11 @@ class SistemaLibrary {
             ini_set($key, $value);
         }
         error_reporting($errorReporting);
+    }
+
+    public static function setDevelopeMode() : void {
+        ini_set('display_erros', 1);
+        error_reporting(E_ERROR | E_WARNING | E_PARSE);
     }
 
 }

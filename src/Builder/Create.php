@@ -81,18 +81,20 @@ class Create {
             'enum' => 'string',
         ];
 
-        $rota = [
-            "['prefix' => '/', 'archive' => 'App/index.php']",
-            "['prefix' => '/home', 'archive' => 'App/index.php']",
-            "['prefix' => '/index.php', 'archive' => 'App/index.php']",
-            "['prefix' => '/login', 'archive' => 'login.php']",
-            "['prefix' => '/logout', 'archive' => 'logout.php']",
-            "['prefix' => '/reset', 'archive' => 'reset.php']",
-            "['prefix' => '/about', 'archive' => 'about.php']",
-            "['prefix' => '/versao', 'archive' => 'versao.php']",
-            "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
-            "['prefix' => '/recovery', 'archive' => 'App/passwordRecovery.php']"
-        ];
+$rota = [
+    "['prefix' => '/', 'archive' => 'App/index.php']",
+    "['prefix' => '/home', 'archive' => 'App/index.php']",
+    "['prefix' => '/index.php', 'archive' => 'App/index.php']",
+    "['prefix' => '/login', 'archive' => 'appLogin/index.php']",
+    "['prefix' => '/usuariogrupo', 'archive' => 'fmwUsuariogrupo/index.php']",
+    "['prefix' => '/file', 'archive' => 'file.php']", 
+    "['prefix' => '/logout', 'archive' => 'logout.php']",
+    "['prefix' => '/reset', 'archive' => 'reset.php']",
+    "['prefix' => '/about', 'archive' => 'about.php']",
+    "['prefix' => '/versao', 'archive' => 'versao.php']",
+    "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
+    "['prefix' => '/recovery', 'archive' => 'App/passwordRecovery.php']"
+];
 
         $defaults = [
             'CURRENT_TIMESTAMP' => '',
@@ -144,7 +146,8 @@ class Create {
             $entidade[0] = strtoupper($entidade[0]);
             $menu[] = "['label' => Config::getData('titlePagesAliases', '$entidade'), 'link' => Config::getData('url') .'/$entidade', 'icon' => 'angle-right', 'dropdown' => false]";
 
-            $rota[] = "['prefix' => '/$myent', 'archive' => '$myent.php']";
+            //$rota[] = "['prefix' => '/$myent', 'archive' => '$myent.php']";
+            $rota[] = "['prefix' => '/$entidade', 'archive' => '$entidade/index.php']";
 
             // aliases para tabela
             $aliases[] = "
@@ -279,7 +282,7 @@ class Create {
                 'arrayCamposJson' => $camposJson,
             ];
 
-            $this->data[] = $dados;
+            $this->data['itens'][] = $dados;
 
             $out = [];
 
@@ -321,6 +324,16 @@ class Create {
             ##  saidas
             $outGeral[] = "Arquivos criados para entidade $entidade";
         } // FECHA FOREACH TABELAS
+        // Setando dados final
+        $this->data = [
+            'rotas' => $rota,
+            'menu' => $menu,
+            'aliases' => $aliases,
+            'libraryEntities' => $libraryEntities,
+            'aliasesFields' => $libraryFields, 
+            'hints' => $hints, 
+            'itens' => $this->data['itens']
+        ];
     }
 
     private function loadData() {

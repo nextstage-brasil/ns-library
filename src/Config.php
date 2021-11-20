@@ -10,7 +10,7 @@ class Config {
         
     }
 
-    public static function init(array $dados = []) {
+    public static function init(array $dados = []): void {
         $dados['path'] = \NsUtil\Helper::getPathApp();
         $dados['psr4Name'] = \NsUtil\Helper::getPsr4Name();
         self::$cfg = new \NsUtil\Config($dados);
@@ -22,6 +22,10 @@ class Config {
 
     public static function setData($key, $val) {
         return self::$cfg->set($key, $val);
+    }
+
+    public static function getAll(): array {
+        return self::$cfg->getAll();
     }
 
 }

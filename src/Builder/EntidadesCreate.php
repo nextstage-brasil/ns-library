@@ -23,6 +23,7 @@ class EntidadesCreate {
     }
 
     public static function get($dados) {
+        $dados['relacionamentos'] = ((is_array($dados['relacionamentos']))?$dados['relacionamentos']:[]);
         $schema = $dados['schema'];
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
         $out = '<?php

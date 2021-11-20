@@ -127,7 +127,9 @@ class EntityManager {
                 }
 
                 $functionGet = 'get' . Helper::name2CamelCase(ucwords($atributo));
-                if ($atributo !== 'dao' && substr($atributo, -8) != "Detalhes" && $atributo != "error" && $atributo != 'table' && $atributo != 'cpoId' && $atributo != $this->object->getCpoId()) {
+                $atributosAIgnorar = ['dao', 'relacoes', 'error', 'table', 'cpoId', $this->object->getCpoId()];
+                if (array_search($atributo, $atributosAIgnorar)===false && substr($atributo, -8) != "Detalhes")   {
+//                if ($atributo !== 'dao' &&  && $atributo != "error" && $atributo != 'table' && $atributo != 'cpoId' && $atributo != $this->object->getCpoId()) {
                     $val = $this->object->$functionGet();
                     $type = gettype($val);
                     if ($type === 'object') {
