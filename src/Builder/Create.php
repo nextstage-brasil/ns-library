@@ -93,7 +93,7 @@ $rota = [
     "['prefix' => '/about', 'archive' => 'about.php']",
     "['prefix' => '/versao', 'archive' => 'versao.php']",
     "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
-    "['prefix' => '/recovery', 'archive' => 'App/passwordRecovery.php']"
+    "['prefix' => '/recovery', 'archive' => 'appRecovery/index.php']"
 ];
 
         $defaults = [
@@ -126,7 +126,7 @@ $rota = [
 
         $totalRegistros = count($tabelas);
         if (!$this->quiet) {
-            $loader = new StatusLoader($totalRegistros, 'Obtendo dados');
+            $loader = new StatusLoader($totalRegistros, 'Lendo database');
         }
 
 
