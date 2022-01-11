@@ -233,6 +233,7 @@ $rota = [
                     'entidade' => $entidade,
                     'key' => (($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') ? true : false),
                     'nome' => Helper::name2CamelCase($detalhes['column_name']),
+                    'column_name' => $detalhes['column_name'],
                     'tipo' => $detalhes['data_type'],
                     'maxsize' => (($detalhes['character_maximum_length']) ? $detalhes['character_maximum_length'] : 1000000000),
                     'valorPadrao' => (($detalhes['column_default'] != '' && $detalhes['ordinal_position'] > 1) ? $detalhes['column_default'] : "''"),
@@ -258,6 +259,7 @@ $rota = [
                     $atributos[] = [
                         'key' => false,
                         'nome' => $entidadeRef,
+                        'column_name' => $detalhes['column_name'],
                         'tipo' => (((Helper::compareString(substr($dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
                         'valorPadrao' => 'new ' . ucwords($entidadeRef) . '()',
                         'coments' => 'Relação com entidade ' . $dd['referenced_table_name'] . ' @JoinColumn(name=\'' . $dd['referenced_column_name'] . '\')',
@@ -280,6 +282,8 @@ $rota = [
                 'camposDouble' => implode(', ', $camposDouble),
                 'camposJson' => implode(', ', $camposJson),
                 'arrayCamposJson' => $camposJson,
+                'routeBackend' => Helper::name2CamelCase($tabela),
+                'routeFrontend' => str_replace('_', ' ', mb_strtolower($tabela))
             ];
 
             $this->data['itens'][] = $dados;
@@ -365,5 +369,7 @@ $rota = [
         $this->quiet = true;
         return $this->data;
     }
+    
+    
 
 }
