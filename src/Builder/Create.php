@@ -283,7 +283,7 @@ $rota = [
                 'camposJson' => implode(', ', $camposJson),
                 'arrayCamposJson' => $camposJson,
                 'routeBackend' => Helper::name2CamelCase($tabela),
-                'routeFrontend' => str_replace('_', '-', mb_strtolower($tabela))
+                'routeFrontend' => str_replace('_', '-', mb_strtolower($tabela)) 
             ];
 
             $this->data['itens'][] = $dados;
