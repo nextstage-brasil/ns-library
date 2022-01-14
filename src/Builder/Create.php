@@ -239,7 +239,8 @@ $rota = [
                     'valorPadrao' => (($detalhes['column_default'] != '' && $detalhes['ordinal_position'] > 1) ? $detalhes['column_default'] : "''"),
                     'coments' => (($detalhes['column_comment']) ? $detalhes['column_comment'] : Helper::name2CamelCase($detalhes['column_name'])),
                     'notnull' => (($detalhes['is_nullable'] === 'NO') ? true : false),
-                    'hint' => $detalhes['hint']
+                    'hint' => $detalhes['hint'], 
+                    'relationship' => false
                 ];
             }
 
@@ -263,7 +264,8 @@ $rota = [
                         'tipo' => (((Helper::compareString(substr($dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
                         'valorPadrao' => 'new ' . ucwords($entidadeRef) . '()',
                         'coments' => 'Relação com entidade ' . $dd['referenced_table_name'] . ' @JoinColumn(name=\'' . $dd['referenced_column_name'] . '\')',
-                        'notnull' => 'false'
+                        'notnull' => 'false', 
+                        'relationship' => true
                     ];
                 }
             }
