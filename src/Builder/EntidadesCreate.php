@@ -260,6 +260,7 @@ public function populate($dd)  {
             unset($this->error[\'%nome%\']);
             $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
         }
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -272,6 +273,7 @@ public function populate($dd)  {
             $%nome% = $%nome%[\'%nome%\'];
         }
         $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -296,6 +298,7 @@ public function populate($dd)  {
                 $this->error[\'%nome%\'] = \'%coments%\';
             }
         }
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -313,6 +316,7 @@ public function populate($dd)  {
         $%nome% = Helper::decimalFormat($%nome%);
         $this->%nome% = Helper::getValByType($%nome%, \'double\');
         unset($this->error[\'%nome%\']);
+        return $this;
     }
 
         public function get%nomeFunction%() {
@@ -336,6 +340,7 @@ public function populate($dd)  {
             $this->%nome% = (%tipo%) mb_substr($%nome%, 0, %maxsize%);
             
         }
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -351,6 +356,7 @@ public function populate($dd)  {
         %upper%
         $%nome% = Helper::getValByType($%nome%, \'string\');
         $this->%nome% = (%tipo%) mb_substr($%nome%, 0, %maxsize%);
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -359,6 +365,7 @@ public function populate($dd)  {
 ';
     public static $templateObject = 'public function set%nomeFunction%($%nome%) {
         $this->%nome% = (($%nome% instanceof %nome%)? $%nome% : new %nome%($%nome%));
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -367,6 +374,7 @@ public function populate($dd)  {
 ';
     public static $templateExterna = 'public function set%nomeFunction%($%nome%) {
         $this->%nome% = (object) $%nome%;
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -384,6 +392,7 @@ public function populate($dd)  {
             } else   {
                 $this->%nome% = null;
             }
+            return $this;
     }
     public function get%nomeFunction%() {
         return $this->%nome%;
@@ -404,7 +413,8 @@ public function populate($dd)  {
             } else   {
                 $this->error[\'%nome%\'] = "%coments% - Data Inválida";
             }
-        }        
+        } 
+        return $this;
     }
     public function get%nomeFunction%() {
         return $this->%nome%;
@@ -420,6 +430,7 @@ public function populate($dd)  {
             } else   {
                 $this->%nome% = null;
             }
+            return $this;
     }
     public function get%nomeFunction%() {
         return $this->%nome%;
@@ -436,6 +447,7 @@ public function populate($dd)  {
                 $this->error[\'%nome%\'] = "%coments% - Data Inválida";
             }
         }
+        return $this;
     }
     public function get%nomeFunction%() {
         return $this->%nome%;
@@ -450,11 +462,13 @@ Metodos obrigatório pois EntityManager depende deles
 
     public function setId($id) {
         $this->%cpoID% = (int) $id;
+        return $this;
     }
 
     public function setError($error) {
         Helper::upperByReference($error);
         $this->error = $error;
+        return $this;
     }
 
     public function getError() {
@@ -501,6 +515,7 @@ Demais métodos getters e setters
             unset($this->error[\'%nome%\']);
             $this->%nome% = $%nome%;
         }
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -515,6 +530,7 @@ Demais métodos getters e setters
             $%nome% = \'{}\';
         }
         $this->%nome% = $%nome%;
+        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -531,6 +547,7 @@ Demais métodos getters e setters
                     } else {
                         $this->%nome% = (string) ((Helper::compareString(\'true\', (string) $%nome%)) ?\'true\' :\'false\' );
                     }
+                    return $this;
                 }
 
                 public function get%nomeFunction%() {
