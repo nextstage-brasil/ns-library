@@ -192,6 +192,11 @@ public function save($onConflict=\'\') {
     return $this;
 }
 
+public function count(array $filters=[]) : int   {
+    $this->setDao();    
+    return (int) $this->dao->count($filters);
+}
+
 public function toArray() {
     return (new Controller())->objectToArray($this);
 }
