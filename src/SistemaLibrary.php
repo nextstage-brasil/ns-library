@@ -44,7 +44,7 @@ class SistemaLibrary {
         return self::init($SistemaConfig['database']['host'], $SistemaConfig['database']['user'], $SistemaConfig['database']['pass'], $SistemaConfig['database']['dbname'], $SistemaConfig['database']['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
 
-    public static function isStarted() : bool {
+    public static function isStarted(): bool {
         return self::$library == null;
     }
 
@@ -70,19 +70,19 @@ class SistemaLibrary {
         return $dependencies;
     }
 
-    public final static function getPath() : string{
+    public final static function getPath(): string {
         return self::$path;
     }
 
-    public final static function getPathRoot() : string {
+    public final static function getPathRoot(): string {
         return self::$pathRoot;
     }
 
-    public function __shutdown_check() : void {
+    public function __shutdown_check(): void {
         //Log::gravaFromSession();
     }
 
-    public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1) : void {
+    public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1): void {
         foreach ([
     'session.use_strict_mode' => $strictMode,
     'session.cookie_secure' => $cookieSecure,
@@ -94,9 +94,17 @@ class SistemaLibrary {
         error_reporting($errorReporting);
     }
 
-    public static function setDevelopeMode() : void {
+    public static function setDevelopeMode(): void {
         ini_set('display_erros', 1);
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
+    }
+
+    public static function encrypt($texto, $senha) {
+        return (new \NsUtil\Crypto(Config::getData('TOKEN_CRYPTO')))->encrypt($texto, $senha);
+    }
+
+    public static function decrypt($texto, $senha) {
+        return (new \NsUtil\Crypto(Config::getData('TOKEN_CRYPTO')))->decrypt($texto, $senha);
     }
 
 }

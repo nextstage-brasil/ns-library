@@ -128,7 +128,7 @@ class EntityManager {
 
                 $functionGet = 'get' . Helper::name2CamelCase(ucwords($atributo));
                 $atributosAIgnorar = ['dao', 'relacoes', 'error', 'table', 'cpoId', $this->object->getCpoId()];
-                if (array_search($atributo, $atributosAIgnorar)===false && substr($atributo, -8) != "Detalhes")   {
+                if (array_search($atributo, $atributosAIgnorar) === false && substr($atributo, -8) != "Detalhes") {
 //                if ($atributo !== 'dao' &&  && $atributo != "error" && $atributo != 'table' && $atributo != 'cpoId' && $atributo != $this->object->getCpoId()) {
                     $val = $this->object->$functionGet();
                     $type = gettype($val);
@@ -202,29 +202,86 @@ class EntityManager {
         }
     }
 
-    public function remove($audit = true) {
+//    public function remove($audit = true) {
+//        try {
+//            $app = new AppLibraryController();
+//            $oldObject = $this->getById($this->object->getId(), false);
+//            $diff['removed'] = $app->objectToArray($oldObject);
+//            $diff[$this->object->getCpoId()] = $this->object->getId();
+//            if ($diff['removed'][$this->object->getCpoId()] > 0) {
+//                $this->con->executeQuery("DELETE FROM "
+//                        . $this->object->getTable()
+//                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
+//                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId()));
+//                $res = $this->con->next();
+//                $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())];
+//                if ($audit) {
+//                    Log::auditoria(get_class($this->object), 'Remover', $diff);
+//                    //TlController::addFromAuditoria(get_class($this->object), $this->object->getId(), 'Remover', $diff);
+//                }
+//
+//                return $result;
+//            }
+//        } catch (Exception $e) {
+//            Log::error("Erro ao remover: " . $e->getMessage());
+//            return self::getErrorByConfig($e->getMessage());
+//        }
+//    }
+
+    /**
+     * Ira aplicar a condição a chave "is_alive" para a entidade, caso esta condição exista
+     * @param type $condicao
+     */
+    public function setCondicaoIsAlive(&$condicao = []) {
+        // Tratamento da condição is_alive
+        $isAliveMethod = 'getIsAlive' . get_class($this->object);
+        $methodExists = method_exists($this->object, $isAliveMethod);
+        if ($methodExists) {
+            if (is_array($condicao)) {
+                $condicao['isAlive' . get_class($this->object) . '_getall'] = 'true';
+            } else {
+                $condicao .= " and isAlive" . get_class($this->object) . " = 'true'";
+            }
+        }
+        $out = (object) [
+                    'exists' => $methodExists,
+                    'get' => $isAliveMethod,
+                    'set' => 'setIsAlive' . get_class($this->object),
+                    'field' => 'is_alive_' . get_class($this->object),
+                    'fieldNome' => 'nome_' . get_class($this->object)
+        ];
+        if (method_exists($this->object, 'getNome' . get_class($this->object))) {
+            $out->fieldName = 'nome_' . get_class($this->object);
+        }
+        return $out;
+    }
+
+    public function remove() {
         try {
-            $app = new AppLibraryController();
-            $oldObject = $this->getById($this->object->getId(), false);
-            $diff['removed'] = $app->objectToArray($oldObject);
-            $diff[$this->object->getCpoId()] = $this->object->getId();
-            if ($diff['removed'][$this->object->getCpoId()] > 0) {
-                $this->con->executeQuery("DELETE FROM "
+            $alive = $this->setCondicaoIsAlive();
+            if ($alive->exists) {
+                $query = "UPDATE "
+                        . $this->object->getTable()
+                        . " SET " . $alive->field . "= 'false'"
+                        . (($alive->fieldNome) ? ", $alive->fieldNome= $alive->fieldNome || ' (Removido)'" : "")
+                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
+                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId())
+                ;
+            } else {
+                $query = "DELETE FROM "
                         . $this->object->getTable()
                         . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
-                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId()));
-                $res = $this->con->next();
-                $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())];
-                if ($audit) {
-                    Log::auditoria(get_class($this->object), 'Remover', $diff);
-                    //TlController::addFromAuditoria(get_class($this->object), $this->object->getId(), 'Remover', $diff);
-                }
-
-                return $result;
+                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId())
+                ;
             }
+            # ------------------------------------------------------------------------
+
+            $this->con->executeQuery($query);
+            $res = $this->con->next();
+            $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())] > 0;
+            return $result;
         } catch (Exception $e) {
-            Log::error("Erro ao remover: " . $e->getMessage());
-            return self::getErrorByConfig($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -326,7 +383,7 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
                 if (!$$entidade) {
-                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : '\\'. ucwords($relacao['schema'])) . $entidade;
+                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : '\\' . ucwords($relacao['schema'])) . $entidade;
                     $$entidade = new $namespace();
                 }
                 $newEntitie = clone($$entidade);
@@ -360,7 +417,9 @@ class EntityManager {
         $this->setInnerOrLeftJoin(); // reset para manter o padrão a cada consulta
         $this->selectExtra = false; // para manter reset a cada consulta
         $this->selectExtraB = false; // para manter reset a cada consulta
-        return ((is_array($entities)) ? $entities : array());
+        $list = ((is_array($entities)) ? $entities : array());
+                
+        return $list;
     }
 
     /**

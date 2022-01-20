@@ -20,6 +20,8 @@ use UploadfileController;
 abstract class AbstractController {
 
     protected $object, $condicao, $ent, $camposDouble, $camposDate, $camposJson, $jsonDefault, $lastObjectSave, $condicaoManual, $extrasA, $extrasB;
+    protected $poderesGrupo, $poderesSubGrupo;
+    protected $camposCrypto = [];
 
     public function save(&$dados) {
         Helper::jsonRecebeFromView($dados, $this->camposJson);
@@ -145,7 +147,7 @@ abstract class AbstractController {
      * @return type
      */
     public function toView($object) {
-        $out = $this->parseToView($object, $this->ent, $this->camposDate, $this->camposDouble, true);
+        $out = $this->objectToArray($list);
 
         if (is_array($out['error'])) {
             if (count($out['error']) === 0) {
@@ -181,11 +183,17 @@ abstract class AbstractController {
     public function objectToArray($object, $relacoes = true) {
         $array = array();
         if (is_object($object)) {
+            // Para limpar os erros se existirem
+            if (method_exists($object, 'getError')) {
+                $object->getError();
+            }
+
             $reflectionClass = new ReflectionClass(get_class($object));
+
             foreach ($reflectionClass->getProperties() as $property) {
                 $property->setAccessible(true);
                 // campo nao permitido, tabela logs, e detalhes
-                if ((int) array_search($property->getName(), ['', 'table', 'cpoId', 'senha', 'password', 'dao', 'fts']) > 0) {
+                if ((int) array_search($property->getName(), ['', 'table', 'relacoes', 'cpoId', 'senha', 'password', 'dao', 'fts']) > 0) {
                     continue;
                 }
 
@@ -284,7 +292,7 @@ abstract class AbstractController {
     }
 
     protected function parseToView($object, $entidade, $campoDate, $campoDouble, $files = true) {
-        $out = ['error' => Translate::get('NOT_FOUND')];
+        $out = ['error' => 'Não localizado'];
         $ent = $entidade;
         if ($object instanceof $entidade) {
             $dao = new EntityManager();

@@ -23,7 +23,7 @@ class EntidadesCreate {
     }
 
     public static function get($dados) {
-        $dados['relacionamentos'] = ((is_array($dados['relacionamentos']))?$dados['relacionamentos']:[]);
+        $dados['relacionamentos'] = ((is_array($dados['relacionamentos'])) ? $dados['relacionamentos'] : []);
         $schema = $dados['schema'];
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
         $out = '<?php
@@ -112,6 +112,9 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
                 case 'boolean' :
                     $template = self::$templateBool;
                     break;
+                case 'bytea':
+                    $template = ((($val['notnull'] === true)) ? self::$templateByteaObrigatorio : self::$templateBytea);
+                    break;
 
                 default:
                     $template = (($val['notnull'] === true && !$val['key']) ? self::$templateObrigatorio : self::$template);
@@ -128,10 +131,14 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
 
         $construct = '
                public function __construct($dd=false)  {
-                    $this->error = false;
-                    ' . implode($constructSet) . '
-                    $this->populate($dd);
+                   $this->init($dd);
                }
+               
+private function init($dd)  {
+ $this->error = false;
+' . implode($constructSet) . '
+$this->populate($dd);
+}
 
 private function setDao() {
     if ($this->dao === null)  {
@@ -154,7 +161,7 @@ private function setDao() {
 * @return $this
  */
 public function read($id) {
-    $ret = $this->list([$this->cpoId => $id])[0];
+    $ret = $this->list([$this->cpoId => (int) $id])[0];
     if ($ret instanceof $this)  {
         $dd = (new Controller())->objectToArray($ret);
         $this->populate($dd);
@@ -185,6 +192,10 @@ public function list(array $filters=[], int $page=0, int $limit=1000, $order=fal
 
 public function save($onConflict=\'\') {
     $this->setDao();
+    $updateName = \'setUpdatedAt\' . array_pop(explode(\'\\\\\', get_class($this)));
+    if (method_exists($this, $updateName))   {
+        $this->$updateName(\'NOW\');
+    }
     $ret = $this->dao->setObject($this)->save($onConflict);
     if ($ret->getError() !== false)   {
         $this->setError = $ret->getError();
@@ -197,12 +208,20 @@ public function count(array $filters=[]) : int   {
     return (int) $this->dao->count($filters);
 }
 
+public function remove() {
+    $this->setDao();
+    $ret = $this->dao->setObject($this)->remove();
+    if ($ret === true)   {
+        $this->init([]);
+    }
+    return $ret;
+}
+
 public function toArray() {
     return (new Controller())->objectToArray($this);
 }
                
 public function populate($dd)  {
-                    $this->error = false;
         if ($dd) {
             $rel = ["setId", "setError"];
             $methods = get_class_methods($this);
@@ -429,7 +448,7 @@ public function populate($dd)  {
             $%nome% = $%nome%[\'%nome%\'];
         }
 
-        $date = Helper::formatDate($%nome%, \'arrumar\', true);
+        $date = Helper::formatDate($%nome%, \'c\', true);
         if ($date)   {
                 $this->%nome% = (string) $date;
             } else   {
@@ -445,11 +464,11 @@ public function populate($dd)  {
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             unset($this->error[\'%nome%\']);
-            $date = Helper::formatDate($%nome%);
+            $date = Helper::formatDate($%nome%, \'c\', true);
             if ($date)   {
                 $this->%nome% = (string) $date;
             } else   {
-                $this->error[\'%nome%\'] = "%coments% - Data Inválida";
+                $this->error[\'%nome%\'] = "%coments% - Invalid date";
             }
         }
         return $this;
@@ -506,21 +525,19 @@ Demais métodos getters e setters
 **/
             ';
     public static $setterConstruct = '$this->set%nomeFunction%(%valorPadrao%);';
-    public static $templateJsonObrigatorio = '
-        public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%)) {
-            $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
-        } else {
-            $%nome% = str_replace(\'&#34;\', \'"\', $%nome%);
+    public static $templateJsonObrigatorio = 'public function set%nomeFunction%($%nome%) {
+        if (!is_array($%nome%) && !is_object($%nome%)) {
+            $%nome% = json_decode($%nome%, true);
         }
-        json_decode($%nome%);
-        if (json_last_error() > 0) {
+        $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
+        $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
+        if (!$%nome% || json_last_error() > 0 || $%nome%===null || $%nome%===\'null\' ) {
             $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
+        }  else {
             unset($this->error[\'%nome%\']);
             $this->%nome% = $%nome%;
-        }
-        return $this;
+        }      
+
     }
 
     public function get%nomeFunction%() {
@@ -528,14 +545,15 @@ Demais métodos getters e setters
     }
 ';
     public static $templateJson = 'public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%)) {
-            $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
+        if (!is_array($%nome%) && !is_object($%nome%)) {
+            $%nome% = json_decode($%nome%, true);
         }
-        if (strlen($%nome%)<=0)   {
-            $%nome% = \'{}\';
-        }
+        $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
+        $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
+        if (json_last_error() > 0) {
+            $%nome% = json_encode([]);
+        }        
         $this->%nome% = $%nome%;
-        return $this;
     }
 
     public function get%nomeFunction%() {
@@ -559,5 +577,5 @@ Demais métodos getters e setters
                     return $this->%nome%;
                 }
     ';
-
+    
 }
