@@ -81,20 +81,20 @@ class Create {
             'enum' => 'string',
         ];
 
-$rota = [
-    "['prefix' => '/', 'archive' => 'App/index.php']",
-    "['prefix' => '/home', 'archive' => 'App/index.php']",
-    "['prefix' => '/index.php', 'archive' => 'App/index.php']",
-    "['prefix' => '/login', 'archive' => 'appLogin/index.php']",
-    "['prefix' => '/usuariogrupo', 'archive' => 'fmwUsuariogrupo/index.php']",
-    "['prefix' => '/file', 'archive' => 'file.php']", 
-    "['prefix' => '/logout', 'archive' => 'logout.php']",
-    "['prefix' => '/reset', 'archive' => 'reset.php']",
-    "['prefix' => '/about', 'archive' => 'about.php']",
-    "['prefix' => '/versao', 'archive' => 'versao.php']",
-    "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
-    "['prefix' => '/recovery', 'archive' => 'appRecovery/index.php']"
-];
+        $rota = [
+            "['prefix' => '/', 'archive' => 'App/index.php']",
+            "['prefix' => '/home', 'archive' => 'App/index.php']",
+            "['prefix' => '/index.php', 'archive' => 'App/index.php']",
+            "['prefix' => '/login', 'archive' => 'appLogin/index.php']",
+            "['prefix' => '/usuariogrupo', 'archive' => 'fmwUsuariogrupo/index.php']",
+            "['prefix' => '/file', 'archive' => 'file.php']",
+            "['prefix' => '/logout', 'archive' => 'logout.php']",
+            "['prefix' => '/reset', 'archive' => 'reset.php']",
+            "['prefix' => '/about', 'archive' => 'about.php']",
+            "['prefix' => '/versao', 'archive' => 'versao.php']",
+            "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
+            "['prefix' => '/recovery', 'archive' => 'appRecovery/index.php']"
+        ];
 
         $defaults = [
             'CURRENT_TIMESTAMP' => '',
@@ -239,13 +239,14 @@ $rota = [
                     'valorPadrao' => (($detalhes['column_default'] != '' && $detalhes['ordinal_position'] > 1) ? $detalhes['column_default'] : "''"),
                     'coments' => (($detalhes['column_comment']) ? $detalhes['column_comment'] : Helper::name2CamelCase($detalhes['column_name'])),
                     'notnull' => (($detalhes['is_nullable'] === 'NO') ? true : false),
-                    'hint' => $detalhes['hint'], 
+                    'hint' => $detalhes['hint'],
                     'relationship' => false
                 ];
             }
 
             //Relacionamentos
             unset($relacoes);
+            $relacoesToKson = [];
             $con->executeQuery(sprintf($query['relacionamentos'], $tabela));
             while ($dd = $con->next()) {
                 foreach ($dd as $key => $value) {
@@ -256,6 +257,15 @@ $rota = [
 
                 // != $tabela: evitara o autorelacionamento, pois gera exaustao de memória
                 if ($dd['referenced_table_name'] != $tabela) {
+                    $relacoesToJson[] = [
+                        'entidade' => ucwords(Helper::name2CamelCase($dd['referenced_table_name'])),
+                        'table' => $dd['referenced_table_name'],
+                        'schema' => $dd['referenced_schema_name'],
+                        'field_origin' => $dd['column_name'],
+                        'fieldOrigin' => Helper::name2CamelCase($dd['column_name']),
+                        'field_relation' => $dd['referenced_column_name'],
+                        'fieldRelation' => Helper::name2CamelCase($dd['referenced_column_name']),
+                    ];
                     $relacoes[] = "['schema' => '" . $dd['referenced_schema_name'] . "',  'tabela'=>'" . $dd['referenced_table_name'] . "', 'cpoOrigem'=>'" . $dd['column_name'] . "', 'cpoRelacao'=>'" . $dd['referenced_column_name'] . "']";
                     $atributos[] = [
                         'key' => false,
@@ -264,7 +274,7 @@ $rota = [
                         'tipo' => (((Helper::compareString(substr($dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
                         'valorPadrao' => 'new ' . ucwords($entidadeRef) . '()',
                         'coments' => 'Relação com entidade ' . $dd['referenced_table_name'] . ' @JoinColumn(name=\'' . $dd['referenced_column_name'] . '\')',
-                        'notnull' => 'false', 
+                        'notnull' => 'false',
                         'relationship' => true
                     ];
                 }
@@ -280,12 +290,13 @@ $rota = [
                 'estrutura' => $estrutura,
                 'atributos' => $atributos,
                 'relacionamentos' => $relacoes,
+                'relations' => $relacoesToJson,
                 'camposDate' => implode(', ', $camposDate),
                 'camposDouble' => implode(', ', $camposDouble),
                 'camposJson' => implode(', ', $camposJson),
                 'arrayCamposJson' => $camposJson,
                 'routeBackend' => Helper::name2CamelCase($tabela),
-                'routeFrontend' => str_replace('_', '-', mb_strtolower($tabela)) 
+                'routeFrontend' => str_replace('_', '-', mb_strtolower($tabela))
             ];
 
             $this->data['itens'][] = $dados;
@@ -336,8 +347,8 @@ $rota = [
             'menu' => $menu,
             'aliases' => $aliases,
             'libraryEntities' => $libraryEntities,
-            'aliasesFields' => $libraryFields, 
-            'hints' => $hints, 
+            'aliasesFields' => $libraryFields,
+            'hints' => $hints,
             'itens' => $this->data['itens']
         ];
     }
@@ -371,7 +382,5 @@ $rota = [
         $this->quiet = true;
         return $this->data;
     }
-    
-    
 
 }
