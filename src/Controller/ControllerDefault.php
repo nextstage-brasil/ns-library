@@ -99,6 +99,11 @@ class ControllerDefault extends AbstractController {
     public function ws_save($dados) {
         $action = ( ((int) $dados['id' . $this->ent] > 0) ? 'Editar' : 'Inserir');
         $isUpdate = $action === 'Editar';
+        
+         if (!$isUpdate) {
+            $create = get_class($this->object);
+            $this->object =  new $create();
+        }
 
         if (method_exists($this->object, 'setIdUsuario') && !Helper::compareString($this->ent, 'usuario')) {
             $dados['idUsuario'] = $this->condicao['idUsuario'];
