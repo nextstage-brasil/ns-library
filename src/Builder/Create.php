@@ -246,7 +246,7 @@ class Create {
 
             //Relacionamentos
             unset($relacoes);
-            $relacoesToKson = [];
+            $relacoesToJson = [];
             $con->executeQuery(sprintf($query['relacionamentos'], $tabela));
             while ($dd = $con->next()) {
                 foreach ($dd as $key => $value) {
