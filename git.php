@@ -2,5 +2,8 @@
 
 require 'vendor/autoload.php';
 
-$message = (($argv[1]) ? $argv[1] : "version/version");
-NsUtil\Package::git(__DIR__ . '/version', $message, 0, 0, 1);
+if (strlen($argv[1])===0){
+    die ("Mensagem do commit é requerido");
+}
+
+NsUtil\Package::git(__DIR__ . '/version', $argv[1]);

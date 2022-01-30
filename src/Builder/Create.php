@@ -50,11 +50,67 @@ class Create {
         ];
     }
 
-    public function run() {
+    public function run($tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '') {
         $con = Connection::getConnection();
         $this->entidadesInit();
         //$this->controllerInit();
         $this->data = [];
+
+        // Config default
+        $CONFIG = [
+            'identificador' => $tokenCrypto, //'trilahsbr_2019', //ATENÇÃO: NÃO ALTERAR APÓS INSTALAÇÃO, POIS OS ARQUIVO SERÃO CRIPTOGRAFADOS UTILIZADO ESTE CAMPO
+            'name' => $appName,
+            'title' => $htmlTitle,
+            'nomeAdmin' => $adminName,
+            'emailAdmin' => $adminEmail,
+            'timeShowError' => 30, // tempo de exibição de erro na tela da view, antes de mudar a pagina
+            'validaIdEmpresa' => false,
+            'keyGoogle' => '', // para uso em mapas
+            'url' => 'URL IS NOT DEFINED', 
+            'sendMail' => [
+                'host' => 'HOST',
+                'email' => 'EMAIL',
+                'username' => 'USERNAME',
+                'password' => 'PASSWORD',
+                'port' => 465,
+                'smtpSecure' => 'ssl',
+                'SMTPAuth' => true
+            ],
+            'local' => false,
+            'dev' => false,
+            'producao' => false,
+            'menuPrincipal' => 'nav_default',
+            'menuUser' => [
+                ['link' => 'logout', 'label' => 'Sair', 'icon' => 'sign-out']
+            ],
+            'rota' => '',
+            'params' => [],
+            'path' => '',
+            'fileserver' => [
+                'StoragePrivate' => 'Local', // define em qua storage deve ser armazenado os arquivos privados. Opções: Local | FileRun | S3 | GCP
+                'StoragePublic' => 'Local', // define em qua storage deve ser armazenado os arquivos publicos (thumbs)
+                'FileRun' => [// dados do servidor de armazenamento de arquivos, para uso na API
+                    'url' => '',
+                    'client_id' => '',
+                    'client_secret' => '',
+                    'username' => '',
+                    'password' => '',
+                ],
+                'S3' => [
+                    // Credenciais:  https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/guide_credentials_profiles.html
+                    'profile' => '',
+                    'region' => '',
+                ],
+                'GCP' => [
+                    'projectId' => '',
+                    'keyFilePath' => '',
+                ],
+            ],
+            'onlyDev' => [], // rotas de acesso exclusivo para login developer
+            'onlyAdm' => [], // rotas de acesso exclusivo para login adminsitrativo
+            'integracao' => [], 
+            'menu' => []
+        ];
 
         $tipos = [
             //numeros
@@ -94,6 +150,22 @@ class Create {
             "['prefix' => '/versao', 'archive' => 'versao.php']",
             "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
             "['prefix' => '/recovery', 'archive' => 'appRecovery/index.php']"
+        ];
+
+        // rotas
+        $CONFIG['router'] = [
+            ['prefix' => '/', 'archive' => 'App/index.php'],
+            ['prefix' => '/home', 'archive' => 'App/index.php'],
+            ['prefix' => '/index.php', 'archive' => 'App/index.php'],
+            ['prefix' => '/login', 'archive' => 'appLogin/index.php'],
+            ['prefix' => '/usuariogrupo', 'archive' => 'fmwUsuariogrupo/index.php'],
+            ['prefix' => '/file', 'archive' => 'file.php'],
+            ['prefix' => '/logout', 'archive' => 'logout.php'],
+            ['prefix' => '/reset', 'archive' => 'reset.php'],
+            ['prefix' => '/about', 'archive' => 'about.php'],
+            ['prefix' => '/versao', 'archive' => 'versao.php'],
+            ['prefix' => '/Teste', 'archive' => 'Teste/index.php'],
+            ['prefix' => '/recovery', 'archive' => 'appRecovery/index.php'],
         ];
 
         $defaults = [
@@ -148,12 +220,7 @@ class Create {
 
             //$rota[] = "['prefix' => '/$myent', 'archive' => '$myent.php']";
             $rota[] = "['prefix' => '/$entidade', 'archive' => '$entidade/index.php']";
-
-            // aliases para tabela
-            $aliases[] = "
-            '" . mb_strtolower($entidade) . "' => '" . ucwords(str_replace('_', ' ', $tabela)) . "s'";
-            $libraryEntities[] = "
-            '" . mb_strtolower($entidade) . "' => '" . $entidade . "'";
+            $CONFIG['router'][] = ['prefix' => '/' . $entidade, 'archive' => $entidade . '/index.php', 'router' => '/' . str_replace('_', '-', $tabela)];
 
             //$libraryEntities
             // Obter atributos da tabela
@@ -211,6 +278,12 @@ class Create {
                     $c = explode('|', $extras['column_comment']);
                     $detalhes['column_comment'] = $c[0];
                     $detalhes['hint'] = ((strlen($c[1]) > 1) ? $c[1] : false);
+
+                    // Aliases table by cpoId
+                    if ($cpoID === $detalhes['column_name']) {
+                        $aliaseTableByCpoID = ((strlen($detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
+                        $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
+                    }
                 }
 
                 if (strlen($detalhes['column_comment']) === 0) {
@@ -224,9 +297,10 @@ class Create {
                 $libraryFields[] = "'" . $chaveField . "' => '" . $detalhes['column_comment'] . "'";
                 if (strlen($detalhes['hint']) > 1) { // se hint existir, salve
                     $hints[] = "'" . $chaveHint . "' => '" . $detalhes['hint'] . "'";
+                    $CONFIG['hints'][$chaveHint] = $detalhes['hint'];
                 }
 
-
+                $CONFIG['aliasesField'][$chaveField] = $detalhes['column_comment'];
 
                 // Criação do atributo
                 $atributos[] = [
@@ -243,6 +317,13 @@ class Create {
                     'relationship' => false
                 ];
             }
+
+            // aliases para tabela
+            $CONFIG['libraryEntities'][mb_strtolower($entidade)] = $entidade;
+            $aliases[] = "
+            '" . mb_strtolower($entidade) . "' => '" . $aliaseTableByCpoID . "'";
+            $libraryEntities[] = "
+            '" . mb_strtolower($entidade) . "' => '" . $entidade . "'";
 
             //Relacionamentos
             unset($relacoes);
@@ -349,6 +430,7 @@ class Create {
             'libraryEntities' => $libraryEntities,
             'aliasesFields' => $libraryFields,
             'hints' => $hints,
+            'config' => $CONFIG,
             'itens' => $this->data['itens']
         ];
     }
@@ -374,10 +456,10 @@ class Create {
         
     }
 
-    public function getData($quiet = false) {
+    public function getData($quiet = false, $tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '') {
         $this->onlyGetData = true;
         $this->quiet = $quiet;
-        $this->run();
+        $this->run($tokenCrypto, $appName, $htmlTitle, $adminName, $adminEmail);
         $this->onlyGetData = false;
         $this->quiet = true;
         return $this->data;
