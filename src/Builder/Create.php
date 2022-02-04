@@ -46,7 +46,20 @@ class Create {
            af.attnum = ct.confkey[1])   
         WHERE   
         cl.relname = '%s' and n.oid in (select oid from pg_catalog.pg_namespace where nspname in (" . $schemas . "))
-        group by 1,2,3,4"
+        group by 1,2,3,4", 
+            'getPrimaryKey' => "SELECT               
+                                    pg_attribute.attname, 
+                                    format_type(pg_attribute.atttypid, pg_attribute.atttypmod) 
+                                  FROM pg_index, pg_class, pg_attribute, pg_namespace 
+                                  WHERE 
+                                    pg_class.oid = '%s'::regclass AND 
+                                    indrelid = pg_class.oid AND 
+                                    nspname in (" . $schemas . ") AND 
+                                    pg_class.relnamespace = pg_namespace.oid AND 
+                                    pg_attribute.attrelid = pg_class.oid AND 
+                                    pg_attribute.attnum = any(pg_index.indkey)
+                                   AND indisprimary
+                                   ;"
         ];
     }
 
@@ -220,7 +233,7 @@ class Create {
 
             //$rota[] = "['prefix' => '/$myent', 'archive' => '$myent.php']";
             $rota[] = "['prefix' => '/$entidade', 'archive' => '$entidade/index.php']";
-            $CONFIG['router'][] = ['prefix' => '/' . $entidade, 'archive' => $entidade . '/index.php', 'router' => '/' . str_replace('_', '-', $tabela)];
+            $CONFIG['router'][] = ['prefix' => '/' . $entidade, 'archive' => $entidade . '/index.php', 'router' => str_replace('_', '-', $tabela)];
 
             //$libraryEntities
             // Obter atributos da tabela
@@ -235,14 +248,20 @@ class Create {
                 echo '<br/>TABELA ' . $tabela . ' NÃO POSSUI ATRIBUTOS. ENTIDADE NÃO CRIADA';
                 continue;
             }
+            
+            // Obter o nome do campo ID da tabela
+            $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $tabela));
+            $cpoID = $ret[0]['attname'];
+            
+            
 
 
             // obter nome dos atributos
             foreach ($estrutura as $key => $detalhes) {
                 // Campo ID:
-                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
-                    $cpoID = $detalhes['column_name'];
-                }
+//                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
+//                    $cpoID = $detalhes['column_name'];
+//                }
 
                 // corrigir tipo do atributo para php
                 foreach ($tipos as $key => $val) {
@@ -285,6 +304,15 @@ class Create {
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
                 }
+                
+                
+                /***********************************************
+                 *         //Campo name
+        $CONFIG['libraryEntities']['NOTIFYTOOL']; // Ferramenta de notificação
+        $CONFIG['aliasesField'][$entidade . "." . $field['column_name']]; // Nome da ferramenta
+        $CONFIG['hint'][$entidade . "." . $field['column_name']]; // Digite aqui o nome da ferramenta
+
+                 */
 
                 if (strlen($detalhes['column_comment']) === 0) {
                     $detalhes['column_comment'] = str_replace('_' . strtolower($entidade), '', $detalhes['column_name']);
@@ -297,15 +325,17 @@ class Create {
                 $libraryFields[] = "'" . $chaveField . "' => '" . $detalhes['column_comment'] . "'";
                 if (strlen($detalhes['hint']) > 1) { // se hint existir, salve
                     $hints[] = "'" . $chaveHint . "' => '" . $detalhes['hint'] . "'";
+                    $CONFIG['hints'][$entidade . "_" . Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['hint'];
                     $CONFIG['hints'][$chaveHint] = $detalhes['hint'];
                 }
-
+                $CONFIG['aliasesField'][$entidade . "_" . Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['column_comment'];
                 $CONFIG['aliasesField'][$chaveField] = $detalhes['column_comment'];
 
                 // Criação do atributo
                 $atributos[] = [
                     'entidade' => $entidade,
-                    'key' => (($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') ? true : false),
+                    'key' => $detalhes['column_name'] === $cpoID, // === 'PRI', 
+//                    'key' => (($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') ? true : false),
                     'nome' => Helper::name2CamelCase($detalhes['column_name']),
                     'column_name' => $detalhes['column_name'],
                     'tipo' => $detalhes['data_type'],
@@ -319,7 +349,7 @@ class Create {
             }
 
             // aliases para tabela
-            $CONFIG['libraryEntities'][mb_strtolower($entidade)] = $entidade;
+            $CONFIG['libraryEntities'][$entidade] = $entidade;
             $aliases[] = "
             '" . mb_strtolower($entidade) . "' => '" . $aliaseTableByCpoID . "'";
             $libraryEntities[] = "
