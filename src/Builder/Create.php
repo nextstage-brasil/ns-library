@@ -262,7 +262,8 @@ class Create {
 //                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
 //                    $cpoID = $detalhes['column_name'];
 //                }
-
+                $isKey = $detalhes['column_name'] === $cpoID;
+                
                 // corrigir tipo do atributo para php
                 foreach ($tipos as $key => $val) {
                     if ($detalhes['data_type'] === $key) {
@@ -299,7 +300,7 @@ class Create {
                     $detalhes['hint'] = ((strlen($c[1]) > 1) ? $c[1] : false);
 
                     // Aliases table by cpoId
-                    if ($cpoID === $detalhes['column_name']) {
+                    if ($isKey) {
                         $aliaseTableByCpoID = ((strlen($detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
@@ -334,13 +335,12 @@ class Create {
                 // Criação do atributo
                 $atributos[] = [
                     'entidade' => $entidade,
-                    'key' => $detalhes['column_name'] === $cpoID, // === 'PRI', 
-//                    'key' => (($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') ? true : false),
+                    'key' => $isKey, 
                     'nome' => Helper::name2CamelCase($detalhes['column_name']),
                     'column_name' => $detalhes['column_name'],
                     'tipo' => $detalhes['data_type'],
                     'maxsize' => (($detalhes['character_maximum_length']) ? $detalhes['character_maximum_length'] : 1000000000),
-                    'valorPadrao' => (($detalhes['column_default'] != '' && $detalhes['ordinal_position'] > 1) ? $detalhes['column_default'] : "''"),
+                    'valorPadrao' => (($detalhes['column_default'] != '' && !$isKey) ? $detalhes['column_default'] : "''"),
                     'coments' => (($detalhes['column_comment']) ? $detalhes['column_comment'] : Helper::name2CamelCase($detalhes['column_name'])),
                     'notnull' => (($detalhes['is_nullable'] === 'NO') ? true : false),
                     'hint' => $detalhes['hint'],
