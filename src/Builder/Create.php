@@ -348,7 +348,8 @@ class Create {
             }
 
             // Se não encontrou a chave, o primeiro camp passa a ser
-            if (!$encontrouPrimaryKey) {
+            if (strlen($cpoID)===0) {
+                $cpoID = $atributos[0]['column_name'];
                 $atributos[0]['valorPadrao'] = "''";
                 $atributos[0]['key'] = true;
             }
