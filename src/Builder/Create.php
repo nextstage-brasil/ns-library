@@ -254,6 +254,7 @@ class Create {
             $cpoID = $ret[0]['attname'];
 
             // obter nome dos atributos
+            $encontrouPrimaryKey = false;
             foreach ($estrutura as $key => $detalhes) {
                 // Campo ID:
 //                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
@@ -298,6 +299,7 @@ class Create {
 
                     // Aliases table by cpoId
                     if ($isKey) {
+                        $encontrouPrimaryKey = true;
                         $aliaseTableByCpoID = ((strlen($detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
@@ -343,6 +345,12 @@ class Create {
                     'hint' => $detalhes['hint'],
                     'relationship' => false
                 ];
+            }
+
+            // Se não encontrou a chave, o primeiro camp passa a ser
+            if (!$encontrouPrimaryKey) {
+                $atributos[0]['valorPadrao'] = "''";
+                $atributos[0]['key'] = true;
             }
 
             // aliases para tabela
