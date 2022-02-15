@@ -250,7 +250,7 @@ class Create {
             }
 
             // Obter o nome do campo ID da tabela
-            $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $tabela));
+            $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $schemaTable));
             $cpoID = $ret[0]['attname'];
 
             // obter nome dos atributos
@@ -348,7 +348,7 @@ class Create {
             }
 
             // Se não encontrou a chave, o primeiro camp passa a ser
-            if (strlen($cpoID)===0) {
+            if (strlen($cpoID) === 0) {
                 $cpoID = $atributos[0]['column_name'];
                 $atributos[0]['valorPadrao'] = "''";
                 $atributos[0]['key'] = true;
