@@ -8,7 +8,7 @@ use NsUtil\Template;
 
 class EntidadesCreate {
 
-    private static $namespace;
+    private static $namespace;  
 
     public static function save($dados, $entidade) {
         ### Criação de entidade
