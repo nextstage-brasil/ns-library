@@ -28,6 +28,9 @@ class Model {
             'entidade' => $file,
             'tabela' => $this->name,
             'cpoID' => 'id' . $this->entityName,
+            'doc' => [],
+            'example' => [],
+            'set' => []
         ];
         $dados['set'][] = '$obj = new ' . $file . '();
         ';
@@ -38,10 +41,11 @@ class Model {
                 'nome' => Helper::name2CamelCase($item->getName()),
                 'coments' => $item->getDescription(),
                 'tipo' => $item->getType(),
-                'valorPadrao' => ((strlen($item->getDefault() > 0)) ? $item->getDefault() : "''"),
+                'valorPadrao' => ((strlen((string) $item->getDefault() > 0)) ? $item->getDefault() : "''"),
                 'maxsize' => (($item->getMaxsize()) ? $item->getMaxsize() : 1000),
             ];
-            $dados['doc'][Helper::name2CamelCase($item->getName())] = "$item->v[1]: $v[0]";
+            $k = ucwords((string) Helper::name2CamelCase($item->getName()));
+//            $dados['doc'][Helper::name2CamelCase($item->getName())] = "$item->v[1]: $v[0]";
             $dados['example'][Helper::name2CamelCase($k)] = "";
             $dados['set'][] = '$obj->set' . ucwords(Helper::name2CamelCase($k)) . '($item->get' . ucwords(Helper::name2CamelCase($k)) . '());
         ';

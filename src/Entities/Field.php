@@ -11,7 +11,7 @@ class Field {
         $this->type = $type;
         $this->description = $description;
         if ($default === '' && ($type === 'jsonb' || $type === 'json')) {
-            $default = '{}';
+            $default = "'{}'";
         }
         $this->default = $default;
     }

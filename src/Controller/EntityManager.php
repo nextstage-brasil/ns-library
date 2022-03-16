@@ -115,8 +115,8 @@ class EntityManager {
             $subs = ['Property [', 'private $', ']', ' ', '<default>'];
             foreach ($api->getProperties() as $atributoOriginal) {
 
-                $atributo = (string) trim(str_replace($subs, '', $atributoOriginal));
-
+//                $atributo = (string) trim(str_replace($subs, '', $atributoOriginal));
+                $atributo = $atributoOriginal->getName(); // (string) trim(str_replace($subs, '', $atributoOriginal));
                 // nao salvar createtime
                 if (strpos(strtolower($atributo), 'createtime') !== false) {
                     continue;
@@ -128,8 +128,7 @@ class EntityManager {
 
                 $functionGet = 'get' . Helper::name2CamelCase(ucwords($atributo));
                 $atributosAIgnorar = ['dao', 'relacoes', 'error', 'table', 'cpoId', $this->object->getCpoId()];
-                if (array_search($atributo, $atributosAIgnorar) === false && substr($atributo, -8) != "Detalhes") {
-//                if ($atributo !== 'dao' &&  && $atributo != "error" && $atributo != 'table' && $atributo != 'cpoId' && $atributo != $this->object->getCpoId()) {
+                if (method_exists($this->object, $functionGet) && false === (bool) array_search($atributo, $atributosAIgnorar) && substr((string) $atributo, -8) != "Detalhes") {
                     $val = $this->object->$functionGet();
                     $type = gettype($val);
                     if ($type === 'object') {
@@ -335,7 +334,7 @@ class EntityManager {
         }
 
         // groupBy
-        if (strlen($this->groupBy) > 2) {
+        if (strlen((string)$this->groupBy) > 2) {
             $condicao .= ' group by ' . $this->groupBy;
             $select[] = $this->groupBy;
             $this->groupBy = false;
@@ -418,7 +417,7 @@ class EntityManager {
         $this->selectExtra = false; // para manter reset a cada consulta
         $this->selectExtraB = false; // para manter reset a cada consulta
         $list = ((is_array($entities)) ? $entities : array());
-                
+
         return $list;
     }
 

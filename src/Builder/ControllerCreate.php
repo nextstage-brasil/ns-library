@@ -42,8 +42,8 @@ class ControllerCreate {
         $dados['datetime'] = date('c');
         $condicoes = [];
         foreach ($dados['atributos'] as $atributo) {
-            if (strtolower(substr($atributo['nome'], 0, 2)) === "id") {
-                $tabelaRelacional = ucwords(substr($atributo['nome'], 2, 150));
+            if (strtolower(substr((string)$atributo['nome'], 0, 2)) === "id") {
+                $tabelaRelacional = ucwords(substr((string)$atributo['nome'], 2, 150));
                 $condicoes[] = "'id$tabelaRelacional'";
             }
         }

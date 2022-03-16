@@ -107,4 +107,23 @@ class SistemaLibrary {
         return (new \NsUtil\Crypto(Config::getData('TOKEN_CRYPTO')))->decrypt($texto, $senha);
     }
 
+    /**
+     * Le as permissões do usuario e retorna um array associativo
+     * @param int $idUser
+     * @return array
+     */
+    public static function getUserByTablePermissions(int $idUser): array {
+        $out = [];
+        if ($idUser > 0) {
+            $con = Connection::getConnection();
+            $query = "select acao_funcao || '_' || grupo_funcao || '_' || subgrupo_funcao as k, b.id_usuario::boolean as u from app_sistema_funcao a
+                left join app_usuario_permissao b on b.id_sistema_funcao = a.id_sistema_funcao and b.id_usuario = " . $idUser;
+            $list = $con->execQueryAndReturn($query, false);
+            foreach ($list as $item) {
+                $out[$item['k']] = boolval($item['u']);
+            }
+        }
+        return $out;
+    }
+
 }

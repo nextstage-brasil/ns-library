@@ -311,14 +311,14 @@ abstract class AbstractController {
     }
 
     protected function setSearch(&$dados) {
-        if (strlen($dados['Search']) > 1) {
+        if (strlen((string)$dados['Search']) > 1) {
             $dados['Search'] = urldecode($dados['Search']);
             $this->condicao['unaccent(nome' . $this->ent . ')'] = array('~*', "unaccent('" . $dados['Search'] . "')");
         }
     }
 
     protected function setDadosComboSearch(&$dados, &$out, $ent) {
-        if (strlen($dados['Search']) > 1) {
+        if (strlen((string)$dados['Search']) > 1) {
             foreach ($out as $value) {
                 $dd[] = ['id' => $value['id' . $ent], 'value' => $value['nome' . $ent]];
             }

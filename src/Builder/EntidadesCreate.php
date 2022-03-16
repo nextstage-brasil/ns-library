@@ -23,8 +23,8 @@ class EntidadesCreate {
     }
 
     public static function get($dados) {
-        $dados['relacionamentos'] = ((is_array($dados['relacionamentos'])) ? $dados['relacionamentos'] : []);
-        $schema = $dados['schema'];
+        $dados['relacionamentos'] = ((isset($dados['relacionamentos']) && is_array($dados['relacionamentos'])) ? $dados['relacionamentos'] : []);
+        $schema = $dados['schema'] ?? 'public';
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
         $out = '<?php
             
@@ -38,7 +38,7 @@ if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access
 class ' . $dados['entidade'] . '{
 
 private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
-private $table = "' . $dados['schemaTable'] . '";
+private $table = "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '";
 private $cpoId = "' . $dados['cpoID'] . '";
 private $dao = null;
 private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
@@ -60,9 +60,9 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
             $val['nomeFunction'] = ucwords($val['nome']);
 
             // tratamento para CE - alterar o nome da function para id ao inves de ce
-            $terceiraLetra = mb_substr($val['nome'], 2, 1);
-            if (mb_substr($val['nome'], 0, 2) === 'ce' && Helper::compareString(strtoupper($terceiraLetra), $terceiraLetra, true)) {
-                $val['nomeFunction'] = 'Id' . mb_substr($val['nome'], 2);
+            $terceiraLetra = mb_substr((string) $val['nome'], 2, 1);
+            if (mb_substr((string) $val['nome'], 0, 2) === 'ce' && Helper::compareString(strtoupper($terceiraLetra), $terceiraLetra, true)) {
+                $val['nomeFunction'] = 'Id' . mb_substr((string) $val['nome'], 2);
             }
             /*
               if (stripos($val['coments'], '[noupper]') > 0) {
@@ -74,6 +74,8 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
               }
              */
             $val['coments'] = ucfirst($val['coments']);
+            $val['notnull'] = $val['notnull'] ?? false;
+            $val['relacionamentos'] = $val['relacionamentos'] ?? null;
 
             $val['upper'] = ''; /// retirei pois o upper deixa o layout horrivel
             $val['USER'] = ((Helper::compareString('idusuario', $val['nome']) && !Helper::compareString('usuario', $dados['tabela'])) ? '$idUsuario = (($idUsuario) ? $idUsuario : $_SESSION[\'user\'][\'id_pessoa\']);' : ''); // protegendo para que todos aparceeam clean, somente user
@@ -85,7 +87,7 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
                     break;
                 case 'EXTERNA':
                     $template = self::$templateExterna;
-                    $val['nome'] = mb_substr($val['nome'], 2);
+                    $val['nome'] = mb_substr((string) $val['nome'], 2);
                     $val['nomeFunction'] = ucwords($val['nome']);
                     $val['valorPadrao'] = '$dd';
                     break;
@@ -135,7 +137,7 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
                }
                
 private function init($dd)  {
- $this->error = false;
+ $this->error = [];
 ' . implode($constructSet) . '
 $this->populate($dd);
 }
@@ -143,6 +145,12 @@ $this->populate($dd);
 private function setDao() {
     if ($this->dao === null)  {
         $this->dao = new EntityManager($this);
+    }
+}
+
+public function __destruct() {
+    if ($this->dao)  {
+        unset($this->dao);
     }
 }
 
@@ -222,7 +230,7 @@ public function toArray() {
 }
                
 public function populate($dd)  {
-        if ($dd) {
+      if (is_array($dd)) {
             $rel = ["setId", "setError"];
             $methods = get_class_methods($this);
             if (method_exists($this, "getRelacionamentos")) {
@@ -237,9 +245,13 @@ public function populate($dd)  {
                 if (array_search($set, $rel)) { // se encontrar, pular pq já foi setado anteriormente
                     continue;
                 }
-                if (mb_substr($set, 0, 3) === "set") {
-                    $file = lcfirst(mb_substr($set, 3, 300));
-                    $dd[$file] = ((!isset($dd[$file])) ? $dd[Helper::reverteName2CamelCase($file)] : $dd[$file]);
+                if (mb_substr((string)$set, 0, 3) === "set") {
+                    $file = lcfirst(mb_substr((string)$set, 3, 300));
+                    
+                    // $dd[$file] = ((!isset($dd[$file])) ? $dd[Helper::reverteName2CamelCase($file)] : $dd[$file]);
+                    if (!isset($dd[$file])) {
+                        $dd[$file] = ((isset($dd[Helper::reverteName2CamelCase($file)]))?$dd[Helper::reverteName2CamelCase($file)]:null);
+                    }
                     if (isset($dd[$file])) {
                         $this->$set($dd[$file]);
                     }
@@ -277,8 +289,10 @@ public function populate($dd)  {
                 if (is_array($%nome%))   {
             $%nome% = $%nome%[\'%nome%\'];
         }
+        
+        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
 
-        if (strlen($%nome%) <= 0) {
+        if (strlen((string)$%nome%) <= 0) {
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             unset($this->error[\'%nome%\']);
@@ -311,7 +325,9 @@ public function populate($dd)  {
             $%nome% = $%nome%[\'%nome%\'];
         }
 
-        if (strlen($%nome%) <= 0) {
+        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+        
+        if (strlen((string)$%nome%) <= 0) {
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             $%nome% = (double) Helper::decimalFormat($%nome%);
@@ -354,14 +370,15 @@ public function populate($dd)  {
             $%nome% = $%nome%[\'%nome%\'];
         }
         
-        $%nome% = Helper::getValByType($%nome%, \'string\');
+//        $%nome% = Helper::getValByType($%nome%, \'string\');
+        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
 
-        if (strlen($%nome%) <= 0) {
+        if (strlen((string)$%nome%) <= 0) {
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             unset($this->error[\'%nome%\']);
             %upper%
-            $this->%nome% = (%tipo%) mb_substr($%nome%, 0, %maxsize%);
+            $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
             
         }
         return $this;
@@ -379,7 +396,7 @@ public function populate($dd)  {
 
         %upper%
         $%nome% = Helper::getValByType($%nome%, \'string\');
-        $this->%nome% = (%tipo%) mb_substr($%nome%, 0, %maxsize%);
+        $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
         return $this;
     }
 
@@ -427,7 +444,7 @@ public function populate($dd)  {
         }
         $%nome% = Helper::getValByType($%nome%, \'string\');
 
-        if (strlen($%nome%) < 8) { // menor que 8 não é data ddmmyyyy
+        if (strlen((string)$%nome%) < 8) { // menor que 8 não é data ddmmyyyy
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             unset($this->error[\'%nome%\']);
@@ -460,7 +477,9 @@ public function populate($dd)  {
         return $this->%nome%;
     }';
     public static $templateDateTimeObrigatorio = 'public function set%nomeFunction%($%nome%) {
-        if (strlen($%nome%) <= 8) {
+        $%nome% = Helper::getValByType($%nome%, \'string\');
+        
+        if (strlen((string)$%nome%) <= 8) {
             $this->error[\'%nome%\'] = \'%coments%\';
         } else {
             unset($this->error[\'%nome%\']);
@@ -490,15 +509,17 @@ Metodos obrigatório pois EntityManager depende deles
     }
 
     public function setError($error) {
-        Helper::upperByReference($error);
-        $this->error = $error;
+        if (is_string($error)) {
+            $error = [$error];
+        }
+        $this->error = (array) $error;
         return $this;
     }
 
     public function getError() {
         if (is_array($this->error)) {
             if (count($this->error) === 0) {
-                $this->error = false;
+                return false;
             }
         }
         return $this->error;
@@ -577,5 +598,5 @@ Demais métodos getters e setters
                     return $this->%nome%;
                 }
     ';
-    
+
 }
