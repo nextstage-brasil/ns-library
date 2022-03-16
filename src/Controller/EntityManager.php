@@ -405,9 +405,9 @@ class EntityManager {
                 $entitie->$set($newEntitie);
             }
             // contador de arquivos em uploadfile
-            $entitie->countUploadfile = (int) (($dd['countuploadfile']) ? $dd['countuploadfile'] : 0);
-            $entitie->selectExtra = $dd['selectextra'];
-            $entitie->selectExtraB = $dd['selectextrab'];
+            $entitie->countUploadfile = (int) ((isset($dd['countuploadfile'])) ? $dd['countuploadfile'] : 0);
+            $entitie->selectExtra = ((isset($dd['selectextra'])) ? $dd['selectextra'] : null);
+            $entitie->selectExtraB = ((isset($dd['selectextrab'])) ? $dd['selectextrab'] : null);
 
             //Log::logTxt('debug', "$objetoAtual =  VALOR DE UPLOADFILE CONTAR: " . $entitie->countUploadfile);
 
