@@ -334,7 +334,7 @@ class EntityManager {
         }
 
         // groupBy
-        if (strlen((string)$this->groupBy) > 2) {
+        if (strlen((string) $this->groupBy) > 2) {
             $condicao .= ' group by ' . $this->groupBy;
             $select[] = $this->groupBy;
             $this->groupBy = false;
@@ -361,8 +361,9 @@ class EntityManager {
 
         $query = 'SELECT ' . implode(', ', $select) . ' FROM ' . $tabelaPrincipal . ' ' . implode(' ', $innerJoin);
 
+        $limitCleaned = (int) (((int) $limit && $limit > 0) ? $limit : 'null');
         $query .= $condicao
-                . " ORDER BY " . $order . " LIMIT " . $limit . " OFFSET " . $inicio * $limit;
+                . " ORDER BY " . $order . " LIMIT " . $limitCleaned . " OFFSET " . $inicio * $limit;
 
         $this->query = $query;
 
