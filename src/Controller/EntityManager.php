@@ -361,7 +361,7 @@ class EntityManager {
 
         $query = 'SELECT ' . implode(', ', $select) . ' FROM ' . $tabelaPrincipal . ' ' . implode(' ', $innerJoin);
 
-        $limitCleaned = (int) (((int) $limit && $limit > 0) ? $limit : 'null');
+        $limitCleaned = (($limit > 0) ? (int) $limit : 'null');
         $query .= $condicao
                 . " ORDER BY " . $order . " LIMIT " . $limitCleaned . " OFFSET " . $inicio * $limit;
 
