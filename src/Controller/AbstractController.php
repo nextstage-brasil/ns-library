@@ -229,6 +229,10 @@ abstract class AbstractController {
                 }
                 $property->setAccessible(false);
             }
+            // Para limpar os erros se existirem
+            if (method_exists($object, 'getError')) {
+                $array['error'] = $object->getError();
+            }
         } else if (is_array($object)) {
             foreach ($object as $value) {
                 $array[] = $this->objectToArray($value);
@@ -311,14 +315,14 @@ abstract class AbstractController {
     }
 
     protected function setSearch(&$dados) {
-        if (strlen((string)$dados['Search']) > 1) {
+        if (strlen((string) $dados['Search']) > 1) {
             $dados['Search'] = urldecode($dados['Search']);
             $this->condicao['unaccent(nome' . $this->ent . ')'] = array('~*', "unaccent('" . $dados['Search'] . "')");
         }
     }
 
     protected function setDadosComboSearch(&$dados, &$out, $ent) {
-        if (strlen((string)$dados['Search']) > 1) {
+        if (strlen((string) $dados['Search']) > 1) {
             foreach ($out as $value) {
                 $dd[] = ['id' => $value['id' . $ent], 'value' => $value['nome' . $ent]];
             }
