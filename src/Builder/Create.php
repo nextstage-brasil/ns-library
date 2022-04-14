@@ -297,12 +297,12 @@ class Create {
                     $c = explode('|', $extras['column_comment']);
                     $detalhes['column_comment'] = $c[0];
 //                    $detalhes['hint'] = ((strlen((string)$c[1]) > 1) ? $c[1] : false);
-                    $detalhes['hint'] = ((isset($c[1]) && strlen((string)$c[1]) > 1) ? $c[1] : false);
+                    $detalhes['hint'] = ((isset($c[1]) && strlen((string) $c[1]) > 1) ? $c[1] : false);
 
                     // Aliases table by cpoId
                     if ($isKey) {
                         $encontrouPrimaryKey = true;
-                        $aliaseTableByCpoID = ((strlen((string)$detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
+                        $aliaseTableByCpoID = ((strlen((string) $detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
                 }
@@ -316,7 +316,7 @@ class Create {
 
                  */
 
-                if (strlen((string)$detalhes['column_comment']) === 0) {
+                if (strlen((string) $detalhes['column_comment']) === 0) {
                     $detalhes['column_comment'] = str_replace('_' . strtolower($entidade), '', $detalhes['column_name']);
                     $detalhes['column_comment'] = str_replace('_', ' ', $detalhes['column_comment']);
                 }
@@ -325,14 +325,14 @@ class Create {
                 $chaveHint = mb_strtolower($entidade . '_' . $chaveField);
 
                 $libraryFields[] = "'" . $chaveField . "' => '" . $detalhes['column_comment'] . "'";
-                if (strlen((string)$detalhes['hint']) > 1) { // se hint existir, salve
+                if (strlen((string) $detalhes['hint']) > 1) { // se hint existir, salve
                     $hints[] = "'" . $chaveHint . "' => '" . $detalhes['hint'] . "'";
                     $CONFIG['hints'][$entidade . "_" . Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['hint'];
                     $CONFIG['hints'][$chaveHint] = $detalhes['hint'];
                 }
                 $CONFIG['aliasesField'][$entidade . "_" . Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['column_comment'];
                 $CONFIG['aliasesField'][$chaveField] = $detalhes['column_comment'];
-                $CONFIG['aliasesField'][$chaveField] = Helper::name2CamelCase($detalhes['column_name']);
+                $CONFIG['aliasesField'][Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['column_comment'];
 
                 // Criação do atributo
                 $atributos[] = [
@@ -351,7 +351,7 @@ class Create {
             }
 
             // Se não encontrou a chave, o primeiro camp passa a ser
-            if (strlen((string)$cpoID) === 0) {
+            if (strlen((string) $cpoID) === 0) {
                 $cpoID = $atributos[0]['column_name'];
                 $atributos[0]['valorPadrao'] = "''";
                 $atributos[0]['key'] = true;
@@ -391,7 +391,7 @@ class Create {
                         'key' => false,
                         'nome' => $entidadeRef,
                         'column_name' => $detalhes['column_name'],
-                        'tipo' => (((Helper::compareString(substr((string)$dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
+                        'tipo' => (((Helper::compareString(substr((string) $dd['referenced_table_name'], 0, 3), 'ce_'))) ? 'EXTERNA' : 'OBJECT'),
                         'valorPadrao' => 'new ' . ucwords($entidadeRef) . '()',
                         'coments' => 'Relação com entidade ' . $dd['referenced_table_name'] . ' @JoinColumn(name=\'' . $dd['referenced_column_name'] . '\')',
                         'notnull' => 'false',
