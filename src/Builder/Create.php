@@ -332,6 +332,7 @@ class Create {
                 }
                 $CONFIG['aliasesField'][$entidade . "_" . Helper::name2CamelCase($detalhes['column_name'])] = $detalhes['column_comment'];
                 $CONFIG['aliasesField'][$chaveField] = $detalhes['column_comment'];
+                $CONFIG['aliasesField'][$chaveField] = Helper::name2CamelCase($detalhes['column_name']);
 
                 // Criação do atributo
                 $atributos[] = [
