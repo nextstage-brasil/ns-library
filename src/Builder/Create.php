@@ -148,6 +148,7 @@ class Create {
             'timestamp without time zone' => 'timestamp',
             'time without time zone' => 'int',
             'enum' => 'string',
+            'text' => 'string'
         ];
 
         $rota = [
