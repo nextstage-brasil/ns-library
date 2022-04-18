@@ -354,7 +354,7 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 if (array_search($relacao['tabela'], $relacaoExceto) === false) {
                     $select[] = $relacao['tabela'] . '.*';
-                    $innerJoin[] = $this->innerOrLeftJoin . " JOIN $relacao[tabela] ON $relacao[tabela].$relacao[cpoRelacao] = $tabelaPrincipal.$relacao[cpoOrigem]";
+                    $innerJoin[] = $this->innerOrLeftJoin . " JOIN $relacao[schema].$relacao[tabela] ON $relacao[tabela].$relacao[cpoRelacao] = $tabelaPrincipal.$relacao[cpoOrigem]";
                 }
             }
         }
