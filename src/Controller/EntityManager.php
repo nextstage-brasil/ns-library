@@ -353,7 +353,7 @@ class EntityManager {
             //Log::logTxt('query-debug', $relacoes);
             foreach ($relacoes as $relacao) {
                 if (array_search($relacao['tabela'], $relacaoExceto) === false) {
-                    $select[] = $relacao['tabela'] . '.*';
+                    $select[] = "$relacao[schema].$relacao[tabela].*";
                     $innerJoin[] = $this->innerOrLeftJoin . " JOIN $relacao[schema].$relacao[tabela] ON $relacao[tabela].$relacao[cpoRelacao] = $tabelaPrincipal.$relacao[cpoOrigem]";
                 }
             }
@@ -383,7 +383,7 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
                 if (!$$entidade) {
-                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : '\\' . ucwords($relacao['schema']).'\\') . $entidade;
+                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
                     $$entidade = new $namespace();
                 }
                 $newEntitie = clone($$entidade);
