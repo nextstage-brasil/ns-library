@@ -28,7 +28,7 @@ abstract class AbstractApiRestController {
                 if ($this->rest->action) {
                     $this->action = $this->rest->action;
                 } else {
-                    $this->action = (((int) $this->rest->id > 0) ? 'read' : 'list');
+                    $this->action = (((int) $this->rest->id > 0) ? 'read' : 'index');
                 }
                 break;
             case 'DELETE':
@@ -36,17 +36,20 @@ abstract class AbstractApiRestController {
                 $this->action = 'delete';
                 $this->dados['id'] = (int) $this->rest->id;
                 break;
-            case 'PUT':
+            case 'POST':
                 $this->type = ucwords($this->rest->resource);
                 $this->action = 'create';
+                break;
+            case 'PUT':
+                $this->type = ucwords($this->rest->resource);
+                $this->action = 'update';
                 $this->dados['id'] = (int) $this->rest->id;
                 break;
             default: // post por enquanto
-                $this->type = ucwords((string) ($this->dados['_tipo'] ?? $router->getAllParam(1)));
-                $this->action = $this->dados['_action'] ?? $router->getAllParam(2);
+                throw new Exception('Action is not implements');
         }
     }
-    
+
     public abstract function index();
 
     public abstract function read();
