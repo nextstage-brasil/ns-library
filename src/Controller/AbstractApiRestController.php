@@ -7,10 +7,9 @@ namespace NsLibrary\Controller;
  */
 abstract class AbstractApiRestController {
 
-    protected $rest, $dados, $header, $token, $type, $action;
+    protected $api, $rest, $dados, $header, $token, $type, $action;
 
     public function __construct(\NsUtil\Api $api) {
-
         $api->setConfig();
         $router = $api->getRouter();
         $this->rest = (object) \NsUtil\Config::getData('rest');
@@ -48,6 +47,7 @@ abstract class AbstractApiRestController {
             default: // post por enquanto
                 throw new Exception('Action is not implements');
         }
+        $this->api = $api;
     }
 
     public abstract function index();
