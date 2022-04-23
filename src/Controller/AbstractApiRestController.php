@@ -46,4 +46,14 @@ abstract class AbstractApiRestController {
                 $this->action = $this->dados['_action'] ?? $router->getAllParam(2);
         }
     }
+    
+    public abstract function index();
+
+    public abstract function read();
+
+    public abstract function create();
+
+    public abstract function update();
+
+    public abstract function delete();
 }
