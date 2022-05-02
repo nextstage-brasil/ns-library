@@ -2,17 +2,25 @@
 
 namespace NsLibrary\Controller;
 
+use NsLibrary\Config;
+use NsLibrary\SistemaLibrary;
+use NsUtil\Helper;
+
 /**
  * TODO Auto-generated comment.
  */
 class ControllerDefault extends AbstractController {
 
     public function __construct($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = []) {
+        $this->controllerInit($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate, $camposDouble, $camposJson);
+    }
+
+    public function controllerInit($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = []) {
         $this->ent = $entidadeName;
         $this->camposDate = $camposDate;
         $this->camposDouble = $camposDouble;
         $this->camposJson = $camposJson;
-        $this->camposCrypto = \NsLibrary\Config::getData('fieldCrypto')[$entidadeName] ?? [];
+        $this->camposCrypto = Config::getData('fieldCrypto')[$entidadeName] ?? [];
         $this->poderesGrupo = $poderesGrupo;
         $this->poderesSubGrupo = $poderesSubGrupo;
 
@@ -36,7 +44,7 @@ class ControllerDefault extends AbstractController {
         $ret = $object->toArray();
         // Decrypto
         foreach ($this->camposCrypto as $val) {
-            $ret[$val] = \NsLibrary\SistemaLibrary::decrypt($ret[$val], $this->object->getTable());
+            $ret[$val] = SistemaLibrary::decrypt($ret[$val], $this->object->getTable());
         }
         return $ret;
     }
@@ -73,7 +81,7 @@ class ControllerDefault extends AbstractController {
         $limit = 30;
 
         // Order
-        $order = $dados['order'] ?? \NsUtil\Helper::reverteName2CamelCase($this->object->getCpoId()) . ' desc';
+        $order = $dados['order'] ?? Helper::reverteName2CamelCase($this->object->getCpoId()) . ' desc';
 
         // Search, caso exista
         parent::setSearch($dados);
@@ -99,10 +107,10 @@ class ControllerDefault extends AbstractController {
     public function ws_save($dados) {
         $action = ( ((int) $dados['id' . $this->ent] > 0) ? 'Editar' : 'Inserir');
         $isUpdate = $action === 'Editar';
-        
-         if (!$isUpdate) {
+
+        if (!$isUpdate) {
             $create = get_class($this->object);
-            $this->object =  new $create();
+            $this->object = new $create();
         }
 
         if (method_exists($this->object, 'setIdUsuario') && !Helper::compareString($this->ent, 'usuario')) {
@@ -124,7 +132,7 @@ class ControllerDefault extends AbstractController {
         // Encryptar dados
         foreach ($this->camposCrypto as $val) {
             if ($dados[$val]) {
-                $dados[$val] = \NsLibrary\SistemaLibrary::encrypt($dados[$val], $this->object->getTable());
+                $dados[$val] = SistemaLibrary::encrypt($dados[$val], $this->object->getTable());
             }
         }
 

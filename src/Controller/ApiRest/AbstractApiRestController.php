@@ -9,7 +9,7 @@ use NsUtil\Config;
 /**
  * TODO Auto-generated comment.
  */
-abstract class AbstractApiRestController {
+abstract class AbstractApiRestController extends \NsLibrary\Controller\ControllerDefault{
 
     protected $api;
     protected $rest, $dados, $header, $token, $type, $action, $error;
