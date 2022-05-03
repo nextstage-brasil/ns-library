@@ -19,7 +19,9 @@ class SistemaLibrary {
         ]);
         define('SISTEMA_LIBRARY', true);  // constante que garante acesso as classes unicamente após este script
         Config::init($cfg);
-        Connection::getConnection();
+        if (strlen((string) $host) > 1) {
+            Connection::getConnection();
+        }
     }
 
     /**
@@ -35,7 +37,7 @@ class SistemaLibrary {
     public static function init($host, $user, $pass, $dbname, $port, $psr4Name, array $config) {
         self::verifyDependencies();
         if (self::$library == null) {
-            self::$library = new SistemaLibrary($host, $user, $pass, $dbname, $port, $psr4Name, $config);
+            self::$library = new SistemaLibrary((string) $host, $user, $pass, $dbname, $port, $psr4Name, $config);
         }
         return self::$library;
     }
