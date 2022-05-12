@@ -2,7 +2,7 @@
 
 namespace NsLibrary\Controller\ApiRest;
 
-interface ControllerApiRestInterface {
+interface InterfaceApiRestController {
 
     function list(): void;
 

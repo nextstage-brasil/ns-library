@@ -3,13 +3,14 @@
 namespace NsLibrary\Controller\ApiRest;
 
 use Exception;
+use NsLibrary\Controller\ControllerDefault;
 use NsUtil\Api;
 use NsUtil\Config;
 
 /**
  * TODO Auto-generated comment.
  */
-abstract class AbstractApiRestController extends \NsLibrary\Controller\ControllerDefault{
+abstract class AbstractApiRestController extends ControllerDefault {
 
     protected $api;
     protected $rest, $dados, $header, $token, $type, $action, $error;
