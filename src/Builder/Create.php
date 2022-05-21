@@ -219,10 +219,8 @@ class Create {
 
         foreach ($tabelas as $schemaTable => $tab) {
             $tabela = $tab['tabela'];
-            $estrutura = $entidade = $atributos = $table = $temp = $declaracao = $out = $relacionamentos = false;
-            $camposDate = [];
-            $camposDouble = [];
-            $camposJson = [];
+            $entidade = $table = $temp = $declaracao = $out = $relacionamentos = false;
+            $camposJson = $camposDouble = $atributos = $camposDate = [];
 
             // obter nome da entidade
             $myent = $entidade = Helper::name2CamelCase($tabela, $prefixos);
@@ -239,13 +237,14 @@ class Create {
             //$libraryEntities
             // Obter atributos da tabela
             $con->executeQuery(sprintf($query['getEstruturaTable'], $tabela));
+            $estrutura = [];
             while ($dd = $con->next()) {
                 foreach ($dd as $key => $value) {
                     $dd[strtolower($key)] = $value;
                 }
                 $estrutura[] = $dd;
             }
-            if (!$estrutura) {
+            if (count($estrutura) === 0) {
                 echo '<br/>TABELA ' . $tabela . ' NÃO POSSUI ATRIBUTOS. ENTIDADE NÃO CRIADA';
                 continue;
             }
@@ -283,7 +282,7 @@ class Create {
 
                 // corrigir valores padrões
                 foreach ($defaults as $key => $value) {
-                    $detalhes['column_default'] = str_replace($key, $value, $detalhes['column_default']);
+                    $detalhes['column_default'] = str_replace($key, $value, (string) $detalhes['column_default']);
                 }
                 if (stripos($detalhes['column_default'], '::') !== false) {
                     $temp = explode('::', $detalhes['column_default']);
@@ -294,7 +293,7 @@ class Create {
                 if (isset($query['getComents'])) {
                     $con->executeQuery(sprintf($query['getComents'], $tabela, $detalhes['column_name']));
                     $extras = $con->next();
-                    $c = explode('|', $extras['column_comment']);
+                    $c = explode('|', (string) $extras['column_comment']);
                     $detalhes['column_comment'] = $c[0];
 //                    $detalhes['hint'] = ((strlen((string)$c[1]) > 1) ? $c[1] : false);
                     $detalhes['hint'] = ((isset($c[1]) && strlen((string) $c[1]) > 1) ? $c[1] : false);
