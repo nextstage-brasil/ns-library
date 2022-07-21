@@ -557,7 +557,9 @@ Demais métodos getters e setters
         }  else {
             unset($this->error[\'%nome%\']);
             $this->%nome% = $%nome%;
-        }      
+        }  
+        
+        return $this;
 
     }
 
@@ -575,6 +577,8 @@ Demais métodos getters e setters
             $%nome% = json_encode([]);
         }        
         $this->%nome% = $%nome%;
+        
+        return $this;
     }
 
     public function get%nomeFunction%() {

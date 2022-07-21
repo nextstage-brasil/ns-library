@@ -63,15 +63,32 @@ class Create {
         ];
     }
 
-    public function run($tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '') {
+    /**
+     * Irá criar as entidades do sistema (models) e os controllers (RestFULL) para o sistema, sempre reescrevendo o diretório total.
+     * Use como base para criar seus demais controller
+     * @param string $tokenCrypto
+     * @param string $appName
+     * @param string $htmlTitle
+     * @param string $adminName
+     * @param string $adminEmail
+     * @param array $controllerIgnoreEntites
+     */
+    public function run(
+            string $tokenCrypto = '',
+            string $appName = '',
+            string $htmlTitle = '',
+            string $adminName = '',
+            string $adminEmail = '',
+            array $controllerIgnoreEntites = []
+    ) {
         $con = Connection::getConnection();
         $this->entidadesInit();
-        //$this->controllerInit();
+        $this->controllerInit();
         $this->data = [];
 
         // Config default
         $CONFIG = [
-            'identificador' => $tokenCrypto, //'trilahsbr_2019', //ATENÇÃO: NÃO ALTERAR APÓS INSTALAÇÃO, POIS OS ARQUIVO SERÃO CRIPTOGRAFADOS UTILIZADO ESTE CAMPO
+            'identificador' => $tokenCrypto, //ATENÇÃO: NÃO ALTERAR APÓS INSTALAÇÃO, POIS OS ARQUIVO SERÃO CRIPTOGRAFADOS UTILIZADO ESTE CAMPO
             'name' => $appName,
             'title' => $htmlTitle,
             'nomeAdmin' => $adminName,
@@ -162,7 +179,6 @@ class Create {
             "['prefix' => '/reset', 'archive' => 'reset.php']",
             "['prefix' => '/about', 'archive' => 'about.php']",
             "['prefix' => '/versao', 'archive' => 'versao.php']",
-            "['prefix' => '/Teste', 'archive' => 'Teste/index.php']",
             "['prefix' => '/recovery', 'archive' => 'appRecovery/index.php']"
         ];
 
@@ -211,6 +227,7 @@ class Create {
         }
 
         $totalRegistros = count($tabelas);
+        $done = 0;
         if (!$this->quiet) {
             $loader = new StatusLoader($totalRegistros, 'Lendo database');
         }
@@ -427,7 +444,8 @@ class Create {
                 EntidadesCreate::save($dados, $entidade);
 
                 // Criação de controller
-                //ControllerCreate::save($dados, $entidade);
+                RestControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
+//                ControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
             }
 
 
@@ -473,8 +491,8 @@ class Create {
         ];
     }
 
-    private function loadData() {
-        
+    public function readData() {
+        return $this->data;
     }
 
     private function entidadesInit() {
@@ -486,12 +504,23 @@ class Create {
     }
 
     private function controllerInit() {
-//        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');        
-//        Helper::mkdir(Config::getData('pathControllers'));
+        // REST
+        Config::setData('pathRestControllers', Config::getData('path') . '/src/NsLibrary/RestControllers');
+//        Helper::deleteDir(Config::getData('pathRestControllers'));
+//        sleep(1);
+        Helper::mkdir(Config::getData('pathRestControllers'));
+
+        // CONTROLLER
+        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');
+//        Helper::deleteDir(Config::getData('pathControllers'));
+//        sleep(1);
+        Helper::mkdir(Config::getData('pathControllers'));
     }
 
     private function viewInit() {
-        
+        Config::setData('pathViewSource', Config::getData('path') . '/src/NsLibrary/ViewSource');
+        Helper::mkdir(Config::getData('pathViewSource'));
+        sleep(1);
     }
 
     public function getData($quiet = false, $tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '') {
