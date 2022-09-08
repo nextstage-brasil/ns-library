@@ -5,7 +5,7 @@ namespace NsLibrary\Builder;
 use NsLibrary\Config;
 use NsUtil\Helper;
 
-class ControllerCreate {
+class ControllerCreate_1 {
 
     private static $namespace;
 

@@ -67,7 +67,7 @@ class RestControllerCreate {
         $dados['jsonConfig'] = implode("\n", $jsonConfig);
 
         $template = '<?php
-            namespace ' . Config::getData('psr4Name') . '\NsLibrary\RestController' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+            namespace ' . Config::getData('psr4Name') . '\NsLibrary\RestControllers' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
 use NsLibrary\Controller\ApiRest\AbstractApiRestController;
 use NsUtil\Api;
 use Poderes;
