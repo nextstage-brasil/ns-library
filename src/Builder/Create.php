@@ -268,7 +268,7 @@ class Create {
 
             // Obter o nome do campo ID da tabela
             $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $schemaTable));
-            $cpoID = $ret[0]['attname'];
+            $cpoID = ((isset($ret[0]['attname'])) ? $ret[0]['attname'] : 'NOTFOUND-ID');
 
             // obter nome dos atributos
             $encontrouPrimaryKey = false;
@@ -316,6 +316,7 @@ class Create {
                     $detalhes['hint'] = ((isset($c[1]) && strlen((string) $c[1]) > 1) ? $c[1] : false);
 
                     // Aliases table by cpoId
+                    $aliaseTableByCpoID = '';
                     if ($isKey) {
                         $encontrouPrimaryKey = true;
                         $aliaseTableByCpoID = ((strlen((string) $detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
