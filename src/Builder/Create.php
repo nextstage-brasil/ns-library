@@ -268,7 +268,7 @@ class Create {
 
             // Obter o nome do campo ID da tabela
             $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $schemaTable));
-            $cpoID = ((isset($ret[0]['attname'])) ? $ret[0]['attname'] : 'NOTFOUND-ID');
+            $cpoID = ((isset($ret[0]['attname'])) ? $ret[0]['attname'] : '');
 
             // obter nome dos atributos
             $encontrouPrimaryKey = false;
