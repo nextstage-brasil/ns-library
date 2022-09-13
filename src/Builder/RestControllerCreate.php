@@ -60,7 +60,7 @@ class RestControllerCreate {
 
         // json config
         $jsonConfig = [];
-        foreach ($dados[arrayCamposJson] as $item) {
+        foreach ($dados['arrayCamposJson'] as $item) {
             //$jsonConfig[] = '$this->jsonDefault[' . $item . '] = [\'Campo a configurar\' => [\'default\' => \'\', \'grid\' => \'col-sm-6\', \'type\' => \'text\', \'class\' => \'\',\'ro\' => \'false\',\'tip\' => \'\', \'label\'=>\'\']];';
             $jsonConfig[] = "$item => \n'nome_variavel' =>[\n['default' => '', 'grid' => 'col-sm-4', 'type' => 'text', 'class' => '', 'ro' => 'false', 'tip' => '', 'label' => '']\n],";
         }
