@@ -38,7 +38,7 @@ class RestControllerCreate {
         }
     }
 
-    public final static function get($dados) {
+    public final static function get($dados) : string {
         $schema = $dados['schema'];
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
 
