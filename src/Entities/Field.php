@@ -2,19 +2,21 @@
 
 namespace NsLibrary\Entities;
 
+use NsUtil\Helper;
+
 class Field {
 
     private $description, $type, $default, $name, $maxsize, $notnull;
 
     public function __construct(string $name, string $type = 'string', $default = '', string $description = '', bool $notnull = false) {
-        $this->name = \NsUtil\Helper::sanitize($name);
+        $this->name = Helper::sanitize($name);
         $this->type = $type;
         $this->description = $description;
         if ($default === '' && ($type === 'jsonb' || $type === 'json')) {
             $default = "'{}'";
         }
         $this->default = $default;
-        $this->notnull = $isNullable;
+        $this->notnull = $notnull;
     }
 
     function setMaxsize(int $maxsize): Field {
