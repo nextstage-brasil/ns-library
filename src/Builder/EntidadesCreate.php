@@ -154,6 +154,13 @@ public function __destruct() {
     }
 }
 
+public function responseIfHasError($code = 200) {
+    if ($this->getError() !== false) {
+        \NsUtil\Api::result($code, [\'error\' => $this->getError()]);
+    }
+}
+
+
     public function setSchema($schema) {
         $t = explode(".", $this->table);
         $table = array_pop($t);
