@@ -43,6 +43,7 @@ class Model {
                 'tipo' => $item->getType(),
                 'valorPadrao' => ((strlen((string) $item->getDefault() > 0)) ? $item->getDefault() : "''"),
                 'maxsize' => (($item->getMaxsize()) ? $item->getMaxsize() : 1000),
+                'notnull' => $item->getNotnull()
             ];
             $k = ucwords((string) Helper::name2CamelCase($item->getName()));
 //            $dados['doc'][Helper::name2CamelCase($item->getName())] = "$item->v[1]: $v[0]";

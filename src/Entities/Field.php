@@ -4,9 +4,9 @@ namespace NsLibrary\Entities;
 
 class Field {
 
-    private $description, $type, $default, $name, $maxsize;
+    private $description, $type, $default, $name, $maxsize, $notnull;
 
-    public function __construct($name, $type = 'string', $default = '', $description = '') {
+    public function __construct(string $name, string $type = 'string', $default = '', string $description = '', bool $notnull = false) {
         $this->name = \NsUtil\Helper::sanitize($name);
         $this->type = $type;
         $this->description = $description;
@@ -14,6 +14,7 @@ class Field {
             $default = "'{}'";
         }
         $this->default = $default;
+        $this->notnull = $isNullable;
     }
 
     function setMaxsize(int $maxsize): Field {
@@ -40,5 +41,11 @@ class Field {
     function getMaxsize() {
         return $this->maxsize;
     }
+    
+    public function getNotnull() {
+        return $this->notnull;
+    }
+
+
 
 }
