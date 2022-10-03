@@ -2,6 +2,11 @@
 
 namespace NsLibrary;
 
+use Closure;
+use Exception;
+use NsUtil\Crypto;
+use NsUtil\Helper;
+
 class SistemaLibrary {
 
     const VERSION = "20210517";
@@ -9,12 +14,13 @@ class SistemaLibrary {
     private static $library;
     private static $path;
     private static $pathRoot;
+    private static $permissionFunction = 'FnToPermission';
 
     private function __construct($host, $user, $pass, $dbname, $port, $psr4Name, array $config) {
         $cfg = array_merge($config, [
             'psr4Name' => $psr4Name,
             'database' => ['host' => $host, 'user' => $user, 'pass' => $pass, 'port' => (int) $port, 'dbname' => $dbname],
-            'path' => \NsUtil\Helper::getPathApp(),
+            'path' => Helper::getPathApp(),
             'NsLibraryPath' => str_replace(DIRECTORY_SEPARATOR . 'src', '', __DIR__)
         ]);
         define('SISTEMA_LIBRARY', true);  // constante que garante acesso as classes unicamente após este script
@@ -22,6 +28,18 @@ class SistemaLibrary {
         if (strlen((string) $host) > 1) {
             Connection::getConnection();
         }
+    }
+
+    public static function checkPermission($param) {
+        if (is_callable(self::$permissionFunction)) {
+            call_user_func(self::$permissionFunction, $param);
+        } else {
+            throw new Exception("NsLibrary: Permission function is not defined. To continue, create thind on SistemaLibrary::setPermissionFunction(Closure)");
+        }
+    }
+
+    public static function setPermissionFunction(Closure $permissionFunction): void {
+        self::$permissionFunction = $permissionFunction;
     }
 
     /**
@@ -101,12 +119,12 @@ class SistemaLibrary {
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
     }
 
-    public static function encrypt($texto, $senha) {
-        return (new \NsUtil\Crypto(Config::getData('TOKEN_CRYPTO')))->encrypt($texto, $senha);
+    public static function encrypt(string $texto, string $senha = ''): string {
+        return (new Crypto(Config::getData('TOKEN_CRYPTO')))->encrypt($texto, $senha);
     }
 
-    public static function decrypt($texto, $senha) {
-        return (new \NsUtil\Crypto(Config::getData('TOKEN_CRYPTO')))->decrypt($texto, $senha);
+    public static function decrypt(string $texto, string $senha = ''): string {
+        return (new Crypto(Config::getData('TOKEN_CRYPTO')))->decrypt($texto, $senha);
     }
 
     /**
@@ -126,6 +144,28 @@ class SistemaLibrary {
             }
         }
         return $out;
+    }
+
+    public static function getNamespace(\NsUtil\Api $api): array {
+        $resource = (string) Helper::name2CamelCase($api->getConfigData()['rest']['resource']);
+        $method = (string) $api->getConfigData()['rest']['method'];
+
+        // Namespace default
+        switch (true) {
+            case file_exists(Config::getData('path') . '/src/Routers/' . ucwords($resource) . '.php'):
+                $namespace = 'NsApp\\Routers';
+                break;
+            case file_exists(Config::getData('path') . '/src/NsLibrary/Routers/' . ucwords($resource) . '.php'):
+                $namespace = 'NsApp\\NsLibrary\\Routers';
+                break;
+            case file_exists(Config::getData('path') . '/vendor/nextstage-brasil/ns-library/src/Controller/ApiRest/Default/' . ucwords($resource) . '.php'):
+                $namespace = 'NsLibrary\\Controller\\ApiRest\\Default';
+                break;
+            default:
+                $namespace = 'NOTFOUND';
+                break;
+        }
+        return [$resource, $method, $namespace];
     }
 
 }

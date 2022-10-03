@@ -2,7 +2,6 @@
 
 namespace NsLibrary\Controller;
 
-use AppLibraryController;
 use BuscaCep;
 use Config;
 use GeoLocalizacao;
@@ -10,7 +9,6 @@ use NsUtil\Api;
 use NsUtil\Helper;
 use NsUtil\Log;
 use ReflectionClass;
-use Translate;
 use TrashController;
 use UploadfileController;
 
@@ -22,6 +20,7 @@ abstract class AbstractController {
     protected $object, $condicao, $ent, $camposDouble, $camposDate, $camposJson, $jsonDefault, $lastObjectSave, $condicaoManual, $extrasA, $extrasB;
     protected $poderesGrupo, $poderesSubGrupo;
     protected $camposCrypto = [];
+
 
     public function save(&$dados) {
         Helper::jsonRecebeFromView($dados, $this->camposJson);

@@ -79,6 +79,7 @@ abstract class AbstractApiRestController extends ControllerDefault {
             default: // post por enquanto
                 $this->error = ['error' => '', 'code' => Api::HTTP_NOT_IMPLEMENTED];
         }
+        $this->dados['id' . $this->type] = $this->dados['id'];
     }
 
     function response(array $response, int $code = 200): void {

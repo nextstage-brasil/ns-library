@@ -417,7 +417,11 @@ class Create {
                 }
             }
 
-
+            $CONFIG['entitieConfig'][$entidade] = [
+                'camposDate' => str_replace("'", '', $camposDate),
+                'camposDouble' => str_replace("'", '', $camposDouble),
+                'camposJson' => str_replace("'", '', $camposJson),
+            ];
             $dados = [
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
@@ -455,29 +459,6 @@ class Create {
                 $done++;
                 $loader->done($done);
             }
-            continue;
-
-            /*
-              ### Criação do ambiente administração
-              $template = SistemaCreate::getList($dados);
-              $index = file_get_contents('./templates/template-index-component.php');
-              $dados['AUX'] = $template['aux'];
-              $dados['SETDATA'] = $template['setdata'];
-              $dados['filtros'] = $template['filtros'];
-              $dados['MODAL_DATA'] = $template['MODAL_DATA'];
-              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/index.php", $template['div']);
-              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/script.js", SistemaCreate::getJs($dados));
-              Helper::saveFileBuild(__DIR__ . "/_sourceView/$entidade/view.php", '<?php include \'../../../library/SistemaLibrary.php\'; ?>');
-
-              // Salvando na rota nova, com PHP no server
-              Helper::saveFileBuild(Config::getData('path') . "/view/fonte/$myent.php", $template['div']);
-              Helper::saveFileBuild(Config::getData('path') . "/_build/js_app/$entidade-script.js", SistemaCreate::getJs($dados));
-             */
-
-
-            ### Criação dos components
-            ##  saidas
-            $outGeral[] = "Arquivos criados para entidade $entidade";
         } // FECHA FOREACH TABELAS
         // Setando dados final
         $this->data = [
@@ -506,16 +487,12 @@ class Create {
 
     private function controllerInit() {
         // REST
-        Config::setData('pathRestControllers', Config::getData('path') . '/src/NsLibrary/RestControllers');
-//        Helper::deleteDir(Config::getData('pathRestControllers'));
-//        sleep(1);
+        Config::setData('pathRestControllers', Config::getData('path') . '/src/NsLibrary/Routers');
         Helper::mkdir(Config::getData('pathRestControllers'));
 
         // CONTROLLER
-        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');
-//        Helper::deleteDir(Config::getData('pathControllers'));
-//        sleep(1);
-        Helper::mkdir(Config::getData('pathControllers'));
+//        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');
+//        Helper::mkdir(Config::getData('pathControllers'));
     }
 
     private function viewInit() {

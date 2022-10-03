@@ -20,7 +20,7 @@ class ControllerDefault extends AbstractController {
         $this->camposDate = $camposDate;
         $this->camposDouble = $camposDouble;
         $this->camposJson = $camposJson;
-        $this->camposCrypto = Config::getData('fieldCrypto')[$entidadeName] ?? [];
+        $this->camposCrypto = Config::getData('entitieConfig')[$entidadeName]['camposEncrypt'] ?? [];
         $this->poderesGrupo = $poderesGrupo;
         $this->poderesSubGrupo = $poderesSubGrupo;
 
@@ -51,11 +51,17 @@ class ControllerDefault extends AbstractController {
 
     ## Metodos padrão para WebService (ws)
 
-    public function ws_getNew() {
+    public function ws_getNew($checkPermission = true) {
+        if ($checkPermission) {
+            SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'create']);
+        }
         return $this->toView($this->object);
     }
 
-    public function ws_getById($dados) {
+    public function ws_getById($dados, $checkPermission = true) {
+        if ($checkPermission) {
+            SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'read']);
+        }
         $this->object->read($dados['id']);
         if ($this->object->getError()) {
             return ['error' => $this->object->getError()];
@@ -63,13 +69,17 @@ class ControllerDefault extends AbstractController {
         return $this->toView($this->object);
     }
 
-    public function ws_getAll($dados) {
+    public function ws_getAll($dados, $checkPermission = true) {
+        if ($checkPermission) {
+            SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'list']);
+        }
 
-        // IDs esperados
-        foreach (['id'] as $v) {
-            if ((int) $dados[$v] > 0) {
-                $this->condicao[$v] = (int) $dados[$v];
-            }
+        // Filtros
+        $filters = array_filter($dados, function ($item) use ($dados) {
+            return strlen((string) $dados[$item]) > 0 && $item !== 'id' && method_exists($this->object, 'set' . ucwords((string) $item));
+        }, ARRAY_FILTER_USE_KEY);
+        if (count($filters) > 0) {
+            $this->condicao = array_merge($this->condicao, $filters);
         }
 
         if ($dados['count']) {
@@ -104,9 +114,13 @@ class ControllerDefault extends AbstractController {
      * @create 18/01/2022
      * Metodo responsavel por salvar uma entidade
      */
-    public function ws_save($dados) {
-        $action = ( ((int) $dados['id' . $this->ent] > 0) ? 'Editar' : 'Inserir');
-        $isUpdate = $action === 'Editar';
+    public function ws_save($dados, $checkPermission = true) {
+        $action = ( ((int) $dados['id' . $this->ent] > 0) ? 'update' : 'create');
+        $isUpdate = $action === 'update';
+
+        if ($checkPermission) {
+            SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, $action]);
+        }
 
         if (!$isUpdate) {
             $create = get_class($this->object);
@@ -159,7 +173,11 @@ class ControllerDefault extends AbstractController {
      * @create 18/01/2022
      * Metodo responsavel por remover uma entidade
      */
-    public function ws_remove($dados) {
+    public function ws_remove($dados, $checkPermission = true) {
+        if ($checkPermission) {
+            SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'delete']);
+        }
+
         $this->object->read($dados['id']);
         if ($this->object->getError()) {
             return ['error' => $this->object->getError()];

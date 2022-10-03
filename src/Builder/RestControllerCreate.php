@@ -10,35 +10,59 @@ class RestControllerCreate {
     private static $namespace;
 
     public static function save(array $dados, string $entidade, array $ignore = []): void {
-        $controllersDefault = (($ignore) ? $ignore : [
+        $ignoreDefault = [
+            'Cep', 
             'Linktable',
             'Trash',
             'Uploadfile',
             'Usuario',
+            'Status',
             'UsuarioPermissao',
             'UsuarioTipo',
+            'Shared',
             'Mensagem',
-            'Status'
-        ]);
+            'MensagemGrupo',
+            'MensagemGrupoUsers',
+            'ConhecimentoView',
+            'Endereco',
+            'JsonTable',
+            'LtRel',
+            'LoginAttempts', 
+            'SistemaFuncao', 
+            'Webhook'
+        ];
+        $controllersDefault = array_merge($ignore, $ignoreDefault);
 
         if (!Config::getData('pathRestControllers')) {
             die('pathRestControllers is not defined');
         }
+        $prefix = ((array_search($entidade, $controllersDefault) === false) ? '' : '/ignoredByConfig/');
+        $file = Config::getData('pathRestControllers')
+                . DIRECTORY_SEPARATOR
+                . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
+                . "${entidade}.php"
+        ;
+        $fileWithPrefix = str_replace("${entidade}.php", "${prefix}${entidade}.php", $file);
 
-        // Não quero salvar esses controller, pq são padrão do framework
-        if (array_search($entidade, $controllersDefault) === false) {
-            $template = self::get($dados);
-
-            $file = Config::getData('pathRestControllers')
-                    . DIRECTORY_SEPARATOR
-                    . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
-                    . $entidade
-                    . 'Controller.php';
-            Helper::saveFile($file, false, $template, 'SOBREPOR');
+        if (file_exists($file) && \array_search($entidade, $controllersDefault) !== false && \array_search($entidade, $ignoreDefault) === false) {
+            rename($file, $fileWithPrefix);
         }
+
+        $template = self::get($dados);
+        Helper::saveFile($fileWithPrefix, false, $template);
+
+//        // Não quero salvar esses controller, pq são padrão do framework
+//        if (array_search($entidade, $controllersDefault) === false) {
+//            $template = self::get($dados);
+//            Helper::saveFile($file, false, $template);
+//        } else {
+//            if (file_exists($file) && array_search($entidade, $ignoreDefault) === false) {
+//                rename($file, str_replace("${entidade}.php", "__REMOVE__${entidade}.old", $file));
+//            }
+//        }
     }
 
-    public final static function get($dados) : string {
+    public final static function get($dados): string {
         $schema = $dados['schema'];
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
 
@@ -67,10 +91,12 @@ class RestControllerCreate {
         $dados['jsonConfig'] = implode("\n", $jsonConfig);
 
         $template = '<?php
-            namespace ' . Config::getData('psr4Name') . '\NsLibrary\RestControllers' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+            namespace ' . Config::getData('psr4Name') . '\\' . str_replace([Config::getData('path') . '/src/', '/'], ['', '\\'], Config::getData('pathRestControllers')) . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+
+use NsApp\NsLibrary\Entities\%entidade% as Entitie;
+use NsLibrary\Config;
 use NsLibrary\Controller\ApiRest\AbstractApiRestController;
 use NsUtil\Api;
-use Poderes;
 
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . 'RestController: Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
@@ -83,40 +109,43 @@ if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . 'RestController:
 * @date %datetime%
 */
 
- class %entidade%Controller extends AbstractApiRestController {
+ class %entidade% extends AbstractApiRestController {
  
-    private static $poderesGrupo = \'%entidade%\';
-    private static $poderesSubGrupo = \'%entidade%\';
+    private $entitieName=  \'%entidade%\';
 
     public function __construct(Api $api) {
         $this->init($api);
+        $this->controllerInit(
+                    $this->entitieName, 
+                    new Entitie(), 
+                     \'%entidade%\', 
+                     \'%entidade%\', 
+                    Config::getData(\'entitieConfig\')[$this->entitieName][\'camposDate\'],
+                    Config::getData(\'entitieConfig\')[$this->entitieName][\'camposDouble\'],
+                    Config::getData(\'entitieConfig\')[$this->entitieName][\'camposJson\'],
+                );
     }
 
     public function list(): void {
-        Poderes::verify(self::$poderesGrupo, self::$poderesSubGrupo, \'ler\');
         $out = $this->ws_getAll($this->dados);
         $this->response($out);
     }
 
     public function read(): void {
-        Poderes::verify(self::$poderesGrupo, self::$poderesSubGrupo, \'ler\');
         $out = $this->ws_getById($this->dados);
         $this->response($out);
     }
 
     public function create(): void {
-        Poderes::verify(self::$poderesGrupo, self::$poderesSubGrupo, \'inserir\');
         $out = $this->ws_save($this->dados);
         $this->response($out);
     }
 
     public function update(): void {
-        Poderes::verify(self::$poderesGrupo, self::$poderesSubGrupo, \'editar\');
         $this->create();
     }
 
     public function delete(): void {
-        Poderes::verify(self::$poderesGrupo, self::$poderesSubGrupo, \'remover\');
         $out = $this->ws_remove($this->dados);
         $this->response($out);
     }
