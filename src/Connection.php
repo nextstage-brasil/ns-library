@@ -8,7 +8,7 @@ use NsUtil\ConnectionPostgreSQL;
 
 class Connection {
 
-    private static $con;
+    private static $con = [];
 
     public function __construct() {
         
@@ -30,8 +30,8 @@ class Connection {
             'type' => Config::getData('DBTYPE'),
                 ] : Config::getData('database')
                 );
-        $type = ((!$config['type']) ? 'postgres' : $config['type']);
-        if (!self::$con[$type]) {
+        $type = ((!isset($config['type'])) ? 'postgres' : $config['type']);
+        if (!isset(self::$con[$type])) {
             try {
                 switch ($type) {
                     case 'postgres':

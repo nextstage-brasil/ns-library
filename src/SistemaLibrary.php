@@ -61,7 +61,19 @@ class SistemaLibrary {
     }
 
     public static function initByConfig(array $SistemaConfig) {
-        return self::init($SistemaConfig['database']['host'], $SistemaConfig['database']['user'], $SistemaConfig['database']['pass'], $SistemaConfig['database']['dbname'], $SistemaConfig['database']['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
+        $config = ((!isset($SistemaConfig['database'])) ?
+                [
+            'host' => $SistemaConfig['DBHOST'], 
+            'user' => $SistemaConfig['DBUSER'], 
+            'pass' => $SistemaConfig['DBPASS'], 
+            'port' => $SistemaConfig['DBPORT'], 
+            'dbname' => $SistemaConfig['DBNAME'], 
+            'type' => $SistemaConfig['DBTYPE'], 
+                ] : $SistemaConfig['database']
+                );
+        $config['type'] = ((!$config['type']) ? 'postgres' : $config['type']);
+
+        return self::init($config['host'], $config['user'], $config['pass'], $config['dbname'], $config['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
 
     public static function isStarted(): bool {
