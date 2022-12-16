@@ -71,7 +71,7 @@ class SistemaLibrary {
             'type' => $SistemaConfig['DBTYPE'], 
                 ] : $SistemaConfig['database']
                 );
-        $config['type'] = ((!$config['type']) ? 'postgres' : $config['type']);
+        $config['type'] = ((!isset($config['type'])) ? 'postgres' : $config['type']);
 
         return self::init($config['host'], $config['user'], $config['pass'], $config['dbname'], $config['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
