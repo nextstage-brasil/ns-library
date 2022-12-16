@@ -92,7 +92,7 @@ class RestControllerCreate {
         $template = '<?php
             namespace ' . Config::getData('psr4Name') . '\\' . str_replace([Config::getData('path') . '/src/', '/'], ['', '\\'], Config::getData('pathRestControllers')) . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
 
-use NsApp\NsLibrary\Entities\\' . ((self::$namespace) ? self::$namespace . '\\' : '') . '%entidade% as Entitie;
+use ' . Config::getData('psr4Name') . '\NsLibrary\Entities\\' . ((self::$namespace) ? self::$namespace . '\\' : '') . '%entidade% as Entitie;
 use NsLibrary\Config;
 use NsLibrary\Controller\ApiRest\AbstractApiRestController;
 use NsUtil\Api;
