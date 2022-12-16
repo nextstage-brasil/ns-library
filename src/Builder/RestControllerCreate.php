@@ -11,7 +11,7 @@ class RestControllerCreate {
 
     public static function save(array $dados, string $entidade, array $ignore = []): void {
         $ignoreDefault = [
-            'Cep', 
+            'Cep',
             'Linktable',
             'Trash',
             'Uploadfile',
@@ -27,8 +27,8 @@ class RestControllerCreate {
             'Endereco',
             'JsonTable',
             'LtRel',
-            'LoginAttempts', 
-            'SistemaFuncao', 
+            'LoginAttempts',
+            'SistemaFuncao',
             'Webhook'
         ];
         $controllersDefault = array_merge($ignore, $ignoreDefault);
@@ -38,10 +38,9 @@ class RestControllerCreate {
         }
         $prefix = ((array_search($entidade, $controllersDefault) === false) ? '' : '/ignoredByConfig/');
         $file = Config::getData('pathRestControllers')
-                . DIRECTORY_SEPARATOR
-                . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
-                . "${entidade}.php"
-        ;
+            . DIRECTORY_SEPARATOR
+            . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
+            . "${entidade}.php";
         $fileWithPrefix = str_replace("${entidade}.php", "${prefix}${entidade}.php", $file);
 
         if (file_exists($file) && \array_search($entidade, $controllersDefault) !== false && \array_search($entidade, $ignoreDefault) === false) {
@@ -51,15 +50,15 @@ class RestControllerCreate {
         $template = self::get($dados);
         Helper::saveFile($fileWithPrefix, false, $template);
 
-//        // Não quero salvar esses controller, pq são padrão do framework
-//        if (array_search($entidade, $controllersDefault) === false) {
-//            $template = self::get($dados);
-//            Helper::saveFile($file, false, $template);
-//        } else {
-//            if (file_exists($file) && array_search($entidade, $ignoreDefault) === false) {
-//                rename($file, str_replace("${entidade}.php", "__REMOVE__${entidade}.old", $file));
-//            }
-//        }
+        //        // Não quero salvar esses controller, pq são padrão do framework
+        //        if (array_search($entidade, $controllersDefault) === false) {
+        //            $template = self::get($dados);
+        //            Helper::saveFile($file, false, $template);
+        //        } else {
+        //            if (file_exists($file) && array_search($entidade, $ignoreDefault) === false) {
+        //                rename($file, str_replace("${entidade}.php", "__REMOVE__${entidade}.old", $file));
+        //            }
+        //        }
     }
 
     public final static function get($dados): string {
@@ -93,7 +92,7 @@ class RestControllerCreate {
         $template = '<?php
             namespace ' . Config::getData('psr4Name') . '\\' . str_replace([Config::getData('path') . '/src/', '/'], ['', '\\'], Config::getData('pathRestControllers')) . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
 
-use NsApp\NsLibrary\Entities\%entidade% as Entitie;
+use NsApp\NsLibrary\Entities\\' . ((self::$namespace) ? self::$namespace . '\\' : '') . '%entidade% as Entitie;
 use NsLibrary\Config;
 use NsLibrary\Controller\ApiRest\AbstractApiRestController;
 use NsUtil\Api;
@@ -153,5 +152,4 @@ if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . 'RestController:
         $out = (new \NsUtil\Template($template, $dados, '%', '%'))->render();
         return $out;
     }
-
 }
