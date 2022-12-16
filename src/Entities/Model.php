@@ -3,17 +3,34 @@
 namespace NsLibrary\Entities;
 
 use NsLibrary\Builder\EntidadesCreate;
-use NsUtil\Config;
+use NsLibrary\Config;
 use NsUtil\Helper;
 
 class Model {
 
-    protected $entityName, $name, $fields;
+    protected $entityName, $name, $fields, $schema, $ddl, $addTablenameOnFields, $prefix, $sufix;
 
-    public function __construct($name) {
+    public function __construct($name = 'default') {
+        $this->setName($name);
+        $this->prefix = $prefix;
+        $this->sufix = $this->sufix;
+        $this->fields = [];
+    }
+
+    public function setName($name): Model {
         $this->entityName = ucwords(Helper::name2CamelCase($name));
         $this->name = $name;
-        $this->fields = [];
+        return $this;
+    }
+
+    public function setAddTablenameOnFields(): Model {
+        $this->addTablenameOnFields = true;
+        return $this;
+    }
+
+    public function setSchema($schema): Model {
+        $this->schema = $schema;
+        return $this;
     }
 
     public function addField(Field $field) {
@@ -21,51 +38,119 @@ class Model {
         return $this;
     }
 
-    public function generate($prefix = '', $sufix = '') {
-        $dados = [];
-        $file = $prefix . $this->entityName . $sufix;
+    private function prepare($prefix = '', $sufix = ''): array {
+        $this->prefix = strlen($prefix) > 0 ? $prefix : $this->prefix;
+        $this->sufix = strlen($sufix) > 0 ? $sufix : $this->sufix;
+
+        $file = $this->prefix . $this->entityName . $sufix;
+
         $dados = [
-            'entidade' => $file,
+            'schema' => $this->schema,
+            'schemaTable' => $this->schema . '.' . $this->name,
             'tabela' => $this->name,
             'cpoID' => 'id' . $this->entityName,
-            'doc' => [],
-            'example' => [],
-            'set' => []
+            'entidade' => $file,
+            'atributos' => [],
+            'camposDate' => [],
+            'camposDouble' => [],
+            'camposJson' => [],
+            'arrayCamposJson' => [],
+            'routeBackend' => Helper::name2CamelCase($file),
+            'routeFrontend' => str_replace('_', '-', mb_strtolower($file))
         ];
-        $dados['set'][] = '$obj = new ' . $file . '();
-        ';
+
+        $dados['set'][] = '$obj = new ' . $file . '();' . PHP_EOL;
+
         // geração dos atributos
         foreach ($this->fields as $item) {
             $item instanceof Field;
+
+            if ($this->addTablenameOnFields && strpos($item->getName(), $file) === false) {
+                $item->setName($item->getName() . $file);
+            }
+
+            // Campo ID
+            if ($item->getIsKey()) {
+                $dados['cpoID'] = $item->getName();
+            }
+
+            // Definição dos array de tipos
+            switch ($item->getType()) {
+                case 'json':
+                case 'jsonb':
+                    $dados['camposJson'][] = $item->getName();
+                    break;
+                case 'date':
+                case 'timestamp':
+                case 'datetime':
+                    $dados['camposDate'][] = $item->getName();
+                    break;
+                case 'double':
+                case 'decimal':
+                    $dados['camposDouble'][] = $item->getName();
+                    break;
+                default:
+                    break;
+            }
+
+            // Criação dos atributos
             $dados ['atributos'][] = [
-                'nome' => Helper::name2CamelCase($item->getName()),
-                'coments' => $item->getDescription(),
+                'entidade' => $file,
+                'key' => $item->getIsKey(),
+                'nome' => $item->getName(),
+                'column_name' => Helper::reverteName2CamelCase($item->getName()),
                 'tipo' => $item->getType(),
-                'valorPadrao' => ((strlen((string) $item->getDefault() > 0)) ? $item->getDefault() : "''"),
-                'maxsize' => (($item->getMaxsize()) ? $item->getMaxsize() : 1000),
-                'notnull' => $item->getNotnull()
+                'typeDB' => $item->getTypeDB(),
+                'maxsize' => (($item->getMaxsize()) ? $item->getMaxsize() : 1000000000),
+                'valorPadrao' => $item->getDefault(),
+                'coments' => $item->getDescription(),
+                'notnull' => $item->getNotnull(),
+                'hint' => $item->getDescription(),
+                'relationship' => false
             ];
             $k = ucwords((string) Helper::name2CamelCase($item->getName()));
-//            $dados['doc'][Helper::name2CamelCase($item->getName())] = "$item->v[1]: $v[0]";
             $dados['example'][Helper::name2CamelCase($k)] = "";
             $dados['set'][] = '$obj->set' . ucwords(Helper::name2CamelCase($k)) . '($item->get' . ucwords(Helper::name2CamelCase($k)) . '());
         ';
         }
 
-        // Salvar entidade
+        return $dados;
+    }
+
+    public function generate($prefix = '', $sufix = ''): Model {
+        $dados = $this->prepare($prefix = '', $sufix = '');
         $template = EntidadesCreate::get($dados);
-        Helper::saveFile(\NsLibrary\Config::getData('path') . '/src/NsLibrary/Entities/' . $file . '.php', false, $template, 'SOBREPOR');
+        Helper::saveFile(Config::getData('path') . '/src/NsLibrary/Entities/' . $dados['entidade'] . '.php', false, $template, 'SOBREPOR');
+        return $this;
+    }
 
-        /*
-          // Gerar documentação
-          $doc[$this->name] = $dados['doc'];
-          Helper::saveFile(\NsLibrary\Config::getData('path') . '/src/NsLibrary/Entities/doc/json/' . $this->name . '.json', '', json_encode($dados['example']), 'SOBREPOR');
+    public function getDDL($drop=false) {
+        $dados = $this->prepare($prefix = '', $sufix = '');
+        $fields = array_map(function ($item) use ($dados) {
+            return implode(' ', [
+        $item['column_name'],
+        (($item['typeDB'] === 'varchar') ? $item['typeDB'] . ' (' . $item['maxsize'] . ')' : $item['typeDB']),
+        (($item['notnull']) ? 'NOT NULL' : 'NULL'),
+        (($item['nome'] !== $dados['cpoID'] && $item['valorPadrao'] !== '' && strlen($item['valorPadrao']) > 0) ? 'DEFAULT ' . $item['valorPadrao'] : '')
+            ]);
+        }, $dados['atributos']);
+        
+        return implode(' ' . PHP_EOL, [
+            'CREATE TABLE IF NOT EXISTS ' . $dados['schemaTable'] . ' (',
+            implode(',' . PHP_EOL, $fields) . ', ',
+            'CONSTRAINT ' . $dados['tabela'] . '_pk PRIMARY KEY (' . Helper::reverteName2CamelCase($dados['cpoID']) . ') ',
+            ');'
+        ]);
+    }
 
-          // setter facilitado
-          $dados['set'][] = '$out[ ] = parent::objectToArray($obj);
-          ';
-          Helper::saveFile(\NsLibrary\Config::getData('path') . '/src/NsLibrary/Entities/doc/setter/' . $this->name . '.txt', '', implode("\n", $dados['set']), 'SOBREPOR');
-         */
+    public function createTableOnDB($drop=false) : Model {
+        $con = \NsLibrary\Connection::getConnection();
+        $query = $this->getDDL();
+        if ($drop)   {
+            $con->executeQuery("DROP TABLE IF EXISTS $this->name;");
+        }
+        $con->executeQuery($query);
+        return $this;
     }
 
 }

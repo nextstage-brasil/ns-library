@@ -138,7 +138,7 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
                
 private function init($dd)  {
  $this->error = [];
-' . implode($constructSet) . '
+' . implode('  ', $constructSet) . '
 $this->populate($dd);
 }
 
@@ -202,7 +202,7 @@ public function list(array $filters=[], int $page=0, int $limit=1000, $order=fal
             }
             $this->dao->setOrder($order);
         }
-    return $this->dao->getAll($filters, true, $page, $limit);
+    return (array) $this->dao->getAll($filters, true, $page, $limit);
 }
 
 public function save($onConflict=\'\') {

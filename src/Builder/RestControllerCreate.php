@@ -106,7 +106,6 @@ if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . 'RestController:
 * Rest Controller da rota
 * Basta seguir o padrão ApiREST com os verbos HTTP para ação
 * Caso seja uma ação especifica, ex.: /another, use a rota: 
-* @date %datetime%
 */
 
  class %entidade% extends AbstractApiRestController {
