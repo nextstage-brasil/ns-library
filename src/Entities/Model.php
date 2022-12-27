@@ -12,23 +12,21 @@ class Model {
 
     public function __construct($name = 'default') {
         $this->setName($name);
-        $this->prefix = $prefix;
-        $this->sufix = $this->sufix;
         $this->fields = [];
     }
 
-    public function setName($name): Model {
+    public function setName($name): self {
         $this->entityName = ucwords(Helper::name2CamelCase($name));
         $this->name = $name;
         return $this;
     }
 
-    public function setAddTablenameOnFields(): Model {
+    public function setAddTablenameOnFields(): self {
         $this->addTablenameOnFields = true;
         return $this;
     }
 
-    public function setSchema($schema): Model {
+    public function setSchema($schema): self {
         $this->schema = $schema;
         return $this;
     }
@@ -46,7 +44,7 @@ class Model {
 
         $dados = [
             'schema' => $this->schema,
-            'schemaTable' => $this->schema . '.' . $this->name,
+            'schemaTable' => $this->schema ? $this->schema  . '.' . $this->name : null, 
             'tabela' => $this->name,
             'cpoID' => 'id' . $this->entityName,
             'entidade' => $file,
@@ -117,15 +115,15 @@ class Model {
         return $dados;
     }
 
-    public function generate($prefix = '', $sufix = ''): Model {
-        $dados = $this->prepare($prefix = '', $sufix = '');
+    public function generate($prefix = '', $sufix = ''): self {
+        $dados = $this->prepare($prefix, $sufix);
         $template = EntidadesCreate::get($dados);
         Helper::saveFile(Config::getData('path') . '/src/NsLibrary/Entities/' . $dados['entidade'] . '.php', false, $template, 'SOBREPOR');
         return $this;
     }
 
     public function getDDL($drop=false) {
-        $dados = $this->prepare($prefix = '', $sufix = '');
+        $dados = $this->prepare();
         $fields = array_map(function ($item) use ($dados) {
             return implode(' ', [
         $item['column_name'],
@@ -143,7 +141,7 @@ class Model {
         ]);
     }
 
-    public function createTableOnDB($drop=false) : Model {
+    public function createTableOnDB($drop=false) : self {
         $con = \NsLibrary\Connection::getConnection();
         $query = $this->getDDL();
         if ($drop)   {

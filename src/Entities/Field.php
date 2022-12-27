@@ -34,16 +34,20 @@ class Field {
         'char' => 'string',
         'blob' => 'string',
         'clob' => 'string',
-        'bool1' => 'string',
+        'bool' => 'string',
         'character' => 'string',
         'longvarchar' => 'string',
         'character varying' => 'string',
-        'timestamp without time zone' => 'timestamp',
+        'timestamp without time zone' => 'string',
         'time without time zone' => 'int',
         'enum' => 'string',
         'text' => 'string',
         'json' => 'json',
-        'jsonb' => 'jsonb'
+        'jsonb' => 'json',
+        'object' => 'json',
+        'array' => 'json',
+        'date' => 'date',
+        'timestamp' => 'date'
     ];
 
     public function __construct(string $name, string $type = 'varchar', $default = '', string $description = '', bool $notnull = false) {
@@ -81,7 +85,7 @@ class Field {
         $type = $type === 'string' ? 'varchar' : $type;
         $type = $type === 'int' ? 'int2' : $type;
         if (!isset(self::$types[$type])) {
-            throw new \Exception("Type $type is not provisioned by library");
+            throw new \Exception("Type '$type' is not provisioned by NSLibrary");
         }
         $this->typeDB = $type;
         $this->type = self::$types[$type];
@@ -94,27 +98,36 @@ class Field {
         if ($default === '' && ($this->type === 'jsonb' || $this->type === 'json')) {
             $default = "{}";
         }
+
         if (strlen($default) > 0 && ($this->type === 'jsonb' || $this->type === 'json')) {
-            $decode = json_decode(str_replace(['::' . $this->type, "'", '&#39;'], [''], $default));
-            if (!$decode) {
-                throw new \Exception("Default value to field '$this->name' is invalid: $default");
+            $default = str_replace(['::' . $this->type, "'", '&#39;'], [''], $default);
+            $decode = json_decode((string) $default);
+            if (null === $decode) {
+                echo "\n";
+                echo "\n";
+                var_export($default);
+                var_export($decode);
+                echo "\n";
+                echo "\n";
+                throw new \Exception($this->name . " ERROR: Default value $default to field '$this->name' is invalid.");
             }
             $this->default = $default;
         } else {
             $this->default = Helper::getValByType($default, $this->type);
         }
 
-        if (strlen($this->default) > 0 && $this->type !== 'int' && $this->type !== 'double') {
-            $this->default = "'$this->default'";
-        }
+        // if (strlen($this->default) > 0 && $this->type !== 'int' && $this->type !== 'double') {
+        $this->default = "'" . (string)$this->default . "'";
+        // }
 
-//        echo "##$this->name:  $type >>> $this->type >> $this->default" . PHP_EOL;
+        //        echo "##$this->name:  $type >>> $this->type >> $this->default" . PHP_EOL;
 
         return $this;
     }
 
     public function setName($name): Field {
         $this->name = Helper::sanitize($name);
+        $this->name = Helper::name2CamelCase($this->name);
         return $this;
     }
 
@@ -154,5 +167,4 @@ class Field {
     public function getTypeDB() {
         return $this->typeDB;
     }
-
 }

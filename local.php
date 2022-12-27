@@ -4,11 +4,11 @@ require __DIR__ . './vendor/autoload.php';
 
 // Raiz default: no mesmo ROOT desta aplicação
 $pathDefault = realpath(__DIR__ . '/../');
-$pathWSL = realpath('Z:\home\cristofer\apps');
+$pathWSL = realpath('Z:\home\cristofer\apps\nextstage');
 $LOCAL_PROJECTS = [
-    $pathDefault . '/trilhasbr-backend',
-    $pathDefault . '/syncpay-backend-v2',
-    $pathWSL . '/nextstage/gitlab-integration'
+    $pathWSL . '/trilhasbr-backend',
+    // $pathDefault . '/syncpay-backend-v2',
+    // $pathWSL . '/nextstage/gitlab-integration'
 ];
 $src = realpath(__DIR__) . DIRECTORY_SEPARATOR . 'src';
 $vendor = 'nextstage-brasil/ns-library';

@@ -3,21 +3,22 @@
 namespace NsLibrary\Builder;
 
 use NsLibrary\Config;
+use NsLibrary\Controller\ModelSetterDefault;
 use NsUtil\Helper;
 use NsUtil\Template;
 
 class EntidadesCreate {
 
-    private static $namespace;  
+    private static $namespace;
 
     public static function save($dados, $entidade) {
         ### Criação de entidade
         $template = self::get($dados);
         $file = Config::getData('pathEntidades')
-                . DIRECTORY_SEPARATOR
-                . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
-                . $entidade
-                . '.php';
+            . DIRECTORY_SEPARATOR
+            . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
+            . $entidade
+            . '.php';
         Helper::saveFile($file, false, $template, 'SOBREPOR');
         return true;
     }
@@ -32,6 +33,7 @@ class EntidadesCreate {
             use NsUtil\Helper;
             use NsLibrary\Controller\Controller;
             use NsLibrary\Controller\EntityManager;
+            use NsLibrary\Controller\ModelSetterDefault;
 
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
@@ -81,45 +83,57 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
             $val['USER'] = ((Helper::compareString('idusuario', $val['nome']) && !Helper::compareString('usuario', $dados['tabela'])) ? '$idUsuario = (($idUsuario) ? $idUsuario : $_SESSION[\'user\'][\'id_pessoa\']);' : ''); // protegendo para que todos aparceeam clean, somente user
             switch ($val['tipo']) {
                 case 'OBJECT':
-                    $template = self::$templateObject;
+                    $template = ModelSetterDefault::getTemplateObject();
+                    // self::$templateObject;
                     $val['nome'] = ucwords($val['nome']);
                     $val['valorPadrao'] = '$dd';
                     break;
                 case 'EXTERNA':
-                    $template = self::$templateExterna;
+                    $template = ModelSetterDefault::getTemplateExterna();
+                    // self::$templateExterna;
                     $val['nome'] = mb_substr((string) $val['nome'], 2);
                     $val['nomeFunction'] = ucwords($val['nome']);
                     $val['valorPadrao'] = '$dd';
                     break;
-
-                case 'timestamp':
-                case 'datetime':
-                    $template = ((($val['notnull'] === true)) ? self::$templateDateTimeObrigatorio : self::$templateDateTime);
-                    break;
-                case 'date':
-                    $template = ((($val['notnull'] === true)) ? self::$templateDateObrigatorio : self::$templateDate);
-                    break;
                 case 'string':
                 case 'text':
-                    $val['tipo'] = 'string';
-                    $template = ((($val['notnull'] === true)) ? self::$templateObrigatorioString : self::$templateString);
-                    break;
-                case 'double':
-                    $template = ((($val['notnull'] === true)) ? self::$templateDoubleObrigatorio : self::$templateDouble);
-                    break;
                 case 'json':
                 case 'jsonb':
-                    $template = ((($val['notnull'] === true)) ? self::$templateJsonObrigatorio : self::$templateJson);
+                case 'boolean':
+                case 'timestamp':
+                case 'datetime':
+                case 'date':
+                case 'double':
+                case 'int':
+                    $template = ModelSetterDefault::getTemplate($val['tipo']);
                     break;
-                case 'boolean' :
-                    $template = self::$templateBool;
-                    break;
-                case 'bytea':
-                    $template = ((($val['notnull'] === true)) ? self::$templateByteaObrigatorio : self::$templateBytea);
-                    break;
-
                 default:
-                    $template = (($val['notnull'] === true && !$val['key']) ? self::$templateObrigatorio : self::$template);
+                    $template = ModelSetterDefault::getTemplate('default');
+
+
+
+                    // case 'timestamp':
+                    // case 'datetime':
+                    //     $template = ((($val['notnull'] === true)) ? self::$templateDateTimeObrigatorio : self::$templateDateTime);
+                    //     break;
+                    // case 'date':
+                    //     $template = ((($val['notnull'] === true)) ? self::$templateDateObrigatorio : self::$templateDate);
+                    //     break;
+                    // case 'double':
+                    //     $template = ((($val['notnull'] === true)) ? self::$templateDoubleObrigatorio : self::$templateDouble);
+                    //     break;
+                    // case 'json':
+                    // case 'jsonb':
+                    //     $template = ((($val['notnull'] === true)) ? self::$templateJsonObrigatorio : self::$templateJson);
+                    //     break;
+                    // case 'boolean':
+                    //     $template = self::$templateBool;
+                    //     break;
+                    // case 'bytea':
+                    //     $template = ((($val['notnull'] === true)) ? self::$templateByteaObrigatorio : self::$templateBytea);
+                    //     break;
+
+                    // (($val['notnull'] === true && !$val['key']) ? self::$templateObrigatorio : self::$template);
             }
             $val['notnull'] = (($val['notnull'] === true) ? "true" : "false");
             // propriedades
@@ -289,223 +303,240 @@ public function populate($dd)  {
         return $out;
     }
 
-    public static $templateObrigatorio = '
-        // obrigatório
-        public function set%nomeFunction%($%nome%) {
-        %USER%
-                if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        
-        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+    //     public static $templateObrigatorio = '
+    //         // obrigatório
+    //         public function set%nomeFunction%($%nome%) {
+    //         %USER%
+    //                 if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
 
-        if (strlen((string)$%nome%) <= 0) {
-            $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
-            unset($this->error[\'%nome%\']);
-            $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
-        }
-        return $this;
-    }
+    //         $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $template = 'public function set%nomeFunction%($%nome%) {
-        // Não obrigatorio
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
-        return $this;
-    }
+    //         if (strlen((string)$%nome%) <= 0) {
+    //             $this->error[\'%nome%\'] = \'%coments%\';
+    //         } else {
+    //             unset($this->error[\'%nome%\']);
+    //             $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+    //         }
+    //         return $this;
+    //     }
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateDoubleObrigatorio = '
-        // double obrigatorio
-        public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+    //     public static $template = 'public function set%nomeFunction%($%nome%) {
+    //         // Não obrigatorio
+    //         if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
+    //         $this->%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+    //         return $this;
+    //     }
 
-        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
-        
-        if (strlen((string)$%nome%) <= 0) {
-            $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
-            $%nome% = (double) Helper::decimalFormat($%nome%);
-            if ($%nome% > 0) {
-                unset($this->error[\'%nome%\']);
-                $this->%nome% =  Helper::getValByType($%nome%, \'double\');
-            } else {
-                $this->error[\'%nome%\'] = \'%coments%\';
-            }
-        }
-        return $this;
-    }
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateDouble = 'public function set%nomeFunction%($%nome%) {
-        // double simples
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
+    //     public static $templateDoubleObrigatorio = '
+    //         // double obrigatorio
+    //         public function set%nomeFunction%($%nome%) {
+    //         if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
 
-        //$%nome% = (double) Helper::decimalFormat($%nome%);
-        
-        $%nome% = Helper::decimalFormat($%nome%);
-        $this->%nome% = Helper::getValByType($%nome%, \'double\');
-        unset($this->error[\'%nome%\']);
-        return $this;
-    }
+    //         $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
 
-        public function get%nomeFunction%() {
-            return $this->%nome%;
-        }
-';
-    public static $templateObrigatorioString = '
-        // Obrigatório - String
-        public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        
-//        $%nome% = Helper::getValByType($%nome%, \'string\');
-        $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+    //         if (strlen((string)$%nome%) <= 0) {
+    //             $this->error[\'%nome%\'] = \'%coments%\';
+    //         } else {
+    //             $%nome% = (double) Helper::decimalFormat($%nome%);
+    //             if ($%nome% > 0) {
+    //                 unset($this->error[\'%nome%\']);
+    //                 $this->%nome% =  Helper::getValByType($%nome%, \'double\');
+    //             } else {
+    //                 $this->error[\'%nome%\'] = \'%coments%\';
+    //             }
+    //         }
+    //         return $this;
+    //     }
 
-        if (strlen((string)$%nome%) <= 0) {
-            $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
-            unset($this->error[\'%nome%\']);
-            %upper%
-            $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
-            
-        }
-        return $this;
-    }
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+    //     public static $templateDouble = 'public function set%nomeFunction%($%nome%) {
+    //         // double simples
+    //         if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateString = 'public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        $%nome% = Helper::getValByType($%nome%, \'%tipo%\');
+    //         //$%nome% = (double) Helper::decimalFormat($%nome%);
 
-        %upper%
-        $%nome% = Helper::getValByType($%nome%, \'string\');
-        $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
-        return $this;
-    }
+    //         $%nome% = Helper::decimalFormat($%nome%);
+    //         $this->%nome% = Helper::getValByType($%nome%, \'double\');
+    //         unset($this->error[\'%nome%\']);
+    //         return $this;
+    //     }
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateObject = 'public function set%nomeFunction%($%nome%) {
-        $this->%nome% = (($%nome% instanceof %nome%)? $%nome% : new %nome%($%nome%));
-        return $this;
-    }
+    //         public function get%nomeFunction%() {
+    //             return $this->%nome%;
+    //         }
+    // ';
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateExterna = 'public function set%nomeFunction%($%nome%) {
-        $this->%nome% = (object) $%nome%;
-        return $this;
-    }
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateDate = 'public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        $%nome% = Helper::getValByType($%nome%, \'string\');
-        $date = Helper::formatDate($%nome%);
-        if ($date)   {
-                $this->%nome% = (string) $date;
-            } else   {
-                $this->%nome% = null;
-            }
-            return $this;
-    }
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }';
-    public static $templateDateObrigatorio = 'public function set%nomeFunction%($%nome%) {
-        if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
-        $%nome% = Helper::getValByType($%nome%, \'string\');
 
-        if (strlen((string)$%nome%) < 8) { // menor que 8 não é data ddmmyyyy
-            $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
-            unset($this->error[\'%nome%\']);
-            $date = Helper::formatDate($%nome%);
-            if ($date)   {
-                $this->%nome% = (string) $date;
-            } else   {
-                $this->error[\'%nome%\'] = "%coments% - Data Inválida";
-            }
-        } 
-        return $this;
-    }
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }';
-    public static $templateDateTime = 'public function set%nomeFunction%($%nome%) {
-                if (is_array($%nome%))   {
-            $%nome% = $%nome%[\'%nome%\'];
-        }
 
-        $date = Helper::formatDate($%nome%, \'c\', true);
-        if ($date)   {
-                $this->%nome% = (string) $date;
-            } else   {
-                $this->%nome% = null;
-            }
-            return $this;
-    }
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }';
-    public static $templateDateTimeObrigatorio = 'public function set%nomeFunction%($%nome%) {
-        $%nome% = Helper::getValByType($%nome%, \'string\');
-        
-        if (strlen((string)$%nome%) <= 8) {
-            $this->error[\'%nome%\'] = \'%coments%\';
-        } else {
-            unset($this->error[\'%nome%\']);
-            $date = Helper::formatDate($%nome%, \'c\', true);
-            if ($date)   {
-                $this->%nome% = (string) $date;
-            } else   {
-                $this->error[\'%nome%\'] = "%coments% - Invalid date";
-            }
-        }
-        return $this;
-    }
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }';
+    //     public static $templateObrigatorioString = '
+    //         // Obrigatorio - String
+    //         public function set%nomeFunction%($%nome%) {
+    //         if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
+
+    // //        $%nome% = Helper::getValByType($%nome%, \'string\');
+    //         $%nome% =  Helper::getValByType($%nome%, \'%tipo%\');
+
+    //         if (strlen((string)$%nome%) <= 0) {
+    //             $this->error[\'%nome%\'] = \'%coments%\';
+    //         } else {
+    //             unset($this->error[\'%nome%\']);
+    //             %upper%
+    //             $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
+
+    //         }
+    //         return $this;
+    //     }
+
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+    //     public static $templateString = 'public function set%nomeFunction%($%nome%) {
+    //         if (is_array($%nome%))   {
+    //             $%nome% = $%nome%[\'%nome%\'];
+    //         }
+    //         $%nome% = Helper::getValByType($%nome%, \'%tipo%\');
+
+    //         %upper%
+    //         $%nome% = Helper::getValByType($%nome%, \'string\');
+    //         $this->%nome% = (%tipo%) mb_substr((string)$%nome%, 0, %maxsize%);
+    //         return $this;
+    //     }
+
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+
+
+
+    //     public static $templateObject = 'public function set%nomeFunction%($%nome%) {
+    //         $this->%nome% = (($%nome% instanceof %nome%)? $%nome% : new %nome%($%nome%));
+    //         return $this;
+    //     }
+
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+
+
+    //     public static $templateExterna = 'public function set%nomeFunction%($%nome%) {
+    //         $this->%nome% = (object) $%nome%;
+    //         return $this;
+    //     }
+
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+
+
+    // public static $templateDate = 'public function set%nomeFunction%($%nome%) {
+    //     if (is_array($%nome%))   {
+    //         $%nome% = $%nome%[\'%nome%\'];
+    //     }
+    //     $%nome% = Helper::getValByType($%nome%, \'string\');
+    //     $date = Helper::formatDate($%nome%);
+    //     if ($date)   {
+    //             $this->%nome% = (string) $date;
+    //         } else   {
+    //             $this->%nome% = null;
+    //         }
+    //         return $this;
+    // }
+    // public function get%nomeFunction%() {
+    //     return $this->%nome%;
+    // }';
+    // public static $templateDateObrigatorio = 'public function set%nomeFunction%($%nome%) {
+    //     if (is_array($%nome%))   {
+    //         $%nome% = $%nome%[\'%nome%\'];
+    //     }
+    //     $%nome% = Helper::getValByType($%nome%, \'string\');
+
+    //     if (strlen((string)$%nome%) < 8) { // menor que 8 não é data ddmmyyyy
+    //         $this->error[\'%nome%\'] = \'%coments%\';
+    //     } else {
+    //         unset($this->error[\'%nome%\']);
+    //         $date = Helper::formatDate($%nome%);
+    //         if ($date)   {
+    //             $this->%nome% = (string) $date;
+    //         } else   {
+    //             $this->error[\'%nome%\'] = "%coments% - Data Inválida";
+    //         }
+    //     } 
+    //     return $this;
+    // }
+    // public function get%nomeFunction%() {
+    //     return $this->%nome%;
+    // }';
+
+
+    // public static $templateDateTime = 'public function set%nomeFunction%($%nome%) {
+    //             if (is_array($%nome%))   {
+    //         $%nome% = $%nome%[\'%nome%\'];
+    //     }
+
+    //     $date = Helper::formatDate($%nome%, \'c\', true);
+    //     if ($date)   {
+    //             $this->%nome% = (string) $date;
+    //         } else   {
+    //             $this->%nome% = null;
+    //         }
+    //         return $this;
+    // }
+    // public function get%nomeFunction%() {
+    //     return $this->%nome%;
+    // }';
+    // public static $templateDateTimeObrigatorio = 'public function set%nomeFunction%($%nome%) {
+    //     $%nome% = Helper::getValByType($%nome%, \'string\');
+
+    //     if (strlen((string)$%nome%) <= 8) {
+    //         $this->error[\'%nome%\'] = \'%coments%\';
+    //     } else {
+    //         unset($this->error[\'%nome%\']);
+    //         $date = Helper::formatDate($%nome%, \'c\', true);
+    //         if ($date)   {
+    //             $this->%nome% = (string) $date;
+    //         } else   {
+    //             $this->error[\'%nome%\'] = "%coments% - Invalid date";
+    //         }
+    //     }
+    //     return $this;
+    // }
+    // public function get%nomeFunction%() {
+    //     return $this->%nome%;
+    // }';
+
+
+
     public static $getterSetterPadrao = '
-/** 
-Metodos obrigatório pois EntityManager depende deles 
-*/
+
+// Metodos obrigatório pois EntityManager depende deles 
+
     public function getId() {
         return $this->%cpoID%;
     }
@@ -548,66 +579,64 @@ Metodos obrigatório pois EntityManager depende deles
         return $this->cpoId;
     }            
     
-/**
-Demais métodos getters e setters
-**/
+// Demais métodos getters e setters
             ';
     public static $setterConstruct = '$this->set%nomeFunction%(%valorPadrao%);';
-    public static $templateJsonObrigatorio = 'public function set%nomeFunction%($%nome%) {
-        if (!is_array($%nome%) && !is_object($%nome%)) {
-            $%nome% = json_decode($%nome%, true);
-        }
-        $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
-        $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
-        if (!$%nome% || json_last_error() > 0 || $%nome%===null || $%nome%===\'null\' ) {
-            $this->error[\'%nome%\'] = \'%coments%\';
-        }  else {
-            unset($this->error[\'%nome%\']);
-            $this->%nome% = $%nome%;
-        }  
-        
-        return $this;
 
-    }
+    //     public static $templateJsonObrigatorio = 'public function set%nomeFunction%($%nome%) {
+    //         if (!is_array($%nome%) && !is_object($%nome%)) {
+    //             $%nome% = json_decode($%nome%, true);
+    //         }
+    //         $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
+    //         $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
+    //         if (!$%nome% || json_last_error() > 0 || $%nome%===null || $%nome%===\'null\' ) {
+    //             $this->error[\'%nome%\'] = \'%coments%\';
+    //         }  else {
+    //             unset($this->error[\'%nome%\']);
+    //             $this->%nome% = $%nome%;
+    //         }  
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateJson = 'public function set%nomeFunction%($%nome%) {
-        if (!is_array($%nome%) && !is_object($%nome%)) {
-            $%nome% = json_decode($%nome%, true);
-        }
-        $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
-        $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
-        if (json_last_error() > 0) {
-            $%nome% = json_encode([]);
-        }        
-        $this->%nome% = $%nome%;
-        
-        return $this;
-    }
+    //         return $this;
 
-    public function get%nomeFunction%() {
-        return $this->%nome%;
-    }
-';
-    public static $templateBool = '
-        public function set%nomeFunction%($%nome%) {
-                    if (is_array($%nome%))   {
-                        $%nome% = $%nome%[\'%nome%\'];
-                    }
-                    if (gettype($%nome%) === \'boolean\')   {
-                        $this->%nome% = (string) (($%nome%) ?\'true\' :\'false\' );
-                    } else {
-                        $this->%nome% = (string) ((Helper::compareString(\'true\', (string) $%nome%)) ?\'true\' :\'false\' );
-                    }
-                    return $this;
-                }
+    //     }
 
-                public function get%nomeFunction%() {
-                    return $this->%nome%;
-                }
-    ';
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+    //     public static $templateJson = 'public function set%nomeFunction%($%nome%) {
+    //         if (!is_array($%nome%) && !is_object($%nome%)) {
+    //             $%nome% = json_decode($%nome%, true);
+    //         }
+    //         $%nome% = json_encode($%nome%, JSON_HEX_QUOT | JSON_HEX_APOS);
+    //         $%nome% = str_replace(\'&#34;\', \'\\u0022\', $%nome%);
+    //         if (json_last_error() > 0) {
+    //             $%nome% = json_encode([]);
+    //         }        
+    //         $this->%nome% = $%nome%;
 
+    //         return $this;
+    //     }
+
+    //     public function get%nomeFunction%() {
+    //         return $this->%nome%;
+    //     }
+    // ';
+    // public static $templateBool = '
+    //     public function set%nomeFunction%($%nome%) {
+    //                 if (is_array($%nome%))   {
+    //                     $%nome% = $%nome%[\'%nome%\'];
+    //                 }
+    //                 if (gettype($%nome%) === \'boolean\')   {
+    //                     $this->%nome% = (string) (($%nome%) ?\'true\' :\'false\' );
+    //                 } else {
+    //                     $this->%nome% = (string) ((Helper::compareString(\'true\', (string) $%nome%)) ?\'true\' :\'false\' );
+    //                 }
+    //                 return $this;
+    //             }
+
+    //             public function get%nomeFunction%() {
+    //                 return $this->%nome%;
+    //             }
+    // ';
 }
