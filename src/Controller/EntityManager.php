@@ -38,7 +38,6 @@ class EntityManager {
         try {
             $this->con->close();
         } catch (Exception $exc) {
-            
         }
     }
 
@@ -66,7 +65,7 @@ class EntityManager {
     }
 
     public function setCountUploadfile($switch) {
-        $this->countUploadfile = (boolean) $switch;
+        $this->countUploadfile = (bool) $switch;
         return $this;
     }
 
@@ -115,7 +114,7 @@ class EntityManager {
             $subs = ['Property [', 'private $', ']', ' ', '<default>'];
             foreach ($api->getProperties() as $atributoOriginal) {
 
-//                $atributo = (string) trim(str_replace($subs, '', $atributoOriginal));
+                //                $atributo = (string) trim(str_replace($subs, '', $atributoOriginal));
                 $atributo = $atributoOriginal->getName(); // (string) trim(str_replace($subs, '', $atributoOriginal));
                 // nao salvar createtime
                 if (strpos(strtolower($atributo), 'createtime') !== false) {
@@ -201,31 +200,31 @@ class EntityManager {
         }
     }
 
-//    public function remove($audit = true) {
-//        try {
-//            $app = new AppLibraryController();
-//            $oldObject = $this->getById($this->object->getId(), false);
-//            $diff['removed'] = $app->objectToArray($oldObject);
-//            $diff[$this->object->getCpoId()] = $this->object->getId();
-//            if ($diff['removed'][$this->object->getCpoId()] > 0) {
-//                $this->con->executeQuery("DELETE FROM "
-//                        . $this->object->getTable()
-//                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
-//                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId()));
-//                $res = $this->con->next();
-//                $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())];
-//                if ($audit) {
-//                    Log::auditoria(get_class($this->object), 'Remover', $diff);
-//                    //TlController::addFromAuditoria(get_class($this->object), $this->object->getId(), 'Remover', $diff);
-//                }
-//
-//                return $result;
-//            }
-//        } catch (Exception $e) {
-//            Log::error("Erro ao remover: " . $e->getMessage());
-//            return self::getErrorByConfig($e->getMessage());
-//        }
-//    }
+    //    public function remove($audit = true) {
+    //        try {
+    //            $app = new AppLibraryController();
+    //            $oldObject = $this->getById($this->object->getId(), false);
+    //            $diff['removed'] = $app->objectToArray($oldObject);
+    //            $diff[$this->object->getCpoId()] = $this->object->getId();
+    //            if ($diff['removed'][$this->object->getCpoId()] > 0) {
+    //                $this->con->executeQuery("DELETE FROM "
+    //                        . $this->object->getTable()
+    //                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
+    //                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId()));
+    //                $res = $this->con->next();
+    //                $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())];
+    //                if ($audit) {
+    //                    Log::auditoria(get_class($this->object), 'Remover', $diff);
+    //                    //TlController::addFromAuditoria(get_class($this->object), $this->object->getId(), 'Remover', $diff);
+    //                }
+    //
+    //                return $result;
+    //            }
+    //        } catch (Exception $e) {
+    //            Log::error("Erro ao remover: " . $e->getMessage());
+    //            return self::getErrorByConfig($e->getMessage());
+    //        }
+    //    }
 
     /**
      * Ira aplicar a condição a chave "is_alive" para a entidade, caso esta condição exista
@@ -243,11 +242,11 @@ class EntityManager {
             }
         }
         $out = (object) [
-                    'exists' => $methodExists,
-                    'get' => $isAliveMethod,
-                    'set' => 'setIsAlive' . get_class($this->object),
-                    'field' => 'is_alive_' . get_class($this->object),
-                    'fieldNome' => 'nome_' . get_class($this->object)
+            'exists' => $methodExists,
+            'get' => $isAliveMethod,
+            'set' => 'setIsAlive' . get_class($this->object),
+            'field' => 'is_alive_' . get_class($this->object),
+            'fieldNome' => 'nome_' . get_class($this->object)
         ];
         if (method_exists($this->object, 'getNome' . get_class($this->object))) {
             $out->fieldName = 'nome_' . get_class($this->object);
@@ -260,24 +259,22 @@ class EntityManager {
             $alive = $this->setCondicaoIsAlive();
             if ($alive->exists) {
                 $query = "UPDATE "
-                        . $this->object->getTable()
-                        . " SET " . $alive->field . "= 'false'"
-                        . (($alive->fieldNome) ? ", $alive->fieldNome= $alive->fieldNome || ' (Removido)'" : "")
-                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
-                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId())
-                ;
+                    . $this->object->getTable()
+                    . " SET " . $alive->field . "= 'false'"
+                    . (($alive->fieldNome) ? ", $alive->fieldNome= $alive->fieldNome || ' (Removido)'" : "")
+                    . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
+                    . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId());
             } else {
                 $query = "DELETE FROM "
-                        . $this->object->getTable()
-                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
-                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId())
-                ;
+                    . $this->object->getTable()
+                    . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
+                    . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId());
             }
             # ------------------------------------------------------------------------
 
             $this->con->executeQuery($query);
             $res = $this->con->next();
-            $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())] > 0;
+            $result = (bool) $res[Helper::reverteName2CamelCase($this->object->getCpoId())] > 0;
             return $result;
         } catch (Exception $e) {
             return $e->getMessage();
@@ -328,8 +325,8 @@ class EntityManager {
         // select extra, definido ou não
         if ($this->countUploadfile) {
             $select[] = '(select count(id_uploadfile) from app_uploadfile '
-                    . 'where entidade_uploadfile= \'' . Helper::upper($tabelaPrincipal) . '\' '
-                    . 'and valorid_uploadfile= ' . $tabelaPrincipal . '.id_' . $tabelaPrincipal . ') as countuploadfile';
+                . 'where entidade_uploadfile= \'' . Helper::upper($tabelaPrincipal) . '\' '
+                . 'and valorid_uploadfile= ' . $tabelaPrincipal . '.id_' . $tabelaPrincipal . ') as countuploadfile';
             $this->countUploadfile = false;
         }
 
@@ -344,8 +341,8 @@ class EntityManager {
 
         // relacionamentos        
         $select[] = $this->object->getTable() . '.*'
-                . (($this->selectExtra) ? ', (' . $this->selectExtra . ') as selectExtra' : '')
-                . (($this->selectExtraB) ? ', (' . $this->selectExtraB . ') as selectExtraB' : '');
+            . (($this->selectExtra) ? ', (' . $this->selectExtra . ') as selectExtra' : '')
+            . (($this->selectExtraB) ? ', (' . $this->selectExtraB . ') as selectExtraB' : '');
         $innerJoin = array();
         $relacoes = array();
         if ($getRelacoes && method_exists(get_class($this->object), 'getRelacionamentos')) {
@@ -363,7 +360,7 @@ class EntityManager {
 
         $limitCleaned = (($limit > 0) ? (int) $limit : 'null');
         $query .= $condicao
-                . " ORDER BY " . $order . " LIMIT " . $limitCleaned . " OFFSET " . $inicio * $limit;
+            . " ORDER BY " . $order . " LIMIT " . $limitCleaned . " OFFSET " . $inicio * $limit;
 
         $this->query = $query;
 
@@ -376,7 +373,7 @@ class EntityManager {
         $con = Connection::getConnection();
         $nsEnt = new $objetoAtual();
         while ($dd = $this->con->next()) {
-            $entitie = clone($nsEnt);
+            $entitie = clone ($nsEnt);
             $entitie->populate($dd);
             //new $objetoAtual($dd);
             // relacionamnetos
@@ -386,24 +383,30 @@ class EntityManager {
                     $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
                     $$entidade = new $namespace();
                 }
-                $newEntitie = clone($$entidade);
+                $newEntitie = clone ($$entidade);
                 $newEntitie->populate($dd);
+
                 // especifico para municipio, mostrar a UF. 3 nivel de relacionamento
                 if ($entidade === 'Municipio' && (int) $dd['id_uf'] > 0) {
-                    //$con = Connection::getConnection();
                     $con->executeQuery('select * from app_uf where id_uf= ' . $dd['id_uf']);
                     $uf = new Uf($con->next());
                     $newEntitie->setUf($uf);
                 }
+
                 // Especifico para Pessoa, mostrar o avatar
-                if ($entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
-                    //$con = Connection::getConnection();
+                if (class_exists('Uploadfile') && $entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
                     $con->executeQuery('select * from app_uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
                     $up = new Uploadfile($con->next());
                     $newEntitie->setUploadfile($up);
                 }
+
+                // Caso a adição de relacionamento tenha sido feito manualmente, apenas setar o valor da propriedade
                 $set = 'set' . $entidade;
-                $entitie->$set($newEntitie);
+                if (method_exists($entitie, $set)) {
+                    $entitie->$set($newEntitie);
+                } else {
+                    $entitie->$entidade = $newEntitie;
+                }
             }
             // contador de arquivos em uploadfile
             $entitie->countUploadfile = (int) ((isset($dd['countuploadfile'])) ? $dd['countuploadfile'] : 0);
@@ -439,10 +442,24 @@ class EntityManager {
         }
         foreach ($condicao as $key => $val) {
             $key = explode('_', $key)[0];
+            
             // tratamento da key: caso não venha palavras, tratar com revertCamelCase
             $unaccent = ((stripos($key, 'unaccent') === false) ? false : 'unaccent');
-            $upper = ((stripos($key, 'upper') === false) ? false : 'upper');
+
+            switch (true) {
+                case stripos($key, 'upper') !== false:
+                    $upper = 'upper';
+                    break;
+                case stripos($key, 'lower') !== false:
+                    $upper = 'lower';
+                    break;
+                default:
+                    $upper = false;
+                    break;
+            }
+
             $entidadeDefinida = ((stripos($key, '.') === false) ? false : 'upper');
+
             $f = '%s'; // funcao a ser aplicada na var
             if (!$unaccent && !$upper && !$entidadeDefinida) { // se não vier funcao nenhuma, apenas manter o padrão
                 $key = $tabelaPrincipal . '.' . Helper::reverteName2CamelCase($key);
@@ -453,7 +470,9 @@ class EntityManager {
                 $field = str_replace(')', '', $fn[count($fn) - 1]);
                 $key = str_replace($field, Helper::reverteName2CamelCase($field), $key);
                 unset($fn[count($fn) - 1]);
+
                 // funcoes enviadas em key
+                $abre = $fecha = '';
                 foreach ($fn as $value) {
                     $fecha .= ')';
                     $abre .= $value . '(';
@@ -516,8 +535,7 @@ class EntityManager {
     public function count($condicao) {
         $tabela = $this->object->getTable();
         $query = 'select count(' . Helper::reverteName2CamelCase($this->object->getCpoId()) . ') as qtde '
-                . ' from ' . $tabela . ' ' . $this->trataCondicao($condicao, $tabela);
+            . ' from ' . $tabela . ' ' . $this->trataCondicao($condicao, $tabela);
         return (int) $this->execQueryAndReturn($query)[0]['qtde'];
     }
-
 }

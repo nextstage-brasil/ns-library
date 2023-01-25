@@ -32,6 +32,12 @@ class ModelSetterDefault {
             throw new Exception("Entities Create: Invalid Template Type: " . $type);
         }
         return  '
+        /**
+         * Setter to %nome%
+         *
+         * @param ' . $type . ' $content
+         * @return self
+         */    
         public function set%nomeFunction%($content) : self {
             ModelSetterDefault::' . $fn . '(
                 $content,
@@ -46,6 +52,11 @@ class ModelSetterDefault {
             return $this;
         }
     
+        /**
+         * Getter to %nome%
+         *
+         * @return ' . $type . '
+         */
         public function get%nomeFunction%() {
             return $this->%nome%;
         }
@@ -85,7 +96,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
@@ -109,7 +120,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
         if (!is_array($content) && !is_object($content)) {
@@ -135,7 +146,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
         if (is_array($content)) {
@@ -155,7 +166,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
@@ -181,7 +192,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
@@ -207,7 +218,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
@@ -236,7 +247,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
@@ -265,7 +276,7 @@ class ModelSetterDefault {
         string $comentError,
         int $maxsize,
         array &$error,
-        string $type, 
+        string $type,
         bool $notNull = false
     ): void {
 
