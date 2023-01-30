@@ -127,7 +127,7 @@ class ModelSetterDefault {
             $content = json_decode((string) $content, true);
         }
         $content = json_encode(
-            str_replace('&#34;', '\u0022', $content),
+            str_replace('&#34;', '\u0022', (string) $content),
             JSON_HEX_QUOT | JSON_HEX_APOS
         );
 
