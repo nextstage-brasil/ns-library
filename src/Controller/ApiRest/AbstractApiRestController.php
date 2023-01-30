@@ -79,7 +79,7 @@ abstract class AbstractApiRestController extends ControllerDefault {
             default: // post por enquanto
                 $this->error = ['error' => '', 'code' => Api::HTTP_NOT_IMPLEMENTED];
         }
-        $this->dados['id' . $this->type] = $this->dados['id'];
+        $this->dados['id' . $this->type] = ($this->dados['id'] ?? null);
     }
 
     function response(array $response, int $code = 200): void {
@@ -94,11 +94,10 @@ abstract class AbstractApiRestController extends ControllerDefault {
             'content' => $response,
             'error' => $response['error'] ?? false,
             'pagination' => $pagination
-                ], $code);
+        ], $code);
     }
 
     function errorResponse(string $message, int $code = Api::HTTP_BAD_REQUEST): void {
         $this->response(['error' => $message], $code);
     }
-
 }
