@@ -123,12 +123,17 @@ class ModelSetterDefault {
         string $type,
         bool $notNull = false
     ): void {
+        $content ??= [];
         if (!is_array($content) && !is_object($content)) {
             $content = json_decode((string) $content, true);
         }
-        $content = json_encode(
-            str_replace('&#34;', '\u0022', (string) $content),
-            JSON_HEX_QUOT | JSON_HEX_APOS
+        $content = str_replace(
+            '&#34;',
+            '\u0022',
+            (string) json_encode(
+                $content,
+                JSON_HEX_QUOT | JSON_HEX_APOS
+            )
         );
 
         if ($notNull && (null === $content  || json_last_error() > 0)) {
