@@ -2,12 +2,12 @@
 
 namespace NsLibrary\Controller;
 
+use Exception;
+use NsUtil\Log;
+use NsUtil\Helper;
+use ReflectionClass;
 use NsLibrary\Config;
 use NsLibrary\Connection;
-use NsUtil\Helper;
-use NsUtil\Log;
-use ReflectionClass;
-use Swoole\MySQL\Exception;
 
 /**
  * Description of EntityManager
@@ -184,7 +184,7 @@ class EntityManager {
      */
     private function auditoria() {
         if (array_search(get_class($this->object), ['ApiLog']) === false) {
-            $app = new AppController();
+            $app = new Controller();
             $new = $app->objectToArray($this->object);
             if ($this->object->getId() > 0) {
                 $tipo = 'update';
@@ -195,42 +195,28 @@ class EntityManager {
                 $old = [];
             }
             $diff = Helper::arrayDiff($new, $old);
-            Log::auditoria(get_class($this->object), $tipo, $diff, $this->object->getId());
-            //Log::log('auditoria', $tipo, $this->object->getId(), get_class($this->object), $diff);
+            $file = Helper::getPathApp() . '/_NSUtilLogs/auditoria.log';
+            Log::logTxt(
+                'auditoria',
+                json_encode([
+                    'entity' => get_class($this->object),
+                    'id' => $this->object->getId(),
+                    'type' => $tipo,
+                    'diff' => $diff,
+                ])
+            );
         }
     }
 
-    //    public function remove($audit = true) {
-    //        try {
-    //            $app = new AppLibraryController();
-    //            $oldObject = $this->getById($this->object->getId(), false);
-    //            $diff['removed'] = $app->objectToArray($oldObject);
-    //            $diff[$this->object->getCpoId()] = $this->object->getId();
-    //            if ($diff['removed'][$this->object->getCpoId()] > 0) {
-    //                $this->con->executeQuery("DELETE FROM "
-    //                        . $this->object->getTable()
-    //                        . " WHERE " . Helper::reverteName2CamelCase($this->object->getCpoId()) . "= " . $this->object->getId()
-    //                        . " RETURNING " . Helper::reverteName2CamelCase($this->object->getCpoId()));
-    //                $res = $this->con->next();
-    //                $result = (boolean) $res[Helper::reverteName2CamelCase($this->object->getCpoId())];
-    //                if ($audit) {
-    //                    Log::auditoria(get_class($this->object), 'Remover', $diff);
-    //                    //TlController::addFromAuditoria(get_class($this->object), $this->object->getId(), 'Remover', $diff);
-    //                }
-    //
-    //                return $result;
-    //            }
-    //        } catch (Exception $e) {
-    //            Log::error("Erro ao remover: " . $e->getMessage());
-    //            return self::getErrorByConfig($e->getMessage());
-    //        }
-    //    }
+
 
     /**
      * Ira aplicar a condição a chave "is_alive" para a entidade, caso esta condição exista
-     * @param type $condicao
+     *
+     * @param array $condicao
+     * @return object
      */
-    public function setCondicaoIsAlive(&$condicao = []) {
+    public function setCondicaoIsAlive(&$condicao = []): object {
         // Tratamento da condição is_alive
         $isAliveMethod = 'getIsAlive' . get_class($this->object);
         $methodExists = method_exists($this->object, $isAliveMethod);
@@ -325,7 +311,7 @@ class EntityManager {
         // select extra, definido ou não
         if ($this->countUploadfile) {
             $select[] = '(select count(id_uploadfile) from app_uploadfile '
-                . 'where entidade_uploadfile= \'' . Helper::upper($tabelaPrincipal) . '\' '
+                . 'where entidade_uploadfile= \'' . mb_strtoupper($tabelaPrincipal) . '\' '
                 . 'and valorid_uploadfile= ' . $tabelaPrincipal . '.id_' . $tabelaPrincipal . ') as countuploadfile';
             $this->countUploadfile = false;
         }
@@ -380,25 +366,25 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
                 if (!$$entidade) {
-                    $namespace = Config::getData('psr4Name') . '\\nsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
+                    $namespace = Config::getData('psr4Name') . '\\NsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
                     $$entidade = new $namespace();
                 }
                 $newEntitie = clone ($$entidade);
                 $newEntitie->populate($dd);
 
-                // especifico para municipio, mostrar a UF. 3 nivel de relacionamento
-                if ($entidade === 'Municipio' && (int) $dd['id_uf'] > 0) {
-                    $con->executeQuery('select * from app_uf where id_uf= ' . $dd['id_uf']);
-                    $uf = new Uf($con->next());
-                    $newEntitie->setUf($uf);
-                }
+                // // especifico para municipio, mostrar a UF. 3 nivel de relacionamento
+                // if ($entidade === 'Municipio' && (int) $dd['id_uf'] > 0) {
+                //     $con->executeQuery('select * from app_uf where id_uf= ' . $dd['id_uf']);
+                //     $uf = new Uf($con->next());
+                //     $newEntitie->setUf($uf);
+                // }
 
-                // Especifico para Pessoa, mostrar o avatar
-                if (class_exists('Uploadfile') && $entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
-                    $con->executeQuery('select * from app_uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
-                    $up = new Uploadfile($con->next());
-                    $newEntitie->setUploadfile($up);
-                }
+                // // Especifico para Pessoa, mostrar o avatar
+                // if (class_exists('Uploadfile') && $entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
+                //     $con->executeQuery('select * from app_uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
+                //     $up = new Uploadfile($con->next());
+                //     $newEntitie->setUploadfile($up);
+                // }
 
                 // Caso a adição de relacionamento tenha sido feito manualmente, apenas setar o valor da propriedade
                 $set = 'set' . $entidade;
@@ -442,7 +428,7 @@ class EntityManager {
         }
         foreach ($condicao as $key => $val) {
             $key = explode('_', $key)[0];
-            
+
             // tratamento da key: caso não venha palavras, tratar com revertCamelCase
             $unaccent = ((stripos($key, 'unaccent') === false) ? false : 'unaccent');
 

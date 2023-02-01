@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.253.3",
+            "version": "3.258.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "7e66338fc6aedd5fa53b268ee30d8f6e4a568147"
+                "reference": "96ed88ca45e54f74a158002411966a92891e8ead"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7e66338fc6aedd5fa53b268ee30d8f6e4a568147",
-                "reference": "7e66338fc6aedd5fa53b268ee30d8f6e4a568147",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/96ed88ca45e54f74a158002411966a92891e8ead",
+                "reference": "96ed88ca45e54f74a158002411966a92891e8ead",
                 "shasum": ""
             },
             "require": {
@@ -146,9 +146,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.253.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.258.0"
             },
-            "time": "2022-12-15T19:26:05+00:00"
+            "time": "2023-01-31T19:33:16+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -461,16 +461,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v1.2.2",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "47afb7fae28ed29057fdca37e16a84f90cc62fae"
+                "reference": "f23fe9d4e95255dacee1bf3525e0810d1a1b0f37"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/47afb7fae28ed29057fdca37e16a84f90cc62fae",
-                "reference": "47afb7fae28ed29057fdca37e16a84f90cc62fae",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/f23fe9d4e95255dacee1bf3525e0810d1a1b0f37",
+                "reference": "f23fe9d4e95255dacee1bf3525e0810d1a1b0f37",
                 "shasum": ""
             },
             "require": {
@@ -517,7 +517,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2022-09-08T13:45:54+00:00"
+            "time": "2023-01-30T18:31:20+00:00"
         },
         {
             "name": "league/flysystem",
@@ -870,16 +870,16 @@
         },
         {
             "name": "nextstage-brasil/ns-util",
-            "version": "1.39.1",
+            "version": "1.45.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextstage-brasil/ns-util.git",
-                "reference": "357189b79b6fc80f345f576720b476045f5c4dab"
+                "reference": "ffa668d5713ae7236a8edea25cc5ca1d1168780d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/357189b79b6fc80f345f576720b476045f5c4dab",
-                "reference": "357189b79b6fc80f345f576720b476045f5c4dab",
+                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/ffa668d5713ae7236a8edea25cc5ca1d1168780d",
+                "reference": "ffa668d5713ae7236a8edea25cc5ca1d1168780d",
                 "shasum": ""
             },
             "require": {
@@ -915,9 +915,9 @@
             "description": "Metodos e classes de utilidades diversas",
             "support": {
                 "issues": "https://github.com/nextstage-brasil/ns-util/issues",
-                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.39.1"
+                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.45.1"
             },
-            "time": "2022-12-09T10:42:04+00:00"
+            "time": "2023-02-01T08:01:42+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -1443,16 +1443,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v5.4.11",
+            "version": "v5.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "7872a66f57caffa2916a584db1aa7f12adc76f8c"
+                "reference": "6071aebf810ad13fe8200c224f36103abb37cf1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/7872a66f57caffa2916a584db1aa7f12adc76f8c",
-                "reference": "7872a66f57caffa2916a584db1aa7f12adc76f8c",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/6071aebf810ad13fe8200c224f36103abb37cf1f",
+                "reference": "6071aebf810ad13fe8200c224f36103abb37cf1f",
                 "shasum": ""
             },
             "require": {
@@ -1486,7 +1486,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v5.4.11"
+                "source": "https://github.com/symfony/finder/tree/v5.4.19"
             },
             "funding": [
                 {
@@ -1502,7 +1502,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-29T07:37:50+00:00"
+            "time": "2023-01-14T19:14:44+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -1919,16 +1919,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v5.4.11",
+            "version": "v5.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "6e75fe6874cbc7e4773d049616ab450eff537bf1"
+                "reference": "c5ba874c9b636dbccf761e22ce750e88ec3f55e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/6e75fe6874cbc7e4773d049616ab450eff537bf1",
-                "reference": "6e75fe6874cbc7e4773d049616ab450eff537bf1",
+                "url": "https://api.github.com/repos/symfony/process/zipball/c5ba874c9b636dbccf761e22ce750e88ec3f55e1",
+                "reference": "c5ba874c9b636dbccf761e22ce750e88ec3f55e1",
                 "shasum": ""
             },
             "require": {
@@ -1961,7 +1961,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v5.4.11"
+                "source": "https://github.com/symfony/process/tree/v5.4.19"
             },
             "funding": [
                 {
@@ -1977,7 +1977,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-27T16:58:25+00:00"
+            "time": "2023-01-01T08:32:19+00:00"
         }
     ],
     "packages-dev": [],
