@@ -62,19 +62,32 @@ class SistemaLibrary {
 
     public static function initByConfig(array $SistemaConfig) {
         $config = ((!isset($SistemaConfig['database'])) ?
-                [
-            'host' => $SistemaConfig['DBHOST'], 
-            'user' => $SistemaConfig['DBUSER'], 
-            'pass' => $SistemaConfig['DBPASS'], 
-            'port' => $SistemaConfig['DBPORT'], 
-            'dbname' => $SistemaConfig['DBNAME'], 
-            'type' => $SistemaConfig['DBTYPE'], 
-                ] : $SistemaConfig['database']
-                );
+            [
+                'host' => $SistemaConfig['DBHOST'],
+                'user' => $SistemaConfig['DBUSER'],
+                'pass' => $SistemaConfig['DBPASS'],
+                'port' => $SistemaConfig['DBPORT'],
+                'dbname' => $SistemaConfig['DBNAME'],
+                'type' => $SistemaConfig['DBTYPE'],
+            ] : $SistemaConfig['database']
+        );
         $config['type'] = ((!isset($config['type'])) ? 'postgres' : $config['type']);
 
         return self::init($config['host'], $config['user'], $config['pass'], $config['dbname'], $config['port'], $SistemaConfig['psr4Name'], $SistemaConfig);
     }
+
+    public static function initByEnv(array $extrasConfig = []) {
+        return self::init(
+            getenv('DBHOST'),
+            getenv('DBUSER'),
+            getenv('DBPASS'),
+            getenv('DBNAME'),
+            getenv('DBPORT'),
+            Helper::getPsr4Name(),
+            $extrasConfig
+        );
+    }
+
 
     public static function isStarted(): bool {
         return self::$library == null;
@@ -116,10 +129,10 @@ class SistemaLibrary {
 
     public final static function setSecurity(int $errorReporting = 0, $maxUploadfile = '10M', $strictMode = 1, $cookieSecure = 1, $cookieHttpOnly = 1): void {
         foreach ([
-    'session.use_strict_mode' => $strictMode,
-    'session.cookie_secure' => $cookieSecure,
-    'session.cookie_httponly' => $cookieHttpOnly,
-    'upload_max_filesize' => $maxUploadfile,
+            'session.use_strict_mode' => $strictMode,
+            'session.cookie_secure' => $cookieSecure,
+            'session.cookie_httponly' => $cookieHttpOnly,
+            'upload_max_filesize' => $maxUploadfile,
         ] as $key => $value) {
             ini_set($key, $value);
         }
@@ -179,5 +192,4 @@ class SistemaLibrary {
         }
         return [$resource, $method, $namespace];
     }
-
 }

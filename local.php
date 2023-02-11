@@ -7,7 +7,7 @@ $pathDefault = realpath(__DIR__ . '/../');
 $pathWSL = realpath('Z:\home\cristofer\apps');
 $LOCAL_PROJECTS = [
     $pathWSL . '/nextstage/trilhasbr-backend',
-    $pathWSL . '/5labs/cnpj',
+    // $pathWSL . '/5labs/cnpj',
     // $pathDefault . '/syncpay-backend-v2',
     // $pathWSL . '/nextstage/gitlab-integration'
 ];

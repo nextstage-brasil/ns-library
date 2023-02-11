@@ -23,7 +23,9 @@ class ModelSetterDefault {
         'date' => 'date',
         'double' => 'double',
         'decimal' => 'double',
-        'int' => 'int'
+        'int' => 'int', 
+        'tsvector' => 'string', 
+        'html' => 'html'
     ];
 
     public static function getTemplate($type) {
@@ -87,6 +89,30 @@ class ModelSetterDefault {
                 return $this->%nome%;
             }
         ';
+    }
+
+    public static function setHTML(
+        $content,
+        &$varToSet,
+        string $fieldName,
+        string $comentError,
+        int $maxsize,
+        array &$error,
+        string $type,
+        bool $notNull = false
+    ): void {
+
+        $content =  Helper::getValByType(
+            is_array($content) ? $content[$fieldName] : $content,
+            'html'
+        );
+
+        if ($notNull && strlen((string)$content) <= 0) {
+            $error[$fieldName] = $comentError;
+        } else {
+            unset($error[$fieldName]);
+            $varToSet = (string) mb_substr((string)$content, 0, $maxsize);
+        }
     }
 
     public static function setString(

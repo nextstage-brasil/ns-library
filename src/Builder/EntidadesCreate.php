@@ -20,7 +20,7 @@ class EntidadesCreate {
             . $entidade
             . '.php';
         Helper::saveFile($file, false, $template, 'SOBREPOR');
-        return true;
+        return $file;
     }
 
     public static function get($dados) {
@@ -43,7 +43,9 @@ private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
 private $table = "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '";
 private $cpoId = "' . $dados['cpoID'] . '";
 private $dao = null;
-private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
+private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];
+public $selectExtra = null;
+';
 
         // caso já exista um campo chamado ID, o setId e getId deve ser removido
         $getSetDefault = self::$getterSetterPadrao;
@@ -76,33 +78,42 @@ private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];';
 
             $val['upper'] = ''; /// retirei pois o upper deixa o layout horrivel
             $val['USER'] = ((Helper::compareString('idusuario', $val['nome']) && !Helper::compareString('usuario', $dados['tabela'])) ? '$idUsuario = (($idUsuario) ? $idUsuario : $_SESSION[\'user\'][\'id_pessoa\']);' : ''); // protegendo para que todos aparceeam clean, somente user
-            switch ($val['tipo']) {
-                case 'OBJECT':
-                    $template = ModelSetterDefault::getTemplateObject();
-                    $val['nome'] = ucwords($val['nome']);
-                    $val['valorPadrao'] = '$dd';
-                    break;
-                case 'EXTERNA':
-                    $template = ModelSetterDefault::getTemplateExterna();
-                    $val['nome'] = mb_substr((string) $val['nome'], 2);
-                    $val['nomeFunction'] = ucwords($val['nome']);
-                    $val['valorPadrao'] = '$dd';
-                    break;
-                case 'string':
-                case 'text':
-                case 'json':
-                case 'jsonb':
-                case 'boolean':
-                case 'timestamp':
-                case 'datetime':
-                case 'date':
-                case 'double':
-                case 'int':
-                    $template = ModelSetterDefault::getTemplate($val['tipo']);
-                    break;
-                default:
-                    $template = ModelSetterDefault::getTemplate('default');
+
+            // Tratamento especifico para campos tipo HTML:
+            if (stripos($val['column_name'], '_html_') !== false) {
+                $template = ModelSetterDefault::getTemplate('html');
+            } else {
+
+                switch ($val['tipo']) {
+                    case 'OBJECT':
+                        $template = ModelSetterDefault::getTemplateObject();
+                        $val['nome'] = ucwords($val['nome']);
+                        $val['valorPadrao'] = '$dd';
+                        break;
+                    case 'EXTERNA':
+                        $template = ModelSetterDefault::getTemplateExterna();
+                        $val['nome'] = mb_substr((string) $val['nome'], 2);
+                        $val['nomeFunction'] = ucwords($val['nome']);
+                        $val['valorPadrao'] = '$dd';
+                        break;
+                    case 'string':
+                    case 'text':
+                    case 'json':
+                    case 'jsonb':
+                    case 'boolean':
+                    case 'timestamp':
+                    case 'datetime':
+                    case 'date':
+                    case 'double':
+                    case 'int':
+                    case 'tsvector':
+                        $template = ModelSetterDefault::getTemplate($val['tipo']);
+                        break;
+                    default:
+                        $template = ModelSetterDefault::getTemplate('NOT_IMPLEMENTED: ' . $val['tipo']);
+                }
             }
+
 
             $val['notnull'] = (($val['notnull'] === true) ? "true" : "false");
 
