@@ -12,24 +12,26 @@ use NsUtil\Helper;
  */
 class ModelSetterDefault {
     private static $config = [
-        'string' => 'string',
-        'text' => 'string',
-        'json' => 'json',
-        'jsonb' => 'json',
-        'bool' => 'bool',
-        'boolean' => 'bool',
-        'timestamp' => 'datetime',
-        'datetime' => 'datetime',
-        'date' => 'date',
-        'double' => 'double',
-        'decimal' => 'double',
-        'int' => 'int', 
-        'tsvector' => 'string', 
-        'html' => 'html'
+        'string' => ['string', 'string', 'string'],
+        'text' => ['string', 'string', 'string'],
+        'json' => ['json', 'string|array|object', 'string'],
+        'jsonb' => ['json', 'string|array|object', 'string'],
+        'bool' => ['bool', 'bool', 'bool'],
+        'boolean' => ['bool', 'bool', 'bool'],
+        'timestamp' => ['datetime', 'string', 'string'],
+        'datetime' => ['datetime', 'string', 'string'],
+        'date' => ['date', 'string|date', 'string'],
+        'double' => ['double', 'string|float|double', 'float'],
+        'decimal' => ['double', 'string|float|double', 'float'],
+        'int' => ['int', 'string|int', 'int'],
+        'tsvector' => ['string', 'string', 'string'],
+        'html' => ['html', 'string', 'string'],
     ];
 
     public static function getTemplate($type) {
-        $fn = 'set' . ucwords((string) self::$config[$type] ?? '');
+        list($type, $entryType, $returnType) = self::$config[$type] ?? ['none', 'no-tem', 'none'];
+
+        $fn = 'set' . ucwords((string) $type ?? '');
         if (!method_exists(ModelSetterDefault::class, $fn)) {
             throw new Exception("Entities Create: Invalid Template Type: " . $type);
         }
@@ -37,7 +39,7 @@ class ModelSetterDefault {
         /**
          * Setter to %nome%
          *
-         * @param ' . $type . ' $content
+         * @param ' . $entryType . ' $content
          * @return self
          */    
         public function set%nomeFunction%($content) : self {
@@ -57,9 +59,9 @@ class ModelSetterDefault {
         /**
          * Getter to %nome%
          *
-         * @return ' . $type . '
+         * @return ' . $returnType . '
          */
-        public function get%nomeFunction%() {
+        public function get%nomeFunction%() : '.$returnType.' {
             return $this->%nome%;
         }
         ';
