@@ -259,11 +259,9 @@ class ModelSetterDefault {
         string $type,
         bool $notNull = false
     ): void {
-        $content = Helper::decimalFormat(
-            Helper::getValByType(
-                is_array($content) ? $content[$fieldName] : $content,
-                'double'
-            )
+        $content = Helper::getValByType(
+            Helper::decimalFormat(is_array($content) ? ($content[$fieldName] ?? null) : $content),
+            'double'
         );
 
         if ($notNull && strlen((string)$content) <= 0) {
@@ -290,12 +288,11 @@ class ModelSetterDefault {
         bool $notNull = false
     ): void {
 
-        $content = Helper::parseInt(
-            Helper::getValByType(
-                is_array($content) ? $content[$fieldName] : $content,
-                'int'
-            )
+        $content = Helper::getValByType(
+            Helper::parseInt(is_array($content) ? ($content[$fieldName] ?? null) : $content),
+            'int'
         );
+
 
         if ($notNull && strlen((string)$content) <= 0) {
             $error[$fieldName] = $comentError;
