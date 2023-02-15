@@ -366,25 +366,15 @@ class EntityManager {
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
                 if (!$$entidade) {
-                    $namespace = Config::getData('psr4Name') . '\\NsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
-                    $$entidade = new $namespace();
+                    if (class_exists($entidade)) {
+                        $$entidade = new $entidade();
+                    } else {
+                        $namespace = Config::getData('psr4Name') . '\\NsLibrary\\Entities\\' . (($relacao['schema'] === 'public') ? '' : ucwords($relacao['schema']) . '\\') . $entidade;
+                        $$entidade = new $namespace();
+                    }
                 }
                 $newEntitie = clone ($$entidade);
                 $newEntitie->populate($dd);
-
-                // // especifico para municipio, mostrar a UF. 3 nivel de relacionamento
-                // if ($entidade === 'Municipio' && (int) $dd['id_uf'] > 0) {
-                //     $con->executeQuery('select * from app_uf where id_uf= ' . $dd['id_uf']);
-                //     $uf = new Uf($con->next());
-                //     $newEntitie->setUf($uf);
-                // }
-
-                // // Especifico para Pessoa, mostrar o avatar
-                // if (class_exists('Uploadfile') && $entidade === 'Pessoa' && (int) $dd['idUploadfile'] > 0) {
-                //     $con->executeQuery('select * from app_uploadfile where id_uploadfile= ' . $dd['idUploadfile']);
-                //     $up = new Uploadfile($con->next());
-                //     $newEntitie->setUploadfile($up);
-                // }
 
                 // Caso a adição de relacionamento tenha sido feito manualmente, apenas setar o valor da propriedade
                 $set = 'set' . $entidade;
