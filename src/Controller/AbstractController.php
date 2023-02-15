@@ -23,13 +23,10 @@ abstract class AbstractController {
 
 
     public function save(&$dados) {
-        Helper::jsonRecebeFromView($dados, $this->camposJson);
-        $dao = new EntityManager();
-
+        // Helper::jsonRecebeFromView($dados, $this->camposJson);
         $this->setIds($dados);
-
         $ent = new $this->ent($dados);
-        $dao->setObject($ent);
+        $dao = new EntityManager($ent);
         if ($ent->getId()) {
             $actual = $dao->setObject($ent)->getById($ent->getId());
             if ($actual instanceof $this->ent) {
@@ -119,7 +116,10 @@ abstract class AbstractController {
             // se existir, apenas sinalizar tupla como isAlive = false
             $ent = $dao->getById($id);
             if (!($ent instanceof $this->ent)) {
-                Log::error('Registro não localizado para setar isAlive=false', ['entidade' => $this->ent, 'id' => $id]);
+                Log::logTxt(
+                    '/tmp/error-nslibrary.log',
+                    'Registro não localizado para setar isAlive=false' . json_encode(['entidade' => $this->ent, 'id' => $id])
+                );
                 return ['error' => false];
             }
             $ent->$fn('false');
@@ -192,7 +192,7 @@ abstract class AbstractController {
             foreach ($reflectionClass->getProperties() as $property) {
                 $property->setAccessible(true);
                 // campo nao permitido, tabela logs, e detalhes
-                if ((int) array_search($property->getName(), ['', 'table', 'relacoes', 'cpoId', 'senha', 'password', 'dao', 'fts']) > 0) {
+                if ((int) array_search($property->getName(), ['', 'table', 'relacoes', 'cpoId', 'senha', 'password', 'dao', 'fts', 'selectExtra']) > 0) {
                     continue;
                 }
 
@@ -390,5 +390,4 @@ abstract class AbstractController {
     public function getObject() {
         return $this->object;
     }
-
 }

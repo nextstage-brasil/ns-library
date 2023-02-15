@@ -3,6 +3,7 @@
 namespace NsLibrary\Controller;
 
 use Exception;
+use NsUtil\Format;
 use NsUtil\Helper;
 
 /**
@@ -61,7 +62,7 @@ class ModelSetterDefault {
          *
          * @return ' . $returnType . '
          */
-        public function get%nomeFunction%() : '.$returnType.' {
+        public function get%nomeFunction%() : ' . $returnType . ' {
             return $this->%nome%;
         }
         ';
@@ -203,9 +204,11 @@ class ModelSetterDefault {
         bool $notNull = false
     ): void {
 
-        $content = Helper::getValByType($content, 'string');
+        $content = (new Format(
+            Helper::getValByType($content, 'string')
+        ))->date('arrumar', true, false);
 
-        if ($notNull && strlen((string)$content) <= 8) {
+        if ($notNull && strlen((string)$content) <= 12) {
             $error[$fieldName] = $comentError;
         } else {
             unset($error[$fieldName]);
@@ -229,7 +232,9 @@ class ModelSetterDefault {
         bool $notNull = false
     ): void {
 
-        $content = Helper::getValByType($content, 'string');
+        $content = (new Format(
+            Helper::getValByType($content, 'string')
+        ))->date('arrumar', false, false);
 
         if ($notNull && strlen((string)$content) < 8) {
             $error[$fieldName] = $comentError;
@@ -254,10 +259,11 @@ class ModelSetterDefault {
         string $type,
         bool $notNull = false
     ): void {
-
-        $content =  Helper::getValByType(
-            is_array($content) ? $content[$fieldName] : $content,
-            'double'
+        $content = Helper::decimalFormat(
+            Helper::getValByType(
+                is_array($content) ? $content[$fieldName] : $content,
+                'double'
+            )
         );
 
         if ($notNull && strlen((string)$content) <= 0) {
@@ -284,9 +290,11 @@ class ModelSetterDefault {
         bool $notNull = false
     ): void {
 
-        $content =  Helper::getValByType(
-            is_array($content) ? $content[$fieldName] : $content,
-            'int'
+        $content = Helper::parseInt(
+            Helper::getValByType(
+                is_array($content) ? $content[$fieldName] : $content,
+                'int'
+            )
         );
 
         if ($notNull && strlen((string)$content) <= 0) {
