@@ -62,7 +62,7 @@ class ModelSetterDefault {
          *
          * @return ' . $returnType . '
          */
-        public function get%nomeFunction%() : ' . $returnType . ' {
+        public function get%nomeFunction%() : ?' . $returnType . ' {
             return $this->%nome%;
         }
         ';
