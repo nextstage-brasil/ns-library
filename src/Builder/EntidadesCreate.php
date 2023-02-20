@@ -148,6 +148,11 @@ public function __destruct() {
     }
 }
 
+/**
+ *
+ * @param int $code
+ * @return void
+ */
 public function responseIfHasError($code = 200) {
     if ($this->getError() !== false) {
         \NsUtil\Api::result($code, [\'error\' => $this->getError()]);
@@ -157,7 +162,7 @@ public function responseIfHasError($code = 200) {
 /**
  * Define o schema do objeto
  *
- * @param [type] $schema
+ * @param string $schema
  * @return void
  */
     public function setSchema($schema) {
