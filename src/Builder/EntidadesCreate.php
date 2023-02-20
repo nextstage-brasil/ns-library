@@ -212,7 +212,8 @@ public function list(array $filters=[], int $page=0, int $limit=1000, $order=fal
  */
 public function save($onConflict = "") : self {
     $this->setDao();
-    $updateName = \'setUpdatedAt\' . array_pop(explode(\'\\\\\', get_class($this)));
+    $parts = explode(\'\\\\\', get_class($this));
+    $updateName = \'setUpdatedAt\' . array_pop($parts);
     if (method_exists($this, $updateName))   {
         $this->$updateName(\'NOW\');
     }
