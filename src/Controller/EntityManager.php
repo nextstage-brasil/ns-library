@@ -365,7 +365,7 @@ class EntityManager {
             // relacionamnetos
             foreach ($relacoes as $relacao) {
                 $entidade = ucwords(Helper::name2CamelCase($relacao['tabela']));
-                if (!$$entidade) {
+                if (!isset($$entidade)) {
                     if (class_exists($entidade)) {
                         $$entidade = new $entidade();
                     } else {
