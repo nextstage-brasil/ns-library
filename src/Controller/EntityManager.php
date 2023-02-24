@@ -346,9 +346,9 @@ class EntityManager {
 
         $limitCleaned = (($limit > 0) ? (int) $limit : 'null');
         $query .= $condicao
-            . $limit > 0
-            ? " ORDER BY " . $order . " LIMIT " . (int) $limit . " OFFSET " . $inicio * $limit
-            : " ORDER BY " . $order;
+            . ($limit > 0
+                ? " ORDER BY " . $order . " LIMIT " . (int) $limit . " OFFSET " . $inicio * $limit
+                : " ORDER BY " . $order);
 
         $this->query = $query;
 
