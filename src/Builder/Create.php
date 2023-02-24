@@ -30,7 +30,7 @@ class Create {
         $schemas = implode(',', $schemasLoad);
 
         $this->querys = [
-            'listTables' => "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE schemaname in (" . $schemas . ") ORDER BY tablename",
+            'listTables' => "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE tablename <> 'spatial_ref_sys' and  schemaname in (" . $schemas . ") ORDER BY tablename",
             'getEstruturaTable' => "select * from information_schema.columns WHERE table_name= '%s' and table_schema in (" . $schemas . ")",
             'getComents' => 'SELECT pg_catalog.col_description(c.oid, a.attnum) AS column_comment FROM pg_class c LEFT JOIN pg_attribute a ON a.attrelid = c.oid LEFT JOIN information_schema.columns ws ON ws.column_name = a.attname AND ws.table_name= c.relname '
             . 'WHERE c.relname = \'%s\' AND a.attname= \'%s\' and c.relnamespace in (select oid from pg_catalog.pg_namespace where nspname in (' . $schemas . ')) ',
