@@ -185,7 +185,7 @@ public function read($id) {
         $dd = (new Controller())->objectToArray($ret);
         $this->populate($dd);
     } else {
-        $this->error = "ID not found \'$id\'";
+        $this->setError("ID not found \'$id\'");
     }
     return $this;
 }
