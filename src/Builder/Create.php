@@ -272,11 +272,13 @@ class Create {
 
             // obter nome dos atributos
             $encontrouPrimaryKey = false;
+            $aliaseTableByCpoID = str_replace('_', ' ', $tabela);
             foreach ($estrutura as $key => $detalhes) {
                 // Campo ID:
                 //                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
                 //                    $cpoID = $detalhes['column_name'];
                 //                }
+
                 $isKey = $detalhes['column_name'] === $cpoID;
 
                 // corrigir tipo do atributo para php
