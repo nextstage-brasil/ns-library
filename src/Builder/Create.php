@@ -33,7 +33,7 @@ class Create {
             'listTables' => "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE tablename <> 'spatial_ref_sys' and  schemaname in (" . $schemas . ") ORDER BY tablename",
             'getEstruturaTable' => "select * from information_schema.columns WHERE table_name= '%s' and table_schema in (" . $schemas . ")",
             'getComents' => 'SELECT pg_catalog.col_description(c.oid, a.attnum) AS column_comment FROM pg_class c LEFT JOIN pg_attribute a ON a.attrelid = c.oid LEFT JOIN information_schema.columns ws ON ws.column_name = a.attname AND ws.table_name= c.relname '
-            . 'WHERE c.relname = \'%s\' AND a.attname= \'%s\' and c.relnamespace in (select oid from pg_catalog.pg_namespace where nspname in (' . $schemas . ')) ',
+                . 'WHERE c.relname = \'%s\' AND a.attname= \'%s\' and c.relnamespace in (select oid from pg_catalog.pg_namespace where nspname in (' . $schemas . ')) ',
             'relacionamentos' => "SELECT nf.nspname as referenced_schema_name, a.attname AS column_name, clf.relname AS referenced_table_name, af.attname AS referenced_column_name   
         FROM pg_catalog.pg_attribute a   
         JOIN pg_catalog.pg_class cl ON (a.attrelid = cl.oid AND cl.relkind = 'r')
@@ -74,12 +74,12 @@ class Create {
      * @param array $controllerIgnoreEntites
      */
     public function run(
-            string $tokenCrypto = '',
-            string $appName = '',
-            string $htmlTitle = '',
-            string $adminName = '',
-            string $adminEmail = '',
-            array $controllerIgnoreEntites = []
+        string $tokenCrypto = '',
+        string $appName = '',
+        string $htmlTitle = '',
+        string $adminName = '',
+        string $adminEmail = '',
+        array $controllerIgnoreEntites = []
     ) {
         $con = Connection::getConnection();
         $this->entidadesInit();
@@ -119,7 +119,7 @@ class Create {
             'fileserver' => [
                 'StoragePrivate' => 'Local', // define em qua storage deve ser armazenado os arquivos privados. Opções: Local | FileRun | S3 | GCP
                 'StoragePublic' => 'Local', // define em qua storage deve ser armazenado os arquivos publicos (thumbs)
-                'FileRun' => [// dados do servidor de armazenamento de arquivos, para uso na API
+                'FileRun' => [ // dados do servidor de armazenamento de arquivos, para uso na API
                     'url' => '',
                     'client_id' => '',
                     'client_secret' => '',
@@ -221,8 +221,8 @@ class Create {
         $aliases = $camposDouble = [];
         if (count($tabelas) === 0) {
             echo '<div class="alert alert-danger text-center">'
-            . 'ERROR!<br/>Nenhuma tabela na base de dados'
-            . '</div>';
+                . 'ERROR!<br/>Nenhuma tabela na base de dados'
+                . '</div>';
             die();
         }
 
@@ -274,9 +274,9 @@ class Create {
             $encontrouPrimaryKey = false;
             foreach ($estrutura as $key => $detalhes) {
                 // Campo ID:
-//                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
-//                    $cpoID = $detalhes['column_name'];
-//                }
+                //                if ($detalhes['ordinal_position'] === 1 || $detalhes['column_key'] === 'PRI') {
+                //                    $cpoID = $detalhes['column_name'];
+                //                }
                 $isKey = $detalhes['column_name'] === $cpoID;
 
                 // corrigir tipo do atributo para php
@@ -312,14 +312,16 @@ class Create {
                     $extras = $con->next();
                     $c = explode('|', (string) $extras['column_comment']);
                     $detalhes['column_comment'] = $c[0];
-//                    $detalhes['hint'] = ((strlen((string)$c[1]) > 1) ? $c[1] : false);
                     $detalhes['hint'] = ((isset($c[1]) && strlen((string) $c[1]) > 1) ? $c[1] : false);
 
                     // Aliases table by cpoId
                     $aliaseTableByCpoID = '';
                     if ($isKey) {
                         $encontrouPrimaryKey = true;
-                        $aliaseTableByCpoID = ((strlen((string) $detalhes['column_comment']) > 0) ? $detalhes['column_comment'] : str_replace('_', ' ', $tabela));
+                        $aliaseTableByCpoID = (
+                            (strlen((string) $detalhes['column_comment']) > 0)
+                            ? $detalhes['column_comment'] :
+                            str_replace('_', ' ', $tabela));
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
                 }
@@ -423,6 +425,8 @@ class Create {
                 'camposJson' => str_replace("'", '', $camposJson),
             ];
             $dados = [
+                'aliaseTableByID' => $aliaseTableByCpoID, 
+                'aliaseTableByComents' => $aliaseTableByCpoID, 
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
@@ -450,7 +454,7 @@ class Create {
 
                 // Criação de controller
                 RestControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
-//                ControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
+                //                ControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
             }
 
 
@@ -491,8 +495,8 @@ class Create {
         Helper::mkdir(Config::getData('pathRestControllers'));
 
         // CONTROLLER
-//        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');
-//        Helper::mkdir(Config::getData('pathControllers'));
+        //        Config::setData('pathControllers', Config::getData('path') . '/src/NsLibrary/Controllers');
+        //        Helper::mkdir(Config::getData('pathControllers'));
     }
 
     private function viewInit() {
@@ -509,5 +513,4 @@ class Create {
         $this->quiet = true;
         return $this->data;
     }
-
 }
