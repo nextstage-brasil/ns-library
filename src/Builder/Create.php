@@ -270,6 +270,13 @@ class Create {
             $ret = $con->execQueryAndReturn(sprintf($query['getPrimaryKey'], $schemaTable));
             $cpoID = ((isset($ret[0]['attname'])) ? $ret[0]['attname'] : '');
 
+            // Aliases Table com base no comentario da tabela
+            $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)] = $con->execQueryAndReturn("
+                select obj_description((table_schema||'.'||quote_ident(table_name))::regclass) as nametable
+                from information_schema.tables where table_schema <> 'pg_catalog' and table_name= '$tabela'
+            ")[0]['nametable'];
+
+
             // obter nome dos atributos
             $encontrouPrimaryKey = false;
             $aliaseTableByCpoID = str_replace('_', ' ', $tabela);
@@ -426,8 +433,8 @@ class Create {
                 'camposJson' => str_replace("'", '', $camposJson),
             ];
             $dados = [
-                'aliaseTableByID' => $aliaseTableByCpoID,
-                'aliaseTableByComents' => $aliaseTableByCpoID,
+                'aliaseTableByID' => $CONFIG['titlePagesAliases'][mb_strtolower($entidade)],
+                'aliaseTableByComents' => $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)], 
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
