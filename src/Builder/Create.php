@@ -316,7 +316,7 @@ class Create {
 
                     // Aliases table by cpoId
                     $aliaseTableByCpoID = '';
-                    if ($isKey) {
+                    if ($isKey && !$encontrouPrimaryKey) {
                         $encontrouPrimaryKey = true;
                         $aliaseTableByCpoID = (
                             (strlen((string) $detalhes['column_comment']) > 0)
