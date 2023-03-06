@@ -318,10 +318,9 @@ class Create {
                     $aliaseTableByCpoID = '';
                     if ($isKey && !$encontrouPrimaryKey) {
                         $encontrouPrimaryKey = true;
-                        $aliaseTableByCpoID = (
-                            (strlen((string) $detalhes['column_comment']) > 0)
-                            ? $detalhes['column_comment'] :
-                            str_replace('_', ' ', $tabela));
+                        $aliaseTableByCpoID = strlen((string) $detalhes['column_comment']) > 0
+                            ? $detalhes['column_comment']
+                            : str_replace('_', ' ', $tabela);
                         $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] = $aliaseTableByCpoID;
                     }
                 }
@@ -425,8 +424,8 @@ class Create {
                 'camposJson' => str_replace("'", '', $camposJson),
             ];
             $dados = [
-                'aliaseTableByID' => $aliaseTableByCpoID, 
-                'aliaseTableByComents' => $aliaseTableByCpoID, 
+                'aliaseTableByID' => $aliaseTableByCpoID,
+                'aliaseTableByComents' => $aliaseTableByCpoID,
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
