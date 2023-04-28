@@ -7,13 +7,16 @@ use NsLibrary\Controller\ApiRest\AbstractApiRestController;
 use NsUtil\Api;
 use NsUtil\Databases\Migrations;
 
-class Version extends AbstractApiRestController {
+class Version extends AbstractApiRestController
+{
 
-    public function __construct(Api $api) {
+    public function __construct(Api $api)
+    {
         $this->init($api);
     }
 
-    public function list(): void {
+    public function list(): void
+    {
         $out = [];
         $out['app'] = Config::getData('appname');
         $out['version'] = file_get_contents(Config::getData('path') . '/version');
@@ -22,5 +25,4 @@ class Version extends AbstractApiRestController {
         }
         $this->response($out);
     }
-
 }

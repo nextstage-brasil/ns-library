@@ -20,44 +20,51 @@ if (!defined("SISTEMA_LIBRARY")) {
  * Caso seja uma ação especifica, ex.: /another, use a rota: 
  * @date 2022-10-03T00:46:08+00:00
  */
-class Usuario extends AbstractApiRestController {
+class Usuario extends AbstractApiRestController
+{
 
     private $entitieName = 'Usuario';
 
-    public function __construct(Api $api) {
+    public function __construct(Api $api)
+    {
         $this->init($api);
         $this->controllerInit(
-                $this->entitieName,
-                new Entitie(),
-                'Usuario',
-                'Usuario',
-                Config::getData('entitieConfig')[$this->entitieName]['camposDate'],
-                Config::getData('entitieConfig')[$this->entitieName]['camposDouble'],
-                Config::getData('entitieConfig')[$this->entitieName]['camposJson'],
+            $this->entitieName,
+            new Entitie(),
+            'Usuario',
+            'Usuario',
+            Config::getData('entitieConfig')[$this->entitieName]['camposDate'],
+            Config::getData('entitieConfig')[$this->entitieName]['camposDouble'],
+            Config::getData('entitieConfig')[$this->entitieName]['camposJson'],
         );
     }
 
-    public function list(): void {
+    public function list(): void
+    {
         $out = $this->ws_getAll($this->dados);
         $this->response($out);
     }
 
-    public function read(): void {
+    public function read(): void
+    {
         $out = $this->ws_getById($this->dados);
         $this->response($out);
     }
 
-    public function create(): void {
+    public function create(): void
+    {
         $out = $this->ws_save($this->dados);
         $this->response($out);
     }
 
-    public function update(): void {
+    public function update(): void
+    {
         unset($this->dados['senhaUsuario']);
         $this->create();
     }
 
-    public function delete(): void {
+    public function delete(): void
+    {
         $out = $this->ws_remove($this->dados);
         $this->response($out);
     }

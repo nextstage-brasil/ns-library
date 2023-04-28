@@ -9,13 +9,16 @@ use NsUtil\Helper;
 /**
  * TODO Auto-generated comment.
  */
-class ControllerDefault extends AbstractController {
+class ControllerDefault extends AbstractController
+{
 
-    public function __construct($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = []) {
+    public function __construct($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = [])
+    {
         $this->controllerInit($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate, $camposDouble, $camposJson);
     }
 
-    public function controllerInit($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = []) {
+    public function controllerInit($entidadeName, $entidadeObject, $poderesGrupo, $poderesSubGrupo, $camposDate = [], $camposDouble = [], $camposJson = [])
+    {
         $this->ent = $entidadeName;
         $this->camposDate = $camposDate;
         $this->camposDouble = $camposDouble;
@@ -40,7 +43,8 @@ class ControllerDefault extends AbstractController {
         }
     }
 
-    public function toView($object) {
+    public function toView($object)
+    {
         $ret = $object->toArray();
         // Decrypto
         foreach ($this->camposCrypto as $val) {
@@ -51,14 +55,16 @@ class ControllerDefault extends AbstractController {
 
     ## Metodos padrão para WebService (ws)
 
-    public function ws_getNew($checkPermission = true) {
+    public function ws_getNew($checkPermission = true)
+    {
         if ($checkPermission) {
             SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'create']);
         }
         return $this->toView($this->object);
     }
 
-    public function ws_getById($dados, $checkPermission = true) {
+    public function ws_getById($dados, $checkPermission = true)
+    {
         if ($checkPermission) {
             SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'read']);
         }
@@ -69,7 +75,8 @@ class ControllerDefault extends AbstractController {
         return $this->toView($this->object);
     }
 
-    public function ws_getAll($dados, $checkPermission = true) {
+    public function ws_getAll($dados, $checkPermission = true)
+    {
         if ($checkPermission) {
             SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'list']);
         }
@@ -114,8 +121,9 @@ class ControllerDefault extends AbstractController {
      * @create 18/01/2022
      * Metodo responsavel por salvar uma entidade
      */
-    public function ws_save($dados, $checkPermission = true) {
-        $action = ( ((int) $dados['id' . $this->ent] > 0) ? 'update' : 'create');
+    public function ws_save($dados, $checkPermission = true)
+    {
+        $action = (((int) $dados['id' . $this->ent] > 0) ? 'update' : 'create');
         $isUpdate = $action === 'update';
 
         if ($checkPermission) {
@@ -173,7 +181,8 @@ class ControllerDefault extends AbstractController {
      * @create 18/01/2022
      * Metodo responsavel por remover uma entidade
      */
-    public function ws_remove($dados, $checkPermission = true) {
+    public function ws_remove($dados, $checkPermission = true)
+    {
         if ($checkPermission) {
             SistemaLibrary::checkPermission([$this->poderesGrupo, $this->poderesSubGrupo, 'delete']);
         }
@@ -184,6 +193,7 @@ class ControllerDefault extends AbstractController {
         }
 
         $res = $this->object->remove();
+        $out = [];
         $out['error'](($res === true) ? false : $res);
 
         $out['result'] = [
@@ -192,5 +202,4 @@ class ControllerDefault extends AbstractController {
         ];
         return $out;
     }
-
 }

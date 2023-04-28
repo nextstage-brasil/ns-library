@@ -23,7 +23,7 @@ if (!defined("SISTEMA_LIBRARY")) {
 class Cep extends AbstractApiRestController
 {
 
-    private $entitieName =  'Cep';
+    private $entitieName = 'Cep';
 
     public function __construct(Api $api)
     {

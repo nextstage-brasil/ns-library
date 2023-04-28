@@ -21,57 +21,65 @@ if (!defined("SISTEMA_LIBRARY")) {
  * Caso seja uma ação especifica, ex.: /another, use a rota: 
  * @date 2022-10-02T22:05:12+00:00
  */
-class Status extends AbstractApiRestController {
+class Status extends AbstractApiRestController
+{
 
     private $entitieName = 'Status';
 
-    public function __construct(Api $api) {
+    public function __construct(Api $api)
+    {
         $this->init($api);
         $this->controllerInit(
-                $this->entitieName,
-                new Entitie(),
-                'Status',
-                'Status',
-                Config::getData('entitieConfig')[$this->entitieName]['camposDate'],
-                Config::getData('entitieConfig')[$this->entitieName]['camposDouble'],
-                Config::getData('entitieConfig')[$this->entitieName]['camposJson'],
+            $this->entitieName,
+            new Entitie(),
+            'Status',
+            'Status',
+            Config::getData('entitieConfig')[$this->entitieName]['camposDate'],
+            Config::getData('entitieConfig')[$this->entitieName]['camposDouble'],
+            Config::getData('entitieConfig')[$this->entitieName]['camposJson'],
         );
     }
 
-    public function list(): void {
+    public function list(): void
+    {
         $this->checkParameters();
         $this->dados['entidadeStatus'] = mb_strtoupper($this->dados['entidade']);
         $out = $this->ws_getAll($this->dados);
         $this->response($out);
     }
 
-    public function read(): void {
+    public function read(): void
+    {
         $out = $this->ws_getById($this->dados, false);
         $this->response($out);
     }
 
-    public function create(): void {
+    public function create(): void
+    {
         $out = $this->ws_save($this->dados);
         $this->response($out);
     }
 
-    public function update(): void {
+    public function update(): void
+    {
         $this->create();
     }
 
-    public function delete(): void {
+    public function delete(): void
+    {
         $out = $this->ws_remove($this->dados);
         $this->response($out);
     }
 
-    private function checkParameters() {
+    private function checkParameters()
+    {
         (new Validate())
-                ->addCampoObrigatorio('entidade', 'Informe a entidade')
-                ->runValidateData($this->dados, $this->api, Api::HTTP_BAD_REQUEST)
-        ;
+            ->addCampoObrigatorio('entidade', 'Informe a entidade')
+            ->runValidateData($this->dados, $this->api, Api::HTTP_BAD_REQUEST);
     }
 
-    public function _getListToArray(string $entidade): array {
+    public function _getListToArray(string $entidade): array
+    {
         $this->dados['entidade'] = mb_strtoupper($entidade);
         $this->dados['entidadeStatus'] = mb_strtoupper($entidade);
         $this->checkParameters();
@@ -83,7 +91,8 @@ class Status extends AbstractApiRestController {
         return $status;
     }
 
-    public function _getIdByOrder(string $entidade, int $order): int {
+    public function _getIdByOrder(string $entidade, int $order): int
+    {
         $this->dados['entidade'] = mb_strtoupper($entidade);
         $this->dados['entidadeStatus'] = mb_strtoupper($entidade);
         $this->dados['orderStatus'] = $order;
@@ -91,5 +100,4 @@ class Status extends AbstractApiRestController {
         $out = $this->ws_getAll($this->dados)[0] ?? [];
         return (int) $out['idStatus'] ?? -1;
     }
-
 }
