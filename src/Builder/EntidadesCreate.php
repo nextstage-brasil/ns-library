@@ -7,11 +7,13 @@ use NsLibrary\Controller\ModelSetterDefault;
 use NsUtil\Helper;
 use NsUtil\Template;
 
-class EntidadesCreate {
+class EntidadesCreate
+{
 
     private static $namespace;
 
-    public static function save($dados, $entidade) {
+    public static function save($dados, $entidade)
+    {
         ### Criação de entidade
         $template = self::get($dados);
         $file = Config::getData('pathEntidades')
@@ -23,7 +25,8 @@ class EntidadesCreate {
         return $file;
     }
 
-    public static function get($dados) {
+    public static function get($dados)
+    {
         $dados['relacionamentos'] = ((isset($dados['relacionamentos']) && is_array($dados['relacionamentos'])) ? $dados['relacionamentos'] : []);
         $schema = $dados['schema'] ?? 'public';
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
@@ -363,6 +366,11 @@ public function populate($dd)  {
     }
 
     public function setError($error) {
+        if ($error === false) {
+            $this->error = [];
+            return $this;
+        }
+        
         if (is_string($error)) {
             $error = [$error];
         }
