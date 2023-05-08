@@ -11,7 +11,8 @@ use NsUtil\Helper;
  *
  * @author NextStage
  */
-class ModelSetterDefault {
+class ModelSetterDefault
+{
     private static $config = [
         'string' => ['string', 'string', 'string'],
         'text' => ['string', 'string', 'string'],
@@ -29,7 +30,8 @@ class ModelSetterDefault {
         'html' => ['html', 'string', 'string'],
     ];
 
-    public static function getTemplate($type) {
+    public static function getTemplate($type)
+    {
         list($type, $entryType, $returnType) = self::$config[$type] ?? ['none', 'no-tem', 'none'];
 
         $fn = 'set' . ucwords((string) $type ?? '');
@@ -68,7 +70,8 @@ class ModelSetterDefault {
         ';
     }
 
-    public static function getTemplateObject() {
+    public static function getTemplateObject()
+    {
         return '
             public function set%nomeFunction%($%nome%) {
                 $this->%nome% = (($%nome% instanceof %nome%)? $%nome% : new %nome%($%nome%));
@@ -81,7 +84,8 @@ class ModelSetterDefault {
         ';
     }
 
-    public static function getTemplateExterna() {
+    public static function getTemplateExterna()
+    {
         return '
             public function set%nomeFunction%($%nome%) {
                 $this->%nome% = (object) $%nome%;
@@ -152,7 +156,10 @@ class ModelSetterDefault {
         string $type,
         bool $notNull = false
     ): void {
-        $content ??= [];
+        $content = $content === null || $content === ''
+            ? []
+            : $content;
+
         if (!is_array($content) && !is_object($content)) {
             $content = json_decode((string) $content, true);
         }

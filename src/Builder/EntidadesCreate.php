@@ -123,7 +123,7 @@ public $selectExtra = null;
             // propriedades
             $propriedades[] = 'private $' . $val['nome'] . ';';
 
-            $template = utf8_encode($template);
+            // $template = utf8_encode($template);
             $getSet[] = (new Template($template, $val, '%', '%'))->render();
             $constructSet[] = (new Template(self::$setterConstruct, $val, '%', '%'))->render();
         }
