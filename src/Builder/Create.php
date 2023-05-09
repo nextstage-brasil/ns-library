@@ -8,7 +8,8 @@ use NsUtil\Helper;
 use NsUtil\StatusLoader;
 use function mb_strtolower;
 
-class Create {
+class Create
+{
 
     private $querys;
     private $rotas;
@@ -20,7 +21,8 @@ class Create {
      * Método para criação das entidades ORM conforme constam no banco de dados Postgresql
      * @param array $schemasLoad
      */
-    public function __construct(array $schemasLoad = ['public']) {
+    public function __construct(array $schemasLoad = ['public'])
+    {
         $database = Config::getData('database')['dbname'];
 
         // Schemas a ler
@@ -369,7 +371,7 @@ class Create {
                     'column_name' => $detalhes['column_name'],
                     'tipo' => $detalhes['data_type'],
                     'maxsize' => (($detalhes['character_maximum_length']) ? $detalhes['character_maximum_length'] : 1000000000),
-                    'valorPadrao' => (($detalhes['column_default'] != '' && !$isKey) ? $detalhes['column_default'] : "''"),
+                    'valorPadrao' => (($detalhes['column_default'] != '' && !$isKey) ? $detalhes['column_default'] : "null"),
                     'coments' => (($detalhes['column_comment']) ? $detalhes['column_comment'] : Helper::name2CamelCase($detalhes['column_name'])),
                     'notnull' => (($detalhes['is_nullable'] === 'NO') ? true : false),
                     'hint' => $detalhes['hint'],
@@ -434,7 +436,7 @@ class Create {
             ];
             $dados = [
                 'aliaseTableByID' => $CONFIG['titlePagesAliases'][mb_strtolower($entidade)],
-                'aliaseTableByComents' => $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)], 
+                'aliaseTableByComents' => $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)],
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
@@ -485,11 +487,13 @@ class Create {
         ];
     }
 
-    public function readData() {
+    public function readData()
+    {
         return $this->data;
     }
 
-    private function entidadesInit() {
+    private function entidadesInit()
+    {
         Config::setData('pathEntidades', Config::getData('path') . '/src/NsLibrary/Entities');
         // Remover diretório de entidades, caso exista
         Helper::deleteDir(Config::getData('pathEntidades'));
@@ -497,7 +501,8 @@ class Create {
         Helper::mkdir(Config::getData('pathEntidades'));
     }
 
-    private function controllerInit() {
+    private function controllerInit()
+    {
         // REST
         Config::setData('pathRestControllers', Config::getData('path') . '/src/NsLibrary/Routers');
         Helper::mkdir(Config::getData('pathRestControllers'));
@@ -507,13 +512,15 @@ class Create {
         //        Helper::mkdir(Config::getData('pathControllers'));
     }
 
-    private function viewInit() {
+    private function viewInit()
+    {
         Config::setData('pathViewSource', Config::getData('path') . '/src/NsLibrary/ViewSource');
         Helper::mkdir(Config::getData('pathViewSource'));
         sleep(1);
     }
 
-    public function getData($quiet = false, $tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '') {
+    public function getData($quiet = false, $tokenCrypto = '', $appName = '', $htmlTitle = '', $adminName = '', $adminEmail = '')
+    {
         $this->onlyGetData = true;
         $this->quiet = $quiet;
         $this->run($tokenCrypto, $appName, $htmlTitle, $adminName, $adminEmail);

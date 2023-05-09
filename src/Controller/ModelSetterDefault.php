@@ -142,7 +142,9 @@ class ModelSetterDefault
             $error[$fieldName] = $comentError;
         } else {
             unset($error[$fieldName]);
-            $varToSet = (string) mb_substr((string)$content, 0, $maxsize);
+            $varToSet = null === $content
+                ? null
+                : (string) mb_substr((string)$content, 0, $maxsize);
         }
     }
 
