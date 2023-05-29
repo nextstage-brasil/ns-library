@@ -523,7 +523,7 @@ class EntityManager
         return $this->getAll([$this->object->getCpoId() => $pk], $relacao)[0];
     }
 
-    public function findOrFail($pk)
+    public function firstOrFail($pk)
     {
         $item = $this->getById($pk);
         if ($item && get_class($item) === get_class($this->object)) {
