@@ -179,7 +179,7 @@ public function responseIfHasError($code = 200) {
 /**
  * Executa a busca de um item pelo ID da tabela 
  *
-* @param type $id
+* @param int $id
 * @return self
  */
 public function read($id) {

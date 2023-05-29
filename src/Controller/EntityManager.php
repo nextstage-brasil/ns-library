@@ -8,13 +8,15 @@ use NsUtil\Helper;
 use ReflectionClass;
 use NsLibrary\Config;
 use NsLibrary\Connection;
+use NsLibrary\Exceptions\ModelNotFoundException;
 
 /**
  * Description of EntityManager
  *
  * @author NextStage
  */
-class EntityManager {
+class EntityManager
+{
 
     private $object;
     private $message;
@@ -26,7 +28,8 @@ class EntityManager {
     private $groupBy;
     private $query;
 
-    public function __construct($object) {
+    public function __construct($object)
+    {
         $this->object = $object;
         $this->order = false;
         $this->message = '';
@@ -34,14 +37,16 @@ class EntityManager {
         $this->setInnerOrLeftJoin();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         try {
             $this->con->close();
         } catch (Exception $exc) {
         }
     }
 
-    function setOrder($orderBy) {
+    function setOrder($orderBy)
+    {
         if ($orderBy && stripos($orderBy, '.') === false) { // não veio tabela principal
             $orderBy = $this->object->getTable() . '.' . $orderBy;
         }
@@ -49,7 +54,8 @@ class EntityManager {
         return $this;
     }
 
-    function setGroupBy($campos) {
+    function setGroupBy($campos)
+    {
         $out = [];
         foreach ($campos as $campo) {
             $f = Helper::reverteName2CamelCase($campo);
@@ -59,33 +65,39 @@ class EntityManager {
         return $this;
     }
 
-    function setInnerOrLeftJoin($innerOrLeftJoin = 'left') {
+    function setInnerOrLeftJoin($innerOrLeftJoin = 'left')
+    {
         $this->innerOrLeftJoin = (($innerOrLeftJoin === 'left') ? 'left' : 'inner');
         return $this;
     }
 
-    public function setCountUploadfile($switch) {
+    public function setCountUploadfile($switch)
+    {
         $this->countUploadfile = (bool) $switch;
         return $this;
     }
 
-    public function setObject($object) {
+    public function setObject($object)
+    {
         $this->object = $object;
         $this->order = false;
         return $this;
     }
 
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         $this->con->begin_transaction();
         return $this;
     }
 
-    public function commit() {
+    public function commit()
+    {
         $this->con->commit();
         return $this;
     }
 
-    public function rollback() {
+    public function rollback()
+    {
         $this->con->rollback();
         return $this;
     }
@@ -99,7 +111,8 @@ class EntityManager {
      * 3 - ID da opera��o
      * 4 - Link para retorno completo
      */
-    public function save($onConflict = '') {
+    public function save($onConflict = '')
+    {
         if ($this->object->getError() !== false) {
             //Log::log('entityManager-error', $this->object->getTable() . ': ' . json_encode($this->object->getError()));
             return $this->object;
@@ -182,7 +195,8 @@ class EntityManager {
     /**
      * Ira gravar log com as diferencas entre arrays
      */
-    private function auditoria() {
+    private function auditoria()
+    {
         if (array_search(get_class($this->object), ['ApiLog']) === false) {
             $app = new Controller();
             $new = $app->objectToArray($this->object);
@@ -216,7 +230,8 @@ class EntityManager {
      * @param array $condicao
      * @return object
      */
-    public function setCondicaoIsAlive(&$condicao = []): object {
+    public function setCondicaoIsAlive(&$condicao = []): object
+    {
         // Tratamento da condição is_alive
         $isAliveMethod = 'getIsAlive' . get_class($this->object);
         $methodExists = method_exists($this->object, $isAliveMethod);
@@ -240,7 +255,8 @@ class EntityManager {
         return $out;
     }
 
-    public function remove() {
+    public function remove()
+    {
         try {
             $alive = $this->setCondicaoIsAlive();
             if ($alive->exists) {
@@ -268,7 +284,8 @@ class EntityManager {
     }
 
     // Faz  aleitura em config de erros conhecidos e traduz para o ambiente
-    public static function getErrorByConfig($msg) {
+    public static function getErrorByConfig($msg)
+    {
         foreach (Config::getData('errors') as $chave => $value) {
             if (stripos($msg, $chave) > -1) {
                 return $value;
@@ -277,15 +294,18 @@ class EntityManager {
         return $msg;
     }
 
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
-    public function getObject() {
+    public function getObject()
+    {
         return $this->object;
     }
 
-    public function getByCondition($condicao, $getRelacoes = false) {
+    public function getByCondition($condicao, $getRelacoes = false)
+    {
         if (is_array($condicao)) {
             $entities = $this->getAll($condicao, $getRelacoes);
             return $entities;
@@ -301,7 +321,8 @@ class EntityManager {
      * @param type $relacaoExceto
      * @return type
      */
-    public function getAll($condicao, $getRelacoes = true, $inicio = 0, $limit = 1000, $relacaoExceto = array()) {
+    public function getAll($condicao, $getRelacoes = true, $inicio = 0, $limit = 1000, $relacaoExceto = array())
+    {
         //$relacaoExceto = array_merge(array('usuario'), $relacaoExceto);
         $tabelaPrincipal = $this->object->getTable();
         $condicao = self::trataCondicao($condicao, $tabelaPrincipal);
@@ -409,7 +430,8 @@ class EntityManager {
      * @param string $tabelaPrincipal
      * @return string
      */
-    public static function trataCondicao($condicao, $tabelaPrincipal) {
+    public static function trataCondicao($condicao, $tabelaPrincipal)
+    {
         if (!$condicao) {
             return '';
         }
@@ -469,7 +491,8 @@ class EntityManager {
         return " WHERE " . implode(" AND ", $where);
     }
 
-    public function getMaxId($condicao = false, $opcao = 'MAX') {
+    public function getMaxId($condicao = false, $opcao = 'MAX')
+    {
         $nomeEntidade = get_class($this->object);
         if ($condicao) {
             $where = ' WHERE ' . $condicao;
@@ -484,20 +507,34 @@ class EntityManager {
         return $entitie;
     }
 
-    public function getMinId($condicao = false) {
+    public function getMinId($condicao = false)
+    {
         return $this->getMaxId($condicao, 'MIN');
     }
 
-    public static function getByIdStatic($objeto, $pk) {
+    public static function getByIdStatic($objeto, $pk)
+    {
         $temp = new EntityManager($objeto);
         return $temp->getById($pk, false);
     }
 
-    public function getById($pk, $relacao = true, $dd = false) {
+    public function getById($pk, $relacao = true, $dd = false)
+    {
         return $this->getAll([$this->object->getCpoId() => $pk], $relacao)[0];
     }
 
-    public function execQueryAndReturn($query, $log = true) {
+    public function findOrFail($pk)
+    {
+        $item = $this->getById($pk);
+        if ($item && get_class($item) === get_class($this->object)) {
+            return $item;
+        }
+
+        throw new ModelNotFoundException("ID $pk not found");
+    }
+
+    public function execQueryAndReturn($query, $log = true)
+    {
         $out = [];
         $this->con->executeQuery($query, $log);
         while ($dd = $this->con->next()) {
@@ -506,11 +543,13 @@ class EntityManager {
         return $out;
     }
 
-    function getQuery() {
+    function getQuery()
+    {
         return $this->query;
     }
 
-    public function count($condicao) {
+    public function count($condicao)
+    {
         $tabela = $this->object->getTable();
         $query = 'select count(' . Helper::reverteName2CamelCase($this->object->getCpoId()) . ') as qtde '
             . ' from ' . $tabela . ' ' . $this->trataCondicao($condicao, $tabela);
