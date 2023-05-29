@@ -179,7 +179,7 @@ public function responseIfHasError($code = 200) {
     /** 
      * Marca a proxima transação select para bloquear a linha até seu update
      * 
-     * /
+     */
     public function setLockedForUpdate() : self {
         $this->setDao();    
         $this->dao->setLockForUpdate();
