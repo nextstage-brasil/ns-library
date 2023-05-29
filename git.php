@@ -11,8 +11,4 @@ $dir = Helper::getPathApp();
 
 NsUtil\Package::git(__DIR__ . '/version', $argv[1]);
 
-echo shell_exec("
-cd $dir;
-git push --tags;
-git push
-");
+echo shell_exec("cd $dir;git push --tags;git push");
