@@ -27,6 +27,7 @@ class EntityManager
     public $selectExtra, $selectExtraB; // serve para injetar um select extra. será colocado entre parenteses e zerado a cada chamada;
     private $groupBy;
     private $query;
+    private $lockedForUpdate = false;
 
     public function __construct($object)
     {
@@ -314,12 +315,13 @@ class EntityManager
 
     /**
      * Lista de itens no banco de dados
-     * @param type $condicao
-     * @param type $getRelacoes
-     * @param type $inicio
-     * @param type $limit
-     * @param type $relacaoExceto
-     * @return type
+     *
+     * @param array|string $condicao
+     * @param boolean $getRelacoes
+     * @param integer $inicio
+     * @param integer $limit
+     * @param array $relacaoExceto
+     * @return array
      */
     public function getAll($condicao, $getRelacoes = true, $inicio = 0, $limit = 1000, $relacaoExceto = array())
     {
@@ -366,18 +368,23 @@ class EntityManager
         $query = 'SELECT ' . implode(', ', $select) . ' FROM ' . $tabelaPrincipal . ' ' . implode(' ', $innerJoin);
 
         $limitCleaned = (($limit > 0) ? (int) $limit : 'null');
+
         $query .= $condicao
-            . ($limit > 0
-                ? " ORDER BY " . $order . " LIMIT " . (int) $limit . " OFFSET " . $inicio * $limit
-                : " ORDER BY " . $order);
+            . " ORDER BY " . $order
+            . ($this->lockedForUpdate ? ' FOR UPDATE SKIP LOCKED ' : '')
+            . ($limit > 0 ? " LIMIT " . (int) $limit . " OFFSET " . $inicio * $limit : '');
 
         $this->query = $query;
 
         $this->con->executeQuery($query);
 
+        // apenas uma execução
+        $this->lockedForUpdate = false;
+
         if ($this->con->numRows === 0) {
             return [];
         }
+
         $objetoAtual = get_class($this->object);
         $con = Connection::getConnection();
         $nsEnt = new $objetoAtual();
@@ -554,5 +561,17 @@ class EntityManager
         $query = 'select count(' . Helper::reverteName2CamelCase($this->object->getCpoId()) . ') as qtde '
             . ' from ' . $tabela . ' ' . $this->trataCondicao($condicao, $tabela);
         return (int) $this->execQueryAndReturn($query)[0]['qtde'];
+    }
+
+    /**
+     * Set the value of lockedForUpdate
+     *
+     * @return  self
+     */
+    public function setLockForUpdate()
+    {
+        $this->lockedForUpdate = true;
+
+        return $this;
     }
 }

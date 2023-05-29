@@ -176,6 +176,16 @@ public function responseIfHasError($code = 200) {
         return $this;
     }
 
+    /** 
+     * Marca a proxima transação select para bloquear a linha até seu update
+     * 
+     * /
+    public function setLockedForUpdate() : self {
+        $this->setDao();    
+        $this->dao->setLockForUpdate();
+        return $this;
+    }
+
 /**
  * Executa a busca de um item pelo ID da tabela 
  *
@@ -183,13 +193,24 @@ public function responseIfHasError($code = 200) {
 * @return self
  */
 public function read($id) {
-    $ret = $this->list([$this->cpoId => (int) $id])[0];
+    $ret = $this->list([$this->cpoId => (int) $id])[0] ?? null;
     if ($ret instanceof $this)  {
         $dd = (new Controller())->objectToArray($ret);
         $this->populate($dd);
     } else {
         $this->setError("ID not found \'$id\'");
     }
+    return $this;
+}
+
+
+public function firstOrFail($id)
+{
+    $item = $this->read($id);
+    if (!($item instanceof $this)) {
+        throw new \NsLibrary\Exceptions\ModelNotFoundException("ID $id not found");
+    }
+
     return $this;
 }
 
