@@ -5,11 +5,13 @@ namespace NsLibrary\Builder;
 use NsLibrary\Config;
 use NsUtil\Helper;
 
-class RestControllerCreate {
+class RestControllerCreate
+{
 
     private static $namespace;
 
-    public static function save(array $dados, string $entidade, array $ignore = []): void {
+    public static function save(array $dados, string $entidade, array $ignore = []): void
+    {
         $ignoreDefault = [
             'Cep',
             'Linktable',
@@ -36,18 +38,19 @@ class RestControllerCreate {
         if (!Config::getData('pathRestControllers')) {
             die('pathRestControllers is not defined');
         }
+        $template = self::get($dados);
         $prefix = ((array_search($entidade, $controllersDefault) === false) ? '' : '/ignoredByConfig/');
         $file = Config::getData('pathRestControllers')
             . DIRECTORY_SEPARATOR
             . ((self::$namespace) ? self::$namespace . DIRECTORY_SEPARATOR : '')
-            . "${entidade}.php";
-        $fileWithPrefix = str_replace("${entidade}.php", "${prefix}${entidade}.php", $file);
+            . "{$entidade}.php";
+        $fileWithPrefix = str_replace("{$entidade}.php", "{$prefix}{$entidade}.php", $file);
 
         if (file_exists($file) && \array_search($entidade, $controllersDefault) !== false && \array_search($entidade, $ignoreDefault) === false) {
             rename($file, $fileWithPrefix);
         }
 
-        $template = self::get($dados);
+
         Helper::saveFile($fileWithPrefix, false, $template);
 
         //        // Não quero salvar esses controller, pq são padrão do framework
@@ -56,12 +59,13 @@ class RestControllerCreate {
         //            Helper::saveFile($file, false, $template);
         //        } else {
         //            if (file_exists($file) && array_search($entidade, $ignoreDefault) === false) {
-        //                rename($file, str_replace("${entidade}.php", "__REMOVE__${entidade}.old", $file));
+        //                rename($file, str_replace("{$entidade}.php", "__REMOVE__{$entidade}.old", $file));
         //            }
         //        }
     }
 
-    public final static function get($dados): string {
+    public final static function get($dados): string
+    {
         $schema = $dados['schema'];
         self::$namespace = (($schema === 'public') ? null : ucwords($schema));
 
