@@ -134,7 +134,7 @@ class ModelSetterDefault
     ): void {
 
         $content =  Helper::getValByType(
-            is_array($content) ? $content[$fieldName] : $content,
+            is_array($content) ? ($content[$fieldName] ?? '') : $content,
             'string'
         );
 
