@@ -10,12 +10,19 @@ use NsUtil\Config;
 /**
  * TODO Auto-generated comment.
  */
-abstract class AbstractApiRestController extends ControllerDefault {
+abstract class AbstractApiRestController extends ControllerDefault
+{
 
     protected $api;
     protected $rest, $dados, $header, $token, $type, $action, $error;
 
-    public function __invoke() {
+    public function __construct(Api $api)
+    {
+        $this->init($api);
+    }
+
+    public function __invoke()
+    {
         try {
             if (method_exists($this, $this->action)) {
                 if ($this->error !== null) {
@@ -31,7 +38,8 @@ abstract class AbstractApiRestController extends ControllerDefault {
         }
     }
 
-    public function init(Api $api) {
+    public function init(Api $api)
+    {
         $api->setConfig();
         $this->rest = (object) Config::getData('rest');
         $this->dados = $api->getBody();
@@ -82,7 +90,8 @@ abstract class AbstractApiRestController extends ControllerDefault {
         $this->dados['id' . $this->type] = ($this->dados['id'] ?? null);
     }
 
-    function response(array $response, int $code = 200): void {
+    function response(array $response, int $code = 200): void
+    {
         // Caso seja um GET para obter um ID, responser com 404 se não encontrar
         if ($this->rest->method === 'GET' && $this->dados['id'] > 0 && count($response) === 0 && $code !== Api::HTTP_NOT_IMPLEMENTED) {
             $code = Api::HTTP_NOT_FOUND;
@@ -97,7 +106,8 @@ abstract class AbstractApiRestController extends ControllerDefault {
         ], $code);
     }
 
-    function errorResponse(string $message, int $code = Api::HTTP_BAD_REQUEST): void {
+    function errorResponse(string $message, int $code = Api::HTTP_BAD_REQUEST): void
+    {
         $this->response(['error' => $message], $code);
     }
 }
