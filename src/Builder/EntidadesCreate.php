@@ -129,15 +129,29 @@ public $selectExtra = null;
         }
 
         $construct = '
-               public function __construct($dd=false)  {
+
+        /**
+         * Contruct of model
+         *
+         * @param array|null $dd
+         */    
+               public function __construct(?array $dd=[])  {
                    $this->init($dd);
                }
                
-private function init($dd)  {
- $this->error = [];
+/**
+ * Reconstruct de data of model
+ *
+ * @param array|null $dd
+ * @return void
+ */
+private function init(?array $dd = [])
+{
+$this->error = [];
 ' . implode('  ', $constructSet) . '
 $this->populate($dd);
 }
+
 
 private function setDao() {
     if ($this->dao === null)  {
@@ -156,7 +170,7 @@ public function __destruct() {
  * @param int $code
  * @return void
  */
-public function responseIfHasError($code = 200) {
+public function responseIfHasError(int $code = 200) {
     if ($this->getError() !== false) {
         \NsUtil\Api::result($code, [\'error\' => $this->getError()]);
     }
@@ -204,24 +218,34 @@ public function read($id) {
 }
 
 
-public function firstOrFail($id)
+public function firstOrFail($param)
 {
-    $item = $this->read($id);
-    if (!($item instanceof $this)) {
-        throw new \NsLibrary\Exceptions\ModelNotFoundException("ID $id not found");
+    if (is_array($param)) {
+        $item = $this->list($param)[0];
+    } else {
+        $item = $this->list([$this->cpoId => (int) $param])[0] ?? null;
     }
+
+    if (!($item instanceof $this)) {
+        throw new \NsUtil\Exceptions\ModelNotFoundException("Not found", 404);
+    }
+
+    $dd = (new Controller())->objectToArray($item);
+    $this->populate($dd);
 
     return $this;
 }
 
 /**
-    * Obtém a lista de entidades. 
-     * @param array $filters Array contendo chave=>valor para filtro no banco. Utilizar camelcase para nome dos campos, ex.: nomeUsuario=>"Teste"
-     * @param int $page Paginação
-     * @param int $limit Limite de resultados por busca
-     * @param array $order Array contendo dois campos: 0: chave para ordenar, 1 : sort. Ex.: ["nomePessoa", "asc"] 
-     * @return array    
-*/
+ * List of entities
+ *
+ * @param array $filters
+ * @param integer $page
+ * @param integer $limit
+ * @param boolean $order
+ * @param boolean $returnObjects
+ * @return array
+ */
 public function list(array $filters=[], int $page=0, int $limit=1000, $order=false) : array   {
         $this->setDao();    
         if ($order !== false) {
@@ -297,14 +321,14 @@ public function remove() {
  *
  * @return array
  */
-public function toArray() {
-    return (new Controller())->objectToArray($this);
+public function toArray($showRelations=true) {
+    return (new Controller())->objectToArray($this, $showRelations);
 }
     
 /**
  * Popula o objeto com os dados em DD conforme campos
  *
- * @param [type] $dd
+ * @param ?array $dd Data to create model
  * @return void
  */
 public function populate($dd)  {

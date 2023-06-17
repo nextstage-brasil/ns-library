@@ -202,4 +202,9 @@ class ControllerDefault extends AbstractController
         ];
         return $out;
     }
+
+    public function toArray($object, $detalhes = false)
+    {
+        return $this->objectToArray($object, $detalhes);
+    }
 }

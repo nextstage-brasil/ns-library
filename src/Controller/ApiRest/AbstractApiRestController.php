@@ -6,6 +6,9 @@ use Exception;
 use NsLibrary\Controller\ControllerDefault;
 use NsUtil\Api;
 use NsUtil\Config;
+use ReflectionMethod;
+
+use function NsUtil\dd;
 
 /**
  * TODO Auto-generated comment.
@@ -29,7 +32,41 @@ abstract class AbstractApiRestController extends ControllerDefault
                     $this->api->error($this->error['error'], $this->error['code']);
                 }
                 $fn = $this->action;
-                $this->$fn();
+
+
+
+                // injeção de dependências
+
+                $reflectionMethod = new ReflectionMethod($this, $fn);
+                $reflectionParameters = $reflectionMethod->getParameters();
+                $dependencies = [];
+                $dependencyResolver = new DependencyResolver();
+
+                foreach ($reflectionParameters as $parameter) {
+                    $dependencyName = $parameter->getName();
+                    $dependencyClass = $parameter->getType();
+
+                    switch (true) {
+                        case $dependencyClass !== null && !$dependencyClass->isBuiltin():
+                            $dependencyInstance = $dependencyResolver->resolve($dependencyClass->getName());
+                            $dependencies[] = $dependencyInstance;
+                            break;
+                        case $dependencyName === 'id':
+                            $dependencies[] = (int) $this->dados['id'];
+                            break;
+                        case $dependencyClass->getName() === 'array':
+                            $dependencies[] = $this->dados;
+                            break;
+                        case $dependencyClass->isBuiltin():
+                            throw new Exception("Dependency '$dependencyName' is builtin and could not be resolved.");
+                            break;
+                        default:
+                            throw new Exception("Dependency '$dependencyName' could not be resolved.");
+                    }
+                }
+
+                // invocar funcao com dependencias
+                $reflectionMethod->invokeArgs($this, $dependencies);
             } else {
                 $this->api->error('', Api::HTTP_NOT_IMPLEMENTED);
             }

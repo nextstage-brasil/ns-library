@@ -459,12 +459,12 @@ class Create
             $out = [];
 
             if (!$this->onlyGetData) {
+
                 // Criação de entidade
                 EntidadesCreate::save($dados, $entidade);
 
                 // Criação de controller
                 RestControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
-                //                ControllerCreate::save($dados, $entidade, $controllerIgnoreEntites);
             }
 
 

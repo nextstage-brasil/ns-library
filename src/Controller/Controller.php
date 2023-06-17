@@ -6,9 +6,15 @@ namespace NsLibrary\Controller;
 /**
  * TODO Auto-generated comment.
  */
- class Controller extends AbstractController {
+class Controller extends AbstractController
+{
 
-        public function __construct() {
+        public function __construct()
+        {
         }
 
+        public static function toArray($object, $detalhes = false)
+        {
+                return (new self)->objectToArray($object, $detalhes);
+        }
 }

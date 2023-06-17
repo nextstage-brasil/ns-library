@@ -15,14 +15,16 @@ use UploadfileController;
 /**
  * TODO Auto-generated comment.
  */
-abstract class AbstractController {
+abstract class AbstractController
+{
 
     protected $object, $condicao, $ent, $camposDouble, $camposDate, $camposJson, $jsonDefault, $lastObjectSave, $condicaoManual, $extrasA, $extrasB;
     protected $poderesGrupo, $poderesSubGrupo;
     protected $camposCrypto = [];
 
 
-    public function save(&$dados) {
+    public function save(&$dados)
+    {
         // Helper::jsonRecebeFromView($dados, $this->camposJson);
         $this->setIds($dados);
         $ent = new $this->ent($dados);
@@ -72,7 +74,8 @@ abstract class AbstractController {
      * @param type $relacaoException
      * @return type
      */
-    public function getAll(&$dados, $getRelacao = true, $inicio = 0, $fim = 1000, $order = false) {
+    public function getAll(&$dados, $getRelacao = true, $inicio = 0, $fim = 1000, $order = false)
+    {
         $this->setSearch($dados);
         $dao = new EntityManager($this->object);
         $dao->setOrder($order);
@@ -92,14 +95,16 @@ abstract class AbstractController {
      * @param type $relacao
      * @return type
      */
-    public function getById($id, $relacao = true) {
+    public function getById($id, $relacao = true)
+    {
         $this->condicao[$this->object->getCpoId()] = (int) $id;
         $dados = [];
         $object = $this->getAll($dados, $relacao, 0, 1, false)[0];
         return $object;
     }
 
-    public function count() {
+    public function count()
+    {
         $dao = new EntityManager($this->object);
         return ['count' => $dao->count($this->condicao)];
     }
@@ -109,7 +114,8 @@ abstract class AbstractController {
      * @param type $id
      * @return type
      */
-    public function remove($id) {
+    public function remove($id)
+    {
         $fn = 'setIsAlive' . $this->ent;
         $dao = new EntityManager($this->object);
         if (method_exists($this->object, $fn)) {
@@ -131,7 +137,8 @@ abstract class AbstractController {
         }
     }
 
-    public function setIds(&$dados) {
+    public function setIds(&$dados)
+    {
         if ($dados['ignoreSetIdUser'] !== true && method_exists($this->object, 'setIdUsuario') && !Helper::compareString($this->ent, 'usuario')) {
             $dados['idUsuario'] = $_SESSION['user']['idUsuario'];
         }
@@ -145,8 +152,9 @@ abstract class AbstractController {
      * @param type $object
      * @return type
      */
-    public function toView($object) {
-        $out = $this->objectToArray($list);
+    public function toView($object)
+    {
+        $out = $this->objectToArray($object);
 
         if (is_array($out['error'])) {
             if (count($out['error']) === 0) {
@@ -164,7 +172,8 @@ abstract class AbstractController {
         return $out;
     }
 
-    public function ws_cep($dados) {
+    public function ws_cep($dados)
+    {
         $dd = BuscaCep::get($dados['cep']);
         if ($dd) {
             $rua = (($dados['numero']) ? "$dd[logradouro], $dados[numero]" : $dd['logradouro']);
@@ -175,11 +184,8 @@ abstract class AbstractController {
         return $dd;
     }
 
-    public static function _objectToArrayStatic($object, $detalhes = false) {
-        return self::objectToArrayStatic($object, $detalhes);
-    }
-
-    public function objectToArray($object, $relacoes = true) {
+    public function objectToArray($object, $relacoes = true)
+    {
         $array = array();
         if (is_object($object)) {
             // Para limpar os erros se existirem
@@ -240,7 +246,8 @@ abstract class AbstractController {
         return $array;
     }
 
-    public static function nameTableCamelCase($val) {
+    public static function nameTableCamelCase($val)
+    {
         $val = str_replace(['sis_', 'mem_'], '', $val);
         $temp = explode("_", $val);
         if (is_array($temp)) {
@@ -253,7 +260,8 @@ abstract class AbstractController {
         return $entidade;
     }
 
-    public static function arrayToObject($entity, $dados) {
+    public static function arrayToObject($entity, $dados)
+    {
         if (!is_array($dados)) {
             return $entity;
         }
@@ -268,12 +276,14 @@ abstract class AbstractController {
         return $entity;
     }
 
-    public function getMaxId($object, $condicao = false) {
+    public function getMaxId($object, $condicao = false)
+    {
         $em = new EntityManager($object);
         return $em->getMaxId($condicao);
     }
 
-    public function getMinId($object, $condicao = false) {
+    public function getMinId($object, $condicao = false)
+    {
         $em = new EntityManager($object);
         return $em->getMinId($condicao);
     }
@@ -283,7 +293,8 @@ abstract class AbstractController {
      * @param type $dados
      * @return type
      */
-    public function ws_getGeoByAddress($dados) {
+    public function ws_getGeoByAddress($dados)
+    {
         $ad[] = $dados['street'];
         $ad[] = $dados['number'];
         $ad[] = $dados['city'];
@@ -294,7 +305,8 @@ abstract class AbstractController {
         return GeoLocalizacao::getGeoByAddress($address);
     }
 
-    protected function parseToView($object, $entidade, $campoDate, $campoDouble, $files = true) {
+    protected function parseToView($object, $entidade, $campoDate, $campoDouble, $files = true)
+    {
         $out = ['error' => 'Não localizado'];
         $ent = $entidade;
         if ($object instanceof $entidade) {
@@ -313,14 +325,16 @@ abstract class AbstractController {
         return $out;
     }
 
-    protected function setSearch(&$dados) {
+    protected function setSearch(&$dados)
+    {
         if (strlen((string) $dados['Search']) > 1) {
             $dados['Search'] = urldecode($dados['Search']);
             $this->condicao['unaccent(nome' . $this->ent . ')'] = array('~*', "unaccent('" . $dados['Search'] . "')");
         }
     }
 
-    protected function setDadosComboSearch(&$dados, &$out, $ent) {
+    protected function setDadosComboSearch(&$dados, &$out, $ent)
+    {
         if (strlen((string) $dados['Search']) > 1) {
             foreach ($out as $value) {
                 $dd[] = ['id' => $value['id' . $ent], 'value' => $value['nome' . $ent]];
@@ -335,11 +349,13 @@ abstract class AbstractController {
      *  método que somente atualiza o token em operação
      */
 
-    public function ws_sessionRenew($dados) {
+    public function ws_sessionRenew($dados)
+    {
         return ['error' => false, 'result' => 'Sessão renovada!'];
     }
 
-    public function ws_validaLogin($dados) {
+    public function ws_validaLogin($dados)
+    {
         return ['error' => false];
     }
 
@@ -356,7 +372,8 @@ abstract class AbstractController {
      * @date 2019-03-14
      * @param type $dados
      */
-    public function ws_setAvatar($dados) {
+    public function ws_setAvatar($dados)
+    {
         $entidade = ucwords(Helper::name2CamelCase($dados['entidade']));
         $id = $dados['valorid'];
         $idUploadfile = $dados['idUploadfile'];
@@ -379,15 +396,18 @@ abstract class AbstractController {
         }
     }
 
-    public function setCondicaoManual(array $condicao) {
+    public function setCondicaoManual(array $condicao)
+    {
         $this->condicaoManual = $condicao;
     }
 
-    public static function naoDisponivel() {
+    public static function naoDisponivel()
+    {
         header("Location:" . Config::getData('url') . '/home');
     }
 
-    public function getObject() {
+    public function getObject()
+    {
         return $this->object;
     }
 }

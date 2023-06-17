@@ -10,6 +10,8 @@ class RestControllerCreate
 
     private static $namespace;
 
+    public static array $ignored = [];
+
     public static function save(array $dados, string $entidade, array $ignore = []): void
     {
         $ignoreDefault = [
@@ -33,7 +35,11 @@ class RestControllerCreate
             'SistemaFuncao',
             'Webhook'
         ];
-        $controllersDefault = array_merge($ignore, $ignoreDefault);
+        $controllersDefault = array_merge(
+            self::$ignored,
+            $ignore,
+            $ignoreDefault
+        );
 
         if (!Config::getData('pathRestControllers')) {
             die('pathRestControllers is not defined');
