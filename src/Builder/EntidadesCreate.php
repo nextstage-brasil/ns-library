@@ -147,7 +147,7 @@ public $selectExtra = null;
  * @param array|null $dd
  * @return void
  */
-private function init(?array $dd = [])
+private function init($dd = [])
 {
 $this->error = [];
 ' . implode('  ', $constructSet) . '
