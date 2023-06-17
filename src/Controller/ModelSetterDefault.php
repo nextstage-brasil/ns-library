@@ -79,14 +79,14 @@ class ModelSetterDefault
                     $this->%nome% = $var;
                 } else {
                     if (is_array($var) && isset($var["%nome%"]))   {
-                        $this->%nome% = new %nome%($var$var["%nome%"]);
+                        $this->%nome% = new %nome%($var["%nome%"]);
                     } else {
-                        $this->%nome% = new %nome%($var));
+                        $this->%nome% = new %nome%($var);
                     }
                 }
 
                 // $this->%nome% = (($var instanceof %nome%)? $var : new %nome%($var));
-                
+
                 return $this;
             }
         
