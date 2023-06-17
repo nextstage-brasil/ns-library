@@ -218,7 +218,7 @@ public function read($id) {
 }
 
 
-public function firstOrFail($param)
+public function firstOrFail($param) : self
 {
     if (is_array($param)) {
         $item = $this->list($param)[0];
