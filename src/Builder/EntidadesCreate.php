@@ -37,6 +37,7 @@ class EntidadesCreate
             use NsLibrary\Controller\Controller;
             use NsLibrary\Controller\EntityManager;
             use NsLibrary\Controller\ModelSetterDefault;
+            use function NsUtil\json_decode;
 
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
@@ -91,7 +92,8 @@ public $selectExtra = null;
                     case 'OBJECT':
                         $template = ModelSetterDefault::getTemplateObject();
                         $val['nome'] = ucwords($val['nome']);
-                        $val['valorPadrao'] = '$dd["' . $val['nome'] . '"] ?? $dd';
+                        // $val['valorPadrao'] = 'isset($dd["' . $val['nome'] . '"]) && is_array($dd["' . $val['nome'] . '"]) ? $dd["' . $val['nome'] . '"] : $dd';
+                        $val['valorPadrao'] = '$dd';
                         break;
                     case 'EXTERNA':
                         $template = ModelSetterDefault::getTemplateExterna();
@@ -135,7 +137,7 @@ public $selectExtra = null;
          *
          * @param array|null $dd
          */    
-               public function __construct(?array $dd=[])  {
+               public function __construct($dd=[])  {
                    $this->init($dd);
                }
                

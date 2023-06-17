@@ -73,8 +73,20 @@ class ModelSetterDefault
     public static function getTemplateObject()
     {
         return '
-            public function set%nomeFunction%($%nome%) {
-                $this->%nome% = (($%nome% instanceof %nome%)? $%nome% : new %nome%($%nome%));
+            public function set%nomeFunction%($var) {
+
+                if ($var instanceof %nome%)  {
+                    $this->%nome% = $var;
+                } else {
+                    if (is_array($var) && isset($var["%nome%"]))   {
+                        $this->%nome% = new %nome%($var$var["%nome%"]);
+                    } else {
+                        $this->%nome% = new %nome%($var));
+                    }
+                }
+
+                // $this->%nome% = (($var instanceof %nome%)? $var : new %nome%($var));
+                
                 return $this;
             }
         
