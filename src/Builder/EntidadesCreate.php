@@ -91,7 +91,7 @@ public $selectExtra = null;
                     case 'OBJECT':
                         $template = ModelSetterDefault::getTemplateObject();
                         $val['nome'] = ucwords($val['nome']);
-                        $val['valorPadrao'] = '$dd';
+                        $val['valorPadrao'] = '$dd["' . $val['nome'] . '"] ?? $dd';
                         break;
                     case 'EXTERNA':
                         $template = ModelSetterDefault::getTemplateExterna();
@@ -210,7 +210,7 @@ public function read($id) {
     $ret = $this->list([$this->cpoId => (int) $id])[0] ?? null;
     if ($ret instanceof $this)  {
         $dd = (new Controller())->objectToArray($ret);
-        $this->populate($dd);
+        $this->init($dd);
     } else {
         $this->setError("ID not found \'$id\'");
     }
@@ -231,7 +231,7 @@ public function firstOrFail($param) : self
     }
 
     $dd = (new Controller())->objectToArray($item);
-    $this->populate($dd);
+    $this->init($dd);
 
     return $this;
 }
