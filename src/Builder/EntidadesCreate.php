@@ -334,7 +334,7 @@ public function toArray($showRelations=true) {
  * @param ?array $dd Data to create model
  * @return void
  */
-private function populate($dd)  {
+public function populate($dd)  {
       if (is_array($dd)) {
             $rel = ["setId", "setError"];
             $methods = get_class_methods($this);
