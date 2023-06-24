@@ -145,13 +145,14 @@ public $selectExtra = null;
  * Reconstruct de data of model
  *
  * @param array|null $dd
- * @return void
+ * @return self
  */
-private function init($dd = [])
+public function init($dd = [])
 {
 $this->error = [];
 ' . implode('  ', $constructSet) . '
 $this->populate($dd);
+return $this;
 }
 
 
@@ -333,7 +334,7 @@ public function toArray($showRelations=true) {
  * @param ?array $dd Data to create model
  * @return void
  */
-public function populate($dd)  {
+private function populate($dd)  {
       if (is_array($dd)) {
             $rel = ["setId", "setError"];
             $methods = get_class_methods($this);
