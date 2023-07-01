@@ -46,9 +46,6 @@ abstract class AbstractApiRestController extends ControllerDefault
                     $dependencyName = $parameter->getName();
                     $dependencyClass = $parameter->getType();
 
-                    if (null === $dependencyClass) {
-                        continue;
-                    }
 
                     switch (true) {
                         case $dependencyClass !== null && !$dependencyClass->isBuiltin():
@@ -58,10 +55,13 @@ abstract class AbstractApiRestController extends ControllerDefault
                         case $dependencyName === 'id':
                             $dependencies[] = (int) $this->dados['id'];
                             break;
-                        case $dependencyClass->getName() === 'array':
+                        case $dependencyClass !== null && $dependencyClass->getName() === 'array':
                             $dependencies[] = $this->dados;
                             break;
-                        case $dependencyClass->isBuiltin():
+                        case is_array($parameter->getDefaultValue()):
+                            $dependencies[] = $this->dados;
+                            break;
+                        case $dependencyClass !== null && $dependencyClass->isBuiltin():
                             throw new Exception("Dependency '$dependencyName' is builtin and could not be resolved.");
                             break;
                         default:
