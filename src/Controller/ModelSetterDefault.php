@@ -65,10 +65,7 @@ class ModelSetterDefault
          * @return null|object|array|' . $returnType . '
          */
         public function get%nomeFunction%(?string $format=null) {
-            if ($format === null) {return $this->%nome%);}
-            if ($format === \'json\') {return json_decode($this->%nome%);}
-            else if ($format === \'array\') {return json_decode($this->%nome%, true);}
-            else throw new \Exception(\'Format "$format" is invalid\')
+            return $this->getItem("%nome%", $format);
         }
 
         ';

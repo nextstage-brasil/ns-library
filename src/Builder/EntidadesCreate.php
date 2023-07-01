@@ -168,6 +168,18 @@ public function __destruct() {
     }
 }
 
+private function getItem($key, $format) {
+    if ($format === null) {
+        return $this->{$key};
+    } else if ($format === \'json\') {
+        return json_decode($this->{$key});
+    } else if ($format === \'array\') {
+        return json_decode($this->{$key}, true);
+    } else   {
+        throw new \Exception(\'Format "$format" is invalid\');
+    }
+}
+
 /**
  *
  * @param int $code
