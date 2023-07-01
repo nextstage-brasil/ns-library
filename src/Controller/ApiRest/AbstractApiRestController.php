@@ -46,6 +46,10 @@ abstract class AbstractApiRestController extends ControllerDefault
                     $dependencyName = $parameter->getName();
                     $dependencyClass = $parameter->getType();
 
+                    if (null === $dependencyClass) {
+                        continue;
+                    }
+
                     switch (true) {
                         case $dependencyClass !== null && !$dependencyClass->isBuiltin():
                             $dependencyInstance = $dependencyResolver->resolve($dependencyClass->getName());
