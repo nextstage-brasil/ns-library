@@ -41,6 +41,7 @@ class EntidadesCreate
 
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
+
 class ' . $dados['entidade'] . '{
 
 private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
@@ -212,6 +213,7 @@ public function responseIfHasError(int $code = 200) {
     public function setLockedForUpdate() : self {
         $this->setDao();    
         $this->dao->setLockForUpdate();
+        $this->dao->setInnerOrLeftJoin("inner");
         return $this;
     }
 
