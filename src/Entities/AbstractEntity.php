@@ -21,9 +21,7 @@ abstract class AbstractEntity
     {
         $this->table = $table;
         $this->cpoId = $cpoId;
-        if (count($relacionamentos) > 0) {
-            $this->relacoes = [$relacionamentos];
-        }
+        $this->relacoes = $relacionamentos;
     }
 
     public function init($dd = [])
