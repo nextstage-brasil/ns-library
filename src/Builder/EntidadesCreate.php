@@ -33,6 +33,7 @@ class EntidadesCreate
         $out = '<?php
             
             namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+
             use NsUtil\Helper;
             use NsLibrary\Controller\Controller;
             use NsLibrary\Controller\EntityManager;
@@ -42,14 +43,14 @@ class EntidadesCreate
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
 
-class ' . $dados['entidade'] . '{
+class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
 
-private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
-private $table = "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '";
-private $cpoId = "' . $dados['cpoID'] . '";
-private $dao = null;
-private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];
-public $selectExtra = null;
+// private $error; // armazena possiveis erros, inclusive, obrigatoriedades.
+// private $table = "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '";
+// private $cpoId = "' . $dados['cpoID'] . '";
+// private $dao = null;
+// private $relacoes = [' . implode(", ", $dados['relacionamentos']) . '];
+// public $selectExtra = null;
 ';
 
         // caso já exista um campo chamado ID, o setId e getId deve ser removido
@@ -138,9 +139,17 @@ public $selectExtra = null;
          *
          * @param array|null $dd
          */    
-               public function __construct($dd=[])  {
-                   $this->init($dd);
-               }
+
+         public function __construct($dd=[])  {
+
+            parent::__construct(
+                "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '", 
+                "' . $dados['cpoID'] . '", 
+                ' . implode(", ", $dados['relacionamentos']) . '
+            );
+
+            $this->init($dd);
+        }
                
 /**
  * Reconstruct de data of model
@@ -156,317 +165,18 @@ $this->populate($dd);
 return $this;
 }
 
-
-private function setDao() {
-    if ($this->dao === null)  {
-        $this->dao = new EntityManager($this);
-    }
+public static function getRelacionamentosStatic()   {
+    return (new self())->getRelacionamentos();
 }
-
-public function __destruct() {
-    if ($this->dao)  {
-        unset($this->dao);
-    }
-}
-
-private function getItem($key, $format) {
-    if ($format === null) {
-        return $this->{$key};
-    } else if ($format === \'json\') {
-        return json_decode($this->{$key});
-    } else if ($format === \'array\') {
-        return json_decode($this->{$key}, true);
-    } else   {
-        throw new \Exception(\'Format "$format" is invalid\');
-    }
-}
-
-/**
- *
- * @param int $code
- * @return void
- */
-public function responseIfHasError(int $code = 200) {
-    if ($this->getError() !== false) {
-        \NsUtil\Api::result($code, [\'error\' => $this->getError()]);
-    }
-}
-
-/**
- * Define o schema do objeto
- *
- * @param string $schema
- * @return void
- */
-    public function setSchema($schema) {
-        $t = explode(".", $this->table);
-        $table = array_pop($t);
-        $this->table = "$schema.$table";
-        //echo $this->table;
-        return $this;
-    }
-
-    /** 
-     * Marca a proxima transação select para bloquear a linha até seu update
-     * 
-     */
-    public function setLockedForUpdate() : self {
-        $this->setDao();    
-        $this->dao->setLockForUpdate();
-        $this->dao->setInnerOrLeftJoin("inner");
-        return $this;
-    }
-
-/**
- * Executa a busca de um item pelo ID da tabela 
- *
-* @param int $id
-* @return self
- */
-public function read($id) {
-    $ret = $this->list([$this->cpoId => (int) $id])[0] ?? null;
-    if ($ret instanceof $this)  {
-        $dd = (new Controller())->objectToArray($ret);
-        $this->init($dd);
-    } else {
-        $this->setError("ID not found \'$id\'");
-    }
-    return $this;
-}
+';
 
 
-public function firstOrFail($param) : self
-{
-    if (is_array($param)) {
-        $item = $this->list($param)[0];
-    } else {
-        $item = $this->list([$this->cpoId => (int) $param])[0] ?? null;
-    }
-
-    if (!($item instanceof $this)) {
-        throw new \NsUtil\Exceptions\ModelNotFoundException("Not found", 404);
-    }
-
-    $dd = (new Controller())->objectToArray($item);
-    $this->init($dd);
-
-    return $this;
-}
-
-/**
- * List of entities
- *
- * @param array $filters
- * @param integer $page
- * @param integer $limit
- * @param boolean $order
- * @param boolean $returnObjects
- * @return array
- */
-public function list(array $filters=[], int $page=0, int $limit=1000, $order=false) : array   {
-        $this->setDao();    
-        if ($order !== false) {
-            if (is_array($order)) {
-                $order = Helper::reverteName2CamelCase($order[\'0\']) . \' \' . $order[1];
-            }
-            $this->dao->setOrder($order);
-        }
-    return (array) $this->dao->getAll($filters, true, $page, $limit);
-}
-
-/**
- * Persiste o objeto
- *
- * @param string $onConflict
- * @return self
- */
-public function save($onConflict = "") : self {
-    $this->setDao();
-    $parts = explode(\'\\\\\', get_class($this));
-    $updateName = \'setUpdatedAt\' . array_pop($parts);
-    if (method_exists($this, $updateName))   {
-        $this->$updateName(\'NOW\');
-    }
-    $ret = $this->dao->setObject($this)->save($onConflict);
-    if ($ret->getError() !== false)   {
-        $this->setError($ret->getError());
-    }
-    return $this;
-}
-
-/**
- * Conta os itens conforme parametros
- *
- * @param array $filters
- * @return integer
- */
-public function count(array $filters=[]) : int   {
-    $this->setDao();    
-    return (int) $this->dao->count($filters);
-}
-
-/**
- * Retorna um objeto para ser anexado com padrões de paginacao
- *
- * @param array $filters
- * @return array
- */
-public function getPagination($atualPage, $limitPerPage,  $filters = []): array {
-    return Helper::pagination(
-        $atualPage,
-        $limitPerPage,
-        $this->count($filters)
-    );
-}
-
-/**
- * Remove um objeto
- *
- * @return bool|string
- */
-public function remove() {
-    $this->setDao();
-    $ret = $this->dao->setObject($this)->remove();
-    if ($ret === true)   {
-        $this->init([]);
-    }
-    return $ret;
-}
-
-/**
- * Undocumented function
- *
- * @return array
- */
-public function toArray($showRelations=true) {
-    return (new Controller())->objectToArray($this, $showRelations);
-}
-    
-/**
- * Popula o objeto com os dados em DD conforme campos
- *
- * @param ?array $dd Data to create model
- * @return void
- */
-public function populate($dd)  {
-      if (is_array($dd)) {
-            $rel = ["setId", "setError"];
-            $methods = get_class_methods($this);
-            if (method_exists($this, "getRelacionamentos")) {
-                $relacionamentos = $this->getRelacionamentos();
-                foreach ($relacionamentos as $value) {
-                    $entidade = ucwords(Helper::name2CamelCase($value["tabela"]));
-                    $rel[] = "set$entidade";
-                    unset($methods["set$entidade"]);
-                }
-            }
-            foreach ($methods as $set) {
-                if (array_search($set, $rel)) { // se encontrar, pular pq já foi setado anteriormente
-                    continue;
-                }
-                if (mb_substr((string)$set, 0, 3) === "set") {
-                    $file = lcfirst(mb_substr((string)$set, 3, 300));
-                    
-                    // $dd[$file] = ((!isset($dd[$file])) ? $dd[Helper::reverteName2CamelCase($file)] : $dd[$file]);
-                    if (!isset($dd[$file])) {
-                        $dd[$file] = ((isset($dd[Helper::reverteName2CamelCase($file)]))?$dd[Helper::reverteName2CamelCase($file)]:null);
-                    }
-                    if (isset($dd[$file])) {
-                        $this->$set($dd[$file]);
-                    }
-                }
-            }
-        }
-}';
-
-        $rel = '
-                // metodo para retornar os campos de relacionamento entre as entidades
-        public function getRelacionamentos()   {
-            return $this->relacoes;
-        }
-        public static function getRelacionamentosStatic()   {
-            return (new ' . $dados['entidade'] . '())->getRelacionamentos();
-        }
-       
-        public function addRelacionamento($tabela, $campoNaTabelaReferenciada = "", $campoNestaEntidade = "") : self {
-            $schema = "public";;
-            if (!is_array($tabela)) {
-                if (strpos($tabela, ".") !== false)   {
-                    $parts = explode(".", $tabela);
-                    $schema = $parts[0];
-                    $tabela = $parts[1];
-                } 
-                $array = ["tabela" => $tabela, "schema" => $schema, "cpoRelacao" => $campoNaTabelaReferenciada, "cpoOrigem" => $campoNestaEntidade];
-            } else {
-                $array = $tabela;
-            }
-            $this->relacoes[] = $array;
-    
-            return $this;
-        }
-    
-    ';
-
-        $out = $out . implode("", $propriedades) . $construct . implode("", $getSet) . $rel . '}';
+        $out = $out . implode("", $propriedades) . $construct . implode("", $getSet) . '}';
 
         return $out;
     }
 
-
-
-    public static $getterSetterPadrao = '
-
-    // Metodos obrigatório pois EntityManager depende deles 
-
-    public function getId() {
-        return $this->%cpoID%;
-    }
-
-    public function setId($id) {
-        $this->%cpoID% = (int) $id;
-        return $this;
-    }
-
-    public function setError($error) {
-        if ($error === false) {
-            $this->error = [];
-            return $this;
-        }
-        
-        if (is_string($error)) {
-            $error = [$error];
-        }
-        $this->error = (array) $error;
-        return $this;
-    }
-
-    public function getError() {
-        if (is_array($this->error)) {
-            if (count($this->error) === 0) {
-                return false;
-            }
-        }
-        return $this->error;
-    }
-
-    public function getErrorToString() {
-        if (is_array($this->getError())) {
-            return implode(",", $this->getError());
-        } else {
-            return $this->getError();
-        }
-    }
-
-    public function getTable() {
-        return $this->table;
-    }
-
-    public function getCpoId() {
-        return $this->cpoId;
-    }            
-    
-    // Demais métodos getters e setters
-            ';
+    public static $getterSetterPadrao = '';
 
     public static $setterConstruct = '$this->set%nomeFunction%(%valorPadrao%);';
 }
