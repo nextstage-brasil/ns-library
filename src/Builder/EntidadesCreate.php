@@ -34,11 +34,11 @@ class EntidadesCreate
             
             namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
 
-            use NsUtil\Helper;
-            use NsLibrary\Controller\Controller;
-            use NsLibrary\Controller\EntityManager;
+            // use NsUtil\Helper;
+            // use NsLibrary\Controller\Controller;
+            // use NsLibrary\Controller\EntityManager;
             use NsLibrary\Controller\ModelSetterDefault;
-            use function NsUtil\json_decode;
+            // use function NsUtil\json_decode;
 
 /** Created by NsLibrary Framework **/
 if (!defined("SISTEMA_LIBRARY")) {die("' . $dados['entidade'] . ': Direct access not allowed. Define the SISTEMA_LIBRARY contant to use this class.");}               
@@ -125,10 +125,11 @@ class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
             $val['notnull'] = (($val['notnull'] === true) ? "true" : "false");
 
             // propriedades
-            $propriedades[] = 'private $' . $val['nome'] . ';';
+            $propriedades[] = 'protected $' . $val['nome'] . ';';
 
             // $template = utf8_encode($template);
             $getSet[] = (new Template($template, $val, '%', '%'))->render();
+
             $constructSet[] = (new Template(self::$setterConstruct, $val, '%', '%'))->render();
         }
 
@@ -145,7 +146,9 @@ class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
             parent::__construct(
                 "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '", 
                 "' . $dados['cpoID'] . '", 
-                ' . implode(", ", $dados['relacionamentos']) . '
+                [ 
+                    ' . implode(",\n", $dados['relacionamentos']) . '
+                ]
             );
 
             $this->init($dd);
@@ -176,7 +179,7 @@ public static function getRelacionamentosStatic()   {
         return $out;
     }
 
-    public static $getterSetterPadrao = '';
+    public static $getterSetterPadrao = '//';
 
     public static $setterConstruct = '$this->set%nomeFunction%(%valorPadrao%);';
 }

@@ -14,14 +14,16 @@ abstract class AbstractEntity
     protected $table;
     protected $cpoId;
     protected $dao = null;
-    protected array $relacoes;
+    protected array $relacoes = [];
     public $selectExtra = null;
 
     public function __construct(string $table, string $cpoId, array $relacionamentos)
     {
         $this->table = $table;
         $this->cpoId = $cpoId;
-        $this->relacoes = [$relacionamentos];
+        if (count($relacionamentos) > 0) {
+            $this->relacoes = [$relacionamentos];
+        }
     }
 
     public function init($dd = [])
