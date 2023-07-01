@@ -47,7 +47,7 @@ abstract class AbstractEntity
      * Marca a proxima transação select para bloquear a linha até seu update
      * 
      */
-    public function setLockedForUpdate(): self
+    public function setLockedForUpdate()
     {
         $this->setDao();
         $this->dao->setLockForUpdate();
@@ -177,7 +177,7 @@ abstract class AbstractEntity
      * Executa a busca de um item pelo ID da tabela 
      *
      * @param int $id
-     * @return self
+     * @return static
      */
     public function read($id)
     {
@@ -191,7 +191,7 @@ abstract class AbstractEntity
         return $this;
     }
 
-    public function firstOrFail($param): self
+    public function firstOrFail($param)
     {
         if (is_array($param)) {
             $item = $this->list($param)[0];
@@ -213,9 +213,9 @@ abstract class AbstractEntity
      * Persiste o objeto
      *
      * @param string $onConflict
-     * @return self
+     * @return static
      */
-    public function save($onConflict = ""): self
+    public function save($onConflict = "")
     {
         $this->setDao();
         $parts = explode('\\', get_class($this));
@@ -326,7 +326,7 @@ abstract class AbstractEntity
         return $this->relacoes;
     }
 
-    public function addRelacionamento($tabela, $campoNaTabelaReferenciada = "", $campoNestaEntidade = ""): self
+    public function addRelacionamento($tabela, $campoNaTabelaReferenciada = "", $campoNestaEntidade = "")
     {
         $schema = "public";;
         if (!is_array($tabela)) {
