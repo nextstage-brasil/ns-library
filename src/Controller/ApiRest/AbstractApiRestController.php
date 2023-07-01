@@ -6,6 +6,7 @@ use Exception;
 use NsLibrary\Controller\ControllerDefault;
 use NsUtil\Api;
 use NsUtil\Config;
+use NsUtil\Log;
 use ReflectionMethod;
 
 use function NsUtil\dd;
@@ -75,6 +76,9 @@ abstract class AbstractApiRestController extends ControllerDefault
                 $this->api->error('', Api::HTTP_NOT_IMPLEMENTED);
             }
         } catch (Exception $exc) {
+
+            Log::logTxt('/tmp/ns-library_dependency-error.log', $exc->getMessage());
+
             $this->api->error($exc->getMessage(), Api::HTTP_BAD_REQUEST);
         }
     }
