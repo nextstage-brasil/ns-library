@@ -11,17 +11,23 @@ use NsUtil\Helper;
 abstract class AbstractEntity
 {
     protected $error; // armazena possiveis erros, inclusive, obrigatoriedades.
+    protected $schema;
     protected $table;
     protected $cpoId;
     protected $dao = null;
     protected array $relacoes = [];
     public $selectExtra = null;
+    public static $externalDao = null;
 
-    public function __construct(string $table, string $cpoId, array $relacionamentos)
+    public function __construct(string $table, string $cpoId, array $relacionamentos, ?EntityManagerInterface $dao = null)
     {
         $this->table = $table;
         $this->cpoId = $cpoId;
         $this->relacoes = $relacionamentos;
+        $this->schema = explode(".", $this->table)[0];
+        if (null !== $dao) {
+            $this->setExternalDao($dao);
+        }
     }
 
     public function init($dd = [])
@@ -29,10 +35,17 @@ abstract class AbstractEntity
         return $this;
     }
 
+    public function setExternalDao(EntityManagerInterface $dao)
+    {
+        $this->dao = $dao;
+    }
+
     protected function setDao()
     {
         if ($this->dao === null) {
-            $this->dao = new EntityManager($this);
+            $this->dao = null !== self::$externalDao
+                ? new self::$externalDao($this)
+                : new EntityManager($this);
         }
     }
 
@@ -148,7 +161,20 @@ abstract class AbstractEntity
         $t = explode(".", $this->table);
         $table = array_pop($t);
         $this->table = "$schema.$table";
+        $this->schema = $schema;
         return $this;
+    }
+
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
+    public function getTablenameWithoutSchema()
+    {
+        $ret = explode('.', $this->table);
+        $table = array_pop($ret);
+        return $table;
     }
 
     /**

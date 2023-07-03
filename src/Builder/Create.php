@@ -17,13 +17,17 @@ class Create
     private $onlyGetData = false;
     private $quiet = true;
 
+    private array $prefixos;
+
     /**
      * Método para criação das entidades ORM conforme constam no banco de dados Postgresql
      * @param array $schemasLoad
      */
-    public function __construct(array $schemasLoad = ['public'])
+    public function __construct(array $schemasLoad = ['public'], array $prefixos = ['mem_', 'sis_', 'anz_', 'aux_', 'app_'])
     {
         $database = Config::getData('database')['dbname'];
+
+        $this->prefixos = $prefixos;
 
         // Schemas a ler
         $schemasLoad = array_map(function ($val) {
@@ -155,6 +159,7 @@ class Create
             'float' => 'double',
             'decimal' => 'double',
             'numeric' => 'double',
+
             //textos
             'varchar' => 'string',
             'char' => 'string',
@@ -167,7 +172,9 @@ class Create
             'timestamp without time zone' => 'timestamp',
             'time without time zone' => 'int',
             'enum' => 'string',
-            'text' => 'string'
+            'text' => 'string',
+            'USER-DEFINED' => 'string',
+            'citext' => 'string',
         ];
 
         $rota = [
@@ -201,11 +208,19 @@ class Create
         ];
 
         $defaults = [
+            '::integer' => '',
+            '\'{}\'::jsonb' => "'{}'",
+            '\'[]\'::jsonb' => "'{}'",
             'CURRENT_TIMESTAMP' => '',
             'now()' => "date('Y-m-d H:i:s')",
-            'nextval' => ''
+            'nextval' => '',
+            '::text' => '',
+            '::character varying' => '',
+            '::bpchar' => '',
         ];
-        $prefixos = ['mem_', 'sis_', 'anz_', 'aux_', 'app_'];
+
+        $prefixos = $this->prefixos;
+
         $query = $this->querys;
 
         // Obter tabelas

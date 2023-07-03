@@ -30,13 +30,13 @@ class ModelSetterDefault
         'html' => ['html', 'string', 'string'],
     ];
 
-    public static function getTemplate($type)
+    public static function getTemplate($originalType)
     {
-        list($type, $entryType, $returnType) = self::$config[$type] ?? ['none', 'no-tem', 'none'];
+        list($type, $entryType, $returnType) = self::$config[$originalType] ?? ['none', 'no-tem', 'none'];
 
         $fn = 'set' . ucwords((string) $type ?? '');
         if (!method_exists(ModelSetterDefault::class, $fn)) {
-            throw new Exception("Entities Create: Invalid Template Type: " . $type);
+            throw new Exception("Entities Create: Invalid Template Type: " . $originalType);
         }
         return  '
         /**

@@ -8,6 +8,7 @@ use NsUtil\Helper;
 use ReflectionClass;
 use NsLibrary\Config;
 use NsLibrary\Connection;
+use NsLibrary\Entities\EntityManagerInterface;
 use NsLibrary\Exceptions\ModelNotFoundException;
 
 /**
@@ -15,19 +16,19 @@ use NsLibrary\Exceptions\ModelNotFoundException;
  *
  * @author NextStage
  */
-class EntityManager
+class EntityManager implements EntityManagerInterface
 {
 
-    private $object;
-    private $message;
+    protected $object;
+    protected $message;
     public $con;
-    private $order;
-    private $countUploadfile;
-    private $innerOrLeftJoin; // para definir se a consulta será por left ou inner join
+    protected $order;
+    protected $countUploadfile;
+    protected $innerOrLeftJoin; // para definir se a consulta será por left ou inner join
     public $selectExtra, $selectExtraB; // serve para injetar um select extra. será colocado entre parenteses e zerado a cada chamada;
-    private $groupBy;
-    private $query;
-    private $lockedForUpdate = false;
+    protected $groupBy;
+    protected $query;
+    protected $lockedForUpdate = false;
 
     public function __construct($object)
     {
@@ -103,6 +104,7 @@ class EntityManager
         return $this;
     }
 
+
     /**
      * Usado para registrar inserts e updates
      * Retorna Array:
@@ -112,7 +114,7 @@ class EntityManager
      * 3 - ID da opera��o
      * 4 - Link para retorno completo
      */
-    public function save($onConflict = '')
+    public function save($onConflict = '', $audit = true)
     {
         if ($this->object->getError() !== false) {
             //Log::log('entityManager-error', $this->object->getTable() . ': ' . json_encode($this->object->getError()));
@@ -196,7 +198,7 @@ class EntityManager
     /**
      * Ira gravar log com as diferencas entre arrays
      */
-    private function auditoria()
+    protected function auditoria()
     {
         if (array_search(get_class($this->object), ['ApiLog']) === false) {
             $app = new Controller();
@@ -256,7 +258,7 @@ class EntityManager
         return $out;
     }
 
-    public function remove()
+    public function remove($audit = true)
     {
         try {
             $alive = $this->setCondicaoIsAlive();
@@ -390,7 +392,7 @@ class EntityManager
         $nsEnt = new $objetoAtual();
         while ($dd = $this->con->next()) {
             $entitie = clone ($nsEnt);
-            $entitie->populate($dd);
+            $entitie->init($dd);
             //new $objetoAtual($dd);
             // relacionamnetos
             foreach ($relacoes as $relacao) {
@@ -404,7 +406,7 @@ class EntityManager
                     }
                 }
                 $newEntitie = clone ($$entidade);
-                $newEntitie->populate($dd);
+                $newEntitie->init($dd);
 
                 // Caso a adição de relacionamento tenha sido feito manualmente, apenas setar o valor da propriedade
                 $set = 'set' . $entidade;
@@ -525,7 +527,7 @@ class EntityManager
         return $temp->getById($pk, false);
     }
 
-    public function getById($pk, $relacao = true, $dd = false)
+    public function getById($pk, $relacao = true)
     {
         return $this->getAll([$this->object->getCpoId() => $pk], $relacao)[0];
     }
@@ -555,7 +557,7 @@ class EntityManager
         return $this->query;
     }
 
-    public function count($condicao)
+    public function count($condicao, $useQueryCount = true)
     {
         $tabela = $this->object->getTable();
         $query = 'select count(' . Helper::reverteName2CamelCase($this->object->getCpoId()) . ') as qtde '

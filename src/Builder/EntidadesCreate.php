@@ -11,6 +11,7 @@ class EntidadesCreate
 {
 
     private static $namespace;
+    public static bool $ignoreNamespace = false;
 
     public static function save($dados, $entidade)
     {
@@ -29,15 +30,23 @@ class EntidadesCreate
     {
         $dados['relacionamentos'] = ((isset($dados['relacionamentos']) && is_array($dados['relacionamentos'])) ? $dados['relacionamentos'] : []);
         $schema = $dados['schema'] ?? 'public';
-        self::$namespace = (($schema === 'public') ? null : ucwords($schema));
+        // self::$namespace = (($schema === 'public') ? null : ucwords($schema));
+        self::$namespace = self::$ignoreNamespace || $schema === 'public'
+            ? null
+            : ucwords($schema);
         $out = '<?php
-            
-            namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';
+            ' .
+            (self::$ignoreNamespace
+                ? ''
+                : 'namespace ' . Config::getData('psr4Name') . '\NsLibrary\Entities' . ((self::$namespace) ? '\\' . self::$namespace : '') . ';'
+            )
+            . '
 
             // use NsUtil\Helper;
             // use NsLibrary\Controller\Controller;
             // use NsLibrary\Controller\EntityManager;
             use NsLibrary\Controller\ModelSetterDefault;
+            use NsLibrary\Entities\EntityManagerInterface;
             // use function NsUtil\json_decode;
 
 /** Created by NsLibrary Framework **/
@@ -117,6 +126,7 @@ class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
                         $template = ModelSetterDefault::getTemplate($val['tipo']);
                         break;
                     default:
+                        throw new \Exception("Entities Create: Invalid Template Type: " . var_export($val, true));
                         $template = ModelSetterDefault::getTemplate('NOT_IMPLEMENTED: ' . $val['tipo']);
                 }
             }
@@ -141,14 +151,15 @@ class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
          * @param array|null $dd
          */    
 
-         public function __construct($dd=[])  {
+         public function __construct($dd=[], ?EntityManagerInterface $dao = null)  {
 
             parent::__construct(
                 "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '", 
                 "' . $dados['cpoID'] . '", 
                 [ 
                     ' . implode(",\n", $dados['relacionamentos']) . '
-                ]
+                ], 
+                $dao
             );
 
             $this->init($dd);
