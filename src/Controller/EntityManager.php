@@ -170,13 +170,15 @@ class EntityManager implements EntityManagerInterface
                     $this->object->setId($dd['nsnovoid']);
                 }
             } catch (Exception $exc) {
-                foreach (Config::getData('errors') as $chave => $value) {
-                    if (stripos(strtolower($exc->getMessage()), strtolower($chave)) > -1) {
-                        $error[] = $value;
-                    }
-                }
-                $error = (is_array($error) ? $error[0] : $exc->getMessage()) . ((Config::getData('dev')) ? $exc->getMessage() . $this->con->query : '');
-                $this->object->setError($error);
+                Log::logTxt('/tmp/error-ns-library-exception-save.log', $exc->getMessage());
+
+                // foreach (Config::getData('errors') as $chave => $value) {
+                //     if (stripos(strtolower($exc->getMessage()), strtolower($chave)) > -1) {
+                //         $error[] = $value;
+                //     }
+                // }
+                // $error = (is_array($error) ? $error[0] : $exc->getMessage()) . ((Config::getData('dev')) ? $exc->getMessage() . $this->con->query : '');
+                $this->object->setError($exc->getMessage());
             }
         } catch (Exception $e) {
             // traduzir erros conhecidos
