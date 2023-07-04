@@ -235,6 +235,15 @@ abstract class AbstractEntity
         return $this;
     }
 
+    public function onError(\Closure $fn)
+    {
+        if ($this->getError() !== false) {
+            return call_user_func($fn, $this->getError());
+        }
+
+        return $this;
+    }
+
     /**
      * Persiste o objeto
      *

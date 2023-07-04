@@ -75,18 +75,17 @@ class ModelSetterDefault
     {
         return '
             public function set%nomeFunction%($var) {
-
-                if ($var instanceof %nome%)  {
-                    $this->%nome% = $var;
-                } else {
-                    if (is_array($var) && isset($var["%nome%"]))   {
+                switch (true) {
+                    case $var instanceof %nome%:
+                        $this->%nome% = $var;
+                        break;
+                    case is_array($var) && isset($var["%nome%"]):
                         $this->%nome% = new %nome%($var["%nome%"]);
-                    } else {
+                        break;
+                    default:
                         $this->%nome% = new %nome%($var);
-                    }
+                        break;
                 }
-
-                // $this->%nome% = (($var instanceof %nome%)? $var : new %nome%($var));
 
                 return $this;
             }
@@ -325,6 +324,15 @@ class ModelSetterDefault
                 $error[$fieldName] = $comentError;
             } else {
                 $varToSet =  Helper::getValByType($content, 'int');
+
+                // em casos de campo "id", deve sempre retornar um interior e não null
+                if (
+                    Helper::compareString(substr($fieldName, 0, 2), 'id')
+                    ||
+                    Helper::compareString(substr($fieldName, strlen($fieldName), -2), 'id')
+                ) {
+                    $varToSet = (int) $varToSet;
+                }
             }
         }
     }
