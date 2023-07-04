@@ -11,7 +11,7 @@ use NsUtil\Helper;
 abstract class AbstractEntity
 {
     protected $error; // armazena possiveis erros, inclusive, obrigatoriedades.
-    protected $schema;
+    // protected $schema;
     protected $table;
     protected $cpoId;
     protected $dao = null;
@@ -24,7 +24,7 @@ abstract class AbstractEntity
         $this->table = $table;
         $this->cpoId = $cpoId;
         $this->relacoes = $relacionamentos;
-        $this->schema = explode(".", $this->table)[0];
+        // $this->schema = explode(".", $this->table)[0];
         if (null !== $dao) {
             $this->setExternalDao($dao);
         }
@@ -161,13 +161,13 @@ abstract class AbstractEntity
         $t = explode(".", $this->table);
         $table = array_pop($t);
         $this->table = "$schema.$table";
-        $this->schema = $schema;
+        // $this->schema = $schema;
         return $this;
     }
 
     public function getSchema()
     {
-        return $this->schema;
+        return explode(".", $this->table)[0] ?? 'public';
     }
 
     public function getTablenameWithoutSchema()
