@@ -195,6 +195,7 @@ abstract class AbstractController
         ]);
 
         if (is_object($object)) {
+
             // Para limpar os erros se existirem
             if (method_exists($object, 'getError')) {
                 $object->getError();

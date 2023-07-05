@@ -13,8 +13,8 @@ class Controller extends AbstractController
         {
         }
 
-        public static function toArray($object, $detalhes = false)
+        public static function toArray($object, $detalhes = false, array $fieldToIgnore = [])
         {
-                return (new self)->objectToArray($object, $detalhes);
+                return (new self())->objectToArray($object, $detalhes, $fieldToIgnore);
         }
 }
