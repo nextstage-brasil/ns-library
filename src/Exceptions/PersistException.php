@@ -4,6 +4,6 @@ namespace NsLibrary\Exceptions;
 
 use Exception;
 
-class CreateErrorException extends Exception
+class PersistException extends Exception
 {
 }
