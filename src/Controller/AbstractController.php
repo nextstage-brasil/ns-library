@@ -184,9 +184,16 @@ abstract class AbstractController
         return $dd;
     }
 
-    public function objectToArray($object, $relacoes = true)
+    public function objectToArray($object, $relacoes = true, array $fieldToIgnore = [])
     {
         $array = array();
+
+        $fieldToIgnore = array_merge($fieldToIgnore, [
+            'dao', 'fts', 'selectExtra', 'table', 'schema', 'cpoId',
+            'senha', 'password', 'senhaUsuario', 'tokenAlteraSenhaUsuario',
+            'relacoes', 'ftsUploadfile'
+        ]);
+
         if (is_object($object)) {
             // Para limpar os erros se existirem
             if (method_exists($object, 'getError')) {
@@ -197,14 +204,15 @@ abstract class AbstractController
 
             foreach ($reflectionClass->getProperties() as $property) {
                 $property->setAccessible(true);
+
                 // campo nao permitido, tabela logs, e detalhes
-                if ((int) array_search($property->getName(), ['', 'table', 'relacoes', 'cpoId', 'senha', 'password', 'dao', 'fts', 'selectExtra']) > 0) {
+                if ((int) array_search($property->getName(), $fieldToIgnore) !== false) {
                     continue;
                 }
 
                 if (is_object($property->getValue($object))) { // caso object, repetir chamada
                     if ($relacoes) {
-                        $array[$property->getName()] = $this->objectToArray($property->getValue($object));
+                        $array[$property->getName()] = $this->objectToArray($property->getValue($object), $relacoes, $fieldToIgnore);
                     } else {
                         unset($array[$property->getName()]);
                     }
@@ -240,9 +248,10 @@ abstract class AbstractController
             }
         } else if (is_array($object)) {
             foreach ($object as $value) {
-                $array[] = $this->objectToArray($value);
+                $array[] = $this->objectToArray($value, $relacoes, $fieldToIgnore);
             }
         }
+
         return $array;
     }
 
