@@ -207,7 +207,7 @@ abstract class AbstractController
                 $property->setAccessible(true);
 
                 // campo nao permitido, tabela logs, e detalhes
-                if ((int) array_search($property->getName(), $fieldToIgnore) !== false) {
+                if (array_search($property->getName(), $fieldToIgnore) !== false) {
                     continue;
                 }
 
