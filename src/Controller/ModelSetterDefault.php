@@ -327,9 +327,10 @@ class ModelSetterDefault
 
                 // em casos de campo "id", deve sempre retornar um interior e não null
                 if (
-                    Helper::compareString(substr($fieldName, 0, 2), 'id')
-                    ||
-                    Helper::compareString(substr($fieldName, strlen($fieldName), -2), 'id')
+                    $notNull && (Helper::compareString(substr($fieldName, 0, 2), 'id')
+                        ||
+                        Helper::compareString(substr($fieldName, strlen($fieldName), -2), 'id')
+                    )
                 ) {
                     $varToSet = (int) $varToSet;
                 }
