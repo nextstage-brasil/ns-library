@@ -218,8 +218,14 @@ abstract class AbstractController
                         unset($array[$property->getName()]);
                     }
                 } else {
+
                     // core do parse
-                    $VALOR = $property->getValue($object);
+                    $fn = 'get' . ucwords(Helper::name2CamelCase($property->getName()));
+                    if (method_exists($object, $fn)) {
+                        $VALOR = $object->$fn();
+                    } else {
+                        $VALOR = $property->getValue($object);
+                    }
 
                     // type by comment
                     $docComment = $property->getDocComment();
