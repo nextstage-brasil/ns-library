@@ -220,6 +220,21 @@ abstract class AbstractController
                 } else {
                     // core do parse
                     $VALOR = $property->getValue($object);
+
+                    // type by comment
+                    $docComment = $property->getDocComment();
+                    $propertyType = null;
+                    if ($docComment !== false) {
+                        preg_match('/@var\s+([^\s]+)/', $docComment, $matches);
+                        if (isset($matches[1])) {
+                            $propertyType = $matches[1];
+                            if ($propertyType === '?string') {
+                                $propertyType = 'string';
+                            }
+                        }
+                    }
+
+
                     switch (true) {
                         case ($VALOR === 'true'):
                             $array[$property->getName() . 'F'] = 'Sim';
@@ -229,6 +244,7 @@ abstract class AbstractController
                             break;
                         case (strpos($property->getName(), 'xtras') === 1): // campos extras, tipo JSON
                             $VALOR = json_decode($VALOR, true);
+                            $propertyType = null;
                             break;
                         default:
                             if (is_string($VALOR)) {
@@ -236,10 +252,16 @@ abstract class AbstractController
                                 $tmp = json_decode($VALOR, true);
                                 if (json_last_error() === JSON_ERROR_NONE) {
                                     $VALOR = $tmp;
+                                    $propertyType = null;
                                 }
                             }
                     }
                     $array[$property->getName()] = $VALOR;
+
+                    // set type 
+                    if ($propertyType !== null && $VALOR !== null) {
+                        settype($array[$property->getName()], $propertyType);
+                    }
                 }
                 $property->setAccessible(false);
             }

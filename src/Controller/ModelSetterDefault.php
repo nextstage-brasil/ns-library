@@ -30,6 +30,13 @@ class ModelSetterDefault
         'html' => ['html', 'string', 'string'],
     ];
 
+
+    public static function getReturnTypeByOriginalType($originalType)
+    {
+        list($type, $entryType, $returnType) = self::$config[$originalType] ?? ['none', 'no-tem', $originalType];
+        return $returnType;
+    }
+
     public static function getTemplate($originalType)
     {
         list($type, $entryType, $returnType) = self::$config[$originalType] ?? ['none', 'no-tem', 'none'];
