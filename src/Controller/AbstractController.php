@@ -243,9 +243,11 @@ abstract class AbstractController
 
                     switch (true) {
                         case ($VALOR === 'true'):
+                        case ($VALOR === true):
                             $array[$property->getName() . 'F'] = 'Sim';
                             break;
                         case ($VALOR === 'false'):
+                        case ($VALOR === false):
                             $array[$property->getName() . 'F'] = 'Não';
                             break;
                         case (strpos($property->getName(), 'xtras') === 1): // campos extras, tipo JSON
