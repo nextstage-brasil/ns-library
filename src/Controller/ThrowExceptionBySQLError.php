@@ -65,7 +65,7 @@ class ThrowExceptionBySQLError
         }
 
         if (null !== $notFoundExceptionClosure && is_callable($notFoundExceptionClosure)) {
-            $notFoundExceptionClosure($exc);
+            $notFoundExceptionClosure();
         }
     }
 }
