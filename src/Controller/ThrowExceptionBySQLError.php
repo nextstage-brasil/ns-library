@@ -17,7 +17,7 @@ class ThrowExceptionBySQLError
      * @var array
      */
     private static $mappedErrors = [
-        '[23505]' => ['exception' => UniqueException::class, 'message' => null, 'closure' => null]
+        // '[23505]' => ['exception' => UniqueException::class, 'message' => null, 'closure' => null]
     ];
 
     /**
