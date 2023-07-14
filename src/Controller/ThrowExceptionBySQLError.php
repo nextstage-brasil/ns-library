@@ -57,7 +57,7 @@ class ThrowExceptionBySQLError
             if (stripos($exc->getMessage(), $chave) !== false) {
 
                 if (null !== $item['closure'] && is_callable($item['closure'])) {
-                    call_user_func($item['closure'], $exc);
+                    $item['closure']($exc);
                 }
 
                 throw new $item['exception']($item['message'] ?? $exc->getMessage());
