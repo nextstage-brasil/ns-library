@@ -17,24 +17,29 @@ class ThrowExceptionBySQLError
      * @var array
      */
     private static $mappedErrors = [
-        '[23505]' => ['exception' => UniqueException::class, 'message' => null]
+        '[23505]' => ['exception' => UniqueException::class, 'message' => null, 'closure' => null]
     ];
 
     /**
      * Adds a new mapping for SQL error code to exception class and optional friendly error message.
      *
-     * @param string $key                The SQL error code to map.
-     * @param string $exceptionClassname The fully qualified name of the exception class to throw.
+     * @param string $key                  The SQL error code to map.
+     * @param string $exceptionClassname   The fully qualified name of the exception class to throw.
      * @param string|null $friendlyMessage The friendly error message to use, or null to use the original exception message.
+     * @param Closure|null $fn             The function to execute on assert message.
      *
      * @throws Exception If the provided exception class does not exist.
      */
-    public static function addMappedErrors(string $key, string $exceptionClassname, ?string $friendlyMessage = null)
-    {
+    public static function addMappedErrors(
+        string $key,
+        string $exceptionClassname,
+        ?string $friendlyMessage = null,
+        ?Closure $fn = null
+    ) {
         if (!class_exists($exceptionClassname)) {
             throw new Exception("Classname $exceptionClassname not found for ThrowExceptionBySQLError function");
         }
-        self::$mappedErrors[$key] = ['exception' => $exceptionClassname, 'message' => $friendlyMessage];
+        self::$mappedErrors[$key] = ['exception' => $exceptionClassname, 'message' => $friendlyMessage, 'closure' => $fn];
     }
 
     /**
@@ -50,6 +55,11 @@ class ThrowExceptionBySQLError
     {
         foreach (self::$mappedErrors as $chave => $item) {
             if (stripos($exc->getMessage(), $chave) !== false) {
+
+                if (null !== $item['closure'] && is_callable($item['closure'])) {
+                    call_user_func($item['closure'], $exc);
+                }
+
                 throw new $item['exception']($item['message'] ?? $exc->getMessage());
             }
         }
