@@ -51,7 +51,7 @@ class ThrowExceptionBySQLError
      *
      * @throws Exception If a mapped SQL error code is found and a corresponding exception is thrown.
      */
-    public static function handle(Exception $exc, ?Closure $fn = null): void
+    public static function handle(Exception $exc): void
     {
         foreach (self::$mappedErrors as $chave => $item) {
             if (stripos($exc->getMessage(), $chave) !== false) {
