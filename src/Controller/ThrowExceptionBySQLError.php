@@ -47,11 +47,11 @@ class ThrowExceptionBySQLError
      * and throws the corresponding exception with the provided friendly error message if applicable.
      *
      * @param Exception $exc The exception to handle.
-     * @param Closure|null $fn An optional closure to execute before throwing the exception.
+     * @param Closure|null $notFoundExceptionClosure An optional closure to execute on exception not found in configs.
      *
      * @throws Exception If a mapped SQL error code is found and a corresponding exception is thrown.
      */
-    public static function handle(Exception $exc): void
+    public static function handle(Exception $exc, ?Closure $notFoundExceptionClosure = null): void
     {
         foreach (self::$mappedErrors as $chave => $item) {
             if (stripos($exc->getMessage(), $chave) !== false) {
@@ -62,6 +62,10 @@ class ThrowExceptionBySQLError
 
                 throw new $item['exception']($item['message'] ?? $exc->getMessage());
             }
+        }
+
+        if (null !== $notFoundExceptionClosure && is_callable($notFoundExceptionClosure)) {
+            $notFoundExceptionClosure($exc);
         }
     }
 }
