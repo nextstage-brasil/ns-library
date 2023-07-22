@@ -191,7 +191,7 @@ abstract class AbstractController
         $fieldToIgnore = array_merge($fieldToIgnore, [
             'dao', 'fts', 'selectExtra', 'table', 'schema', 'cpoId',
             'senha', 'password', 'senhaUsuario', 'tokenAlteraSenhaUsuario',
-            'relacoes', 'ftsUploadfile'
+            'relacoes', 'ftsUploadfile', 'externalDao'
         ]);
 
         if (is_object($object)) {
