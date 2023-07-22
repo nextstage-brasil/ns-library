@@ -5,12 +5,19 @@ namespace NsLibrary\Controller\ApiRest;
 use Exception;
 use NsUtil\Api;
 use ReflectionClass;
+use stdClass;
 
 class DependencyResolver
 {
     private $resolvedInstances = [];
 
     private $api;
+
+    /**
+     * @var array $bind
+     * A private associative array that holds the mappings between class
+     */
+    public static array $bind = [];
 
     public function __construct()
     {
@@ -39,15 +46,22 @@ class DependencyResolver
             $dependencyName = $parameter->getName();
             $dependencyClass = $parameter->getType();
 
-
             switch (true) {
                 case $dependencyClass !== null && !$dependencyClass->isBuiltin():
-                    $dependencyClassName = $dependencyClass->getName();
+                    $dependencyClassName = self::$bind[$dependencyClass->getName()] ?? $dependencyClass->getName();
                     $dependencyInstance = $this->resolve($dependencyClassName);
                     $dependencies[] = $dependencyInstance;
                     break;
                 case $dependencyName === 'id':
                     $dependencies[] = (int) $this->api->getRest()['id'];
+                    break;
+                case $dependencyName === 'nsModelObject':
+                    $dependencies[] = new stdClass();
+                    break;
+                case $dependencyName === 'dd':
+                case $dependencyName === 'data':
+                case $dependencyName === 'dados':
+                    $dependencies[] = $this->api->getBody();
                     break;
                 case $dependencyClass->getName() === 'array':
                     $dependencies[] = $this->api->getBody();

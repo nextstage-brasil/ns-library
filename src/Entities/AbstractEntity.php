@@ -8,6 +8,8 @@ use NsUtil\Api;
 use NsUtil\Exceptions\ModelNotFoundException;
 use NsUtil\Helper;
 
+use function NsUtil\json_decode;
+
 abstract class AbstractEntity
 {
     protected $error; // armazena possiveis erros, inclusive, obrigatoriedades.
@@ -38,6 +40,7 @@ abstract class AbstractEntity
     public function setExternalDao(EntityManagerInterface $dao)
     {
         $this->dao = $dao;
+        $this->dao->setObject($this);
     }
 
     protected function setDao()

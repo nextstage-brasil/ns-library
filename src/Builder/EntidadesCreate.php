@@ -151,7 +151,7 @@ class ' . $dados['entidade'] . ' extends \NsLibrary\Entities\AbstractEntity {
          * @param array|null $dd
          */    
 
-         public function __construct($dd=[], ?EntityManagerInterface $dao = null)  {
+         public function __construct(?array $dd=[], ?EntityManagerInterface $dao = null)  {
 
             parent::__construct(
                 "' . ($dados['schemaTable'] ?? 'var schemaTable is not defined!!') . '", 

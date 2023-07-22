@@ -30,9 +30,9 @@ class EntityManager implements EntityManagerInterface
     protected $query;
     protected $lockedForUpdate = false;
 
-    public function __construct($object)
+    public function __construct($nsModelObject)
     {
-        $this->object = $object;
+        $this->object = $nsModelObject;
         $this->order = false;
         $this->message = '';
         $this->con = Connection::getConnection();
