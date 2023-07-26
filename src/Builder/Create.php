@@ -450,8 +450,8 @@ class Create
                 'camposJson' => str_replace("'", '', $camposJson),
             ];
             $dados = [
-                'aliaseTableByID' => $CONFIG['titlePagesAliases'][mb_strtolower($entidade)],
-                'aliaseTableByComents' => $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)],
+                'aliaseTableByID' => $CONFIG['titlePagesAliases'][mb_strtolower($entidade)] ?? $entidade,
+                'aliaseTableByComents' => $CONFIG['titlePagesAliasesByComents'][mb_strtolower($entidade)] ?? $entidade,
                 'schema' => $tab['schema'],
                 'schemaTable' => $schemaTable,
                 'tabela' => $tabela,
