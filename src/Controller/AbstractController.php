@@ -254,15 +254,19 @@ abstract class AbstractController
                             $VALOR = json_decode($VALOR, true);
                             $propertyType = null;
                             break;
+                        case is_string($VALOR) && Helper::isJson($VALOR):
+                            $VALOR = \NsUtil\json_decode($VALOR, true);
+                            $propertyType = null;
+                            break;
                         default:
-                            if (is_string($VALOR)) {
-                                // is json?
-                                $tmp = json_decode($VALOR, true);
-                                if (json_last_error() === JSON_ERROR_NONE) {
-                                    $VALOR = $tmp;
-                                    $propertyType = null;
-                                }
-                            }
+                            // if (is_string($VALOR)) {
+                            //     // is json?
+                            //     $tmp = json_decode($VALOR, true);
+                            //     if (json_last_error() === JSON_ERROR_NONE) {
+                            //         $VALOR = $tmp;
+                            //         $propertyType = null;
+                            //     }
+                            // }
                     }
                     $array[$property->getName()] = $VALOR;
 
