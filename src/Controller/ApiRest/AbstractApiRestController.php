@@ -54,6 +54,7 @@ abstract class AbstractApiRestController extends ControllerDefault
                             $dependencies[] = $dependencyInstance;
                             break;
                         case $dependencyName === 'id':
+                        case $dependencyClass->getName() === 'int':
                             $dependencies[] = (int) $this->dados['id'];
                             break;
                         case $dependencyClass !== null && $dependencyClass->getName() === 'array':
