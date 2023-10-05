@@ -186,7 +186,7 @@ abstract class AbstractEntity
      * @param array $filters
      * @param integer $page
      * @param integer $limit
-     * @param boolean $order
+     * @param mixed $order
      * @param boolean $returnObjects
      * @return array
      */
