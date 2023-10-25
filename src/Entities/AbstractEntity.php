@@ -311,13 +311,15 @@ abstract class AbstractEntity
     }
 
     /**
-     * Undocumented function
+     * Get array from a object
      *
+     * @param boolean $showRelations
+     * @param array $ignoreFields fields to ignore on parse. use pascalCase
      * @return array
      */
-    public function toArray($showRelations = true)
+    public function toArray($showRelations = true, array $ignoreFields = [])
     {
-        return (new Controller())->objectToArray($this, $showRelations);
+        return (new Controller())->objectToArray($this, $showRelations, $ignoreFields);
     }
 
     /**
