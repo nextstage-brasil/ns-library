@@ -317,7 +317,7 @@ class ModelSetterDefault
     ): void {
 
         $content = Helper::getValByType(
-            Helper::parseInt(is_array($content) ? ($content[$fieldName] ?? null) : $content),
+            Helper::parseInt(is_array($content) ? ($content[$fieldName] ?? null) : $content, true),
             'int'
         );
 
@@ -326,7 +326,7 @@ class ModelSetterDefault
             $error[$fieldName] = $comentError;
         } else {
             unset($error[$fieldName]);
-            $content = (int) Helper::parseInt($content);
+            $content = (int) Helper::parseInt($content, true);
             if ($notNull && $content == 0) {
                 $error[$fieldName] = $comentError;
             } else {

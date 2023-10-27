@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.283.11",
+            "version": "3.283.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "348b68edcc83062c329cf7540c4c92d061d27d9c"
+                "reference": "853eecfb21e8d623fa1b32e597b0a75912e8a404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/348b68edcc83062c329cf7540c4c92d061d27d9c",
-                "reference": "348b68edcc83062c329cf7540c4c92d061d27d9c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/853eecfb21e8d623fa1b32e597b0a75912e8a404",
+                "reference": "853eecfb21e8d623fa1b32e597b0a75912e8a404",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +151,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.283.11"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.283.13"
             },
-            "time": "2023-10-24T18:10:38+00:00"
+            "time": "2023-10-26T18:14:40+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -896,16 +896,16 @@
         },
         {
             "name": "nextstage-brasil/ns-util",
-            "version": "1.64.9",
+            "version": "1.64.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextstage-brasil/ns-util.git",
-                "reference": "3db8ef002e14165f3a3174ae35d9100498317b69"
+                "reference": "150899d7471ec55bb5a43050fa5b92f7ecb74f41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/3db8ef002e14165f3a3174ae35d9100498317b69",
-                "reference": "3db8ef002e14165f3a3174ae35d9100498317b69",
+                "url": "https://api.github.com/repos/nextstage-brasil/ns-util/zipball/150899d7471ec55bb5a43050fa5b92f7ecb74f41",
+                "reference": "150899d7471ec55bb5a43050fa5b92f7ecb74f41",
                 "shasum": ""
             },
             "require": {
@@ -940,9 +940,9 @@
             "description": "Metodos e classes de utilidades diversas",
             "support": {
                 "issues": "https://github.com/nextstage-brasil/ns-util/issues",
-                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.64.9"
+                "source": "https://github.com/nextstage-brasil/ns-util/tree/1.64.12"
             },
-            "time": "2023-10-25T05:09:52+00:00"
+            "time": "2023-10-27T08:44:50+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
