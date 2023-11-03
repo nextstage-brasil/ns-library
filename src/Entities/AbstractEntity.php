@@ -223,7 +223,7 @@ abstract class AbstractEntity
     public function firstOrFail($param)
     {
         if (is_array($param)) {
-            $item = $this->list($param)[0];
+            $item = $this->list($param)[0] ?? null;
         } else {
             $item = $this->list([$this->cpoId => (int) $param])[0] ?? null;
         }
